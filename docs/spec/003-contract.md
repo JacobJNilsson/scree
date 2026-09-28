@@ -16,7 +16,9 @@ Three versions travel with every report:
 
 Two reports are comparable when all three versions match and their
 configuration digests match. An incomparable pair is refused with the
-reason. It is never compared silently.
+reason. It is never compared silently. A report with an unknown schema
+version fails to load, so a schema refusal can arise only from reports
+built in memory.
 
 ## Determinism
 
@@ -147,8 +149,10 @@ failure.
 - `failOnNew`: requires a baseline. Fails when the comparison lists a new
   finding of a named kind.
 
-Without a baseline, the baseline-dependent checks are skipped and the report
-says so.
+Without a baseline, the baseline-dependent checks are skipped and the
+command names them on stderr. The report itself carries no policy state.
+A budget on a metric id that no report can hold is a configuration error,
+not a policy failure. Integer knobs reject fractions.
 
 ## Command line
 
