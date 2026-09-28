@@ -102,9 +102,12 @@ func TestBrokenFixture(t *testing.T) {
 	if want := []string{"parse bad.go production", "parse bad_test.go test"}; !reflect.DeepEqual(paths, want) {
 		t.Errorf("errors = %v, want %v", paths, want)
 	}
-	for _, set := range []discover.SourceSet{discover.Production, discover.Test} {
+	for set, want := range map[discover.SourceSet][]string{discover.Production: {"bad.go"}, discover.Test: {"bad_test.go"}} {
 		if !inv.Incomplete(set) {
 			t.Errorf("Incomplete(%s) = false, want true", set)
+		}
+		if got := inv.ErrorPaths(set); !reflect.DeepEqual(got, want) {
+			t.Errorf("ErrorPaths(%s) = %v, want %v", set, got, want)
 		}
 	}
 	if inv.Incomplete(discover.Generated) {

@@ -32,7 +32,7 @@ func Measure(inv *inventory.Inventory) (map[string]contract.Metric, []contract.F
 		}
 		setMetrics := measureSet(fns)
 		if inv.Incomplete(set) {
-			detail := contract.Detail{Errors: errorPaths(inv, set)}
+			detail := contract.Detail{Errors: inv.ErrorPaths(set)}
 			for name, m := range setMetrics {
 				setMetrics[name] = contract.Metric{State: contract.Incomplete, Unit: m.Unit, Detail: detail}
 			}
@@ -102,17 +102,6 @@ func measured(value float64, unit string) contract.Metric {
 
 func notApplicable(unit string) contract.Metric {
 	return contract.Metric{State: contract.NotApplicable, Unit: unit}
-}
-
-// errorPaths lists the paths of the errors that make a set incomplete, in the path order of the inventory.
-func errorPaths(inv *inventory.Inventory, set contract.SourceSet) []string {
-	var paths []string
-	for _, e := range inv.Errors {
-		if e.Set == set || (e.Kind == inventory.KindRead && e.Set == "") {
-			paths = append(paths, e.Path)
-		}
-	}
-	return paths
 }
 
 // percentile returns the nearest-rank percentile p of a non-empty ascending list, at the 1-based rank ceil(p/100 × n).

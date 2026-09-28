@@ -53,14 +53,20 @@ type Inventory struct {
 }
 
 // Incomplete reports whether an error touches the set.
-// A read error without a set could hide files of every set.
 func (inv *Inventory) Incomplete(set discover.SourceSet) bool {
+	return len(inv.ErrorPaths(set)) > 0
+}
+
+// ErrorPaths lists the paths of the errors that touch the set, in the order of Errors.
+// A read error without a set could hide files of every set.
+func (inv *Inventory) ErrorPaths(set discover.SourceSet) []string {
+	var paths []string
 	for _, e := range inv.Errors {
 		if e.Set == set || (e.Kind == KindRead && e.Set == "") {
-			return true
+			paths = append(paths, e.Path)
 		}
 	}
-	return false
+	return paths
 }
 
 // declaration is a function declaration or a package-level var spec, with its closures.
