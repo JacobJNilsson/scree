@@ -169,8 +169,10 @@ scree version
   default renderer is terminal text. `--out` writes the report to a file and
   prints a one-line confirmation to stderr; `--quiet` suppresses the
   confirmation. Policy reasons go to stderr. With `--baseline`, the JSON on
-  stdout carries a `comparison` block. A file written by `--out` never does,
-  so every saved report is a valid baseline for a later run.
+  stdout carries a `comparison` block and is not a valid baseline. A file
+  written by `--out` never carries it, so a saved report is always a valid
+  baseline for a later run. Save reports with `--out`, not by redirecting
+  stdout.
 - `compare` reads two saved JSON reports and prints the comparison. It runs
   no audit.
 - Exit codes: `0` when the run passed, `2` when the policy failed or a
