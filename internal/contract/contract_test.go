@@ -3,6 +3,8 @@ package contract
 import (
 	"encoding/json"
 	"errors"
+	"math/rand"
+	"reflect"
 	"testing"
 )
 
@@ -78,6 +80,26 @@ func TestFactsJSON(t *testing.T) {
 	for _, facts := range []Facts{{}, {Hotspot: hotspot, Clone: clone}} {
 		if _, err := json.Marshal(facts); !errors.Is(err, errFacts) {
 			t.Errorf("Marshal(%+v) error = %v, want %v", facts, err, errFacts)
+		}
+	}
+}
+
+// TestSortFindings shuffles findings that differ in one key each and asserts one order.
+func TestSortFindings(t *testing.T) {
+	want := []Finding{
+		{Kind: "a", Path: "z.go", StartLine: 9, Identity: "z"},
+		{Kind: "b", Path: "a.go", StartLine: 9, Identity: "z"},
+		{Kind: "b", Path: "b.go", StartLine: 1, Identity: "z"},
+		{Kind: "b", Path: "b.go", StartLine: 2, Identity: "a"},
+		{Kind: "b", Path: "b.go", StartLine: 2, Identity: "b"},
+	}
+	rng := rand.New(rand.NewSource(1))
+	for range 20 {
+		got := append([]Finding(nil), want...)
+		rng.Shuffle(len(got), func(i, j int) { got[i], got[j] = got[j], got[i] })
+		SortFindings(got)
+		if !reflect.DeepEqual(got, want) {
+			t.Fatalf("order:\n got %+v\nwant %+v", got, want)
 		}
 	}
 }

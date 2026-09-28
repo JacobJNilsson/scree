@@ -4,6 +4,7 @@ package contract
 import (
 	"encoding/json"
 	"errors"
+	"sort"
 )
 
 // MetricState says how much of its scope a metric measured.
@@ -82,6 +83,23 @@ func (f Facts) MarshalJSON() ([]byte, error) {
 		return json.Marshal(f.Clone)
 	}
 	return nil, errFacts
+}
+
+// SortFindings orders findings by kind, path, start line, and identity, as spec 002 demands.
+func SortFindings(findings []Finding) {
+	sort.Slice(findings, func(i, j int) bool {
+		a, b := findings[i], findings[j]
+		if a.Kind != b.Kind {
+			return a.Kind < b.Kind
+		}
+		if a.Path != b.Path {
+			return a.Path < b.Path
+		}
+		if a.StartLine != b.StartLine {
+			return a.StartLine < b.StartLine
+		}
+		return a.Identity < b.Identity
+	})
 }
 
 // HotspotFacts are the measurements of the function behind a complexity hotspot.
