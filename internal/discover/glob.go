@@ -1,6 +1,8 @@
 package discover
 
 import (
+	"errors"
+	"fmt"
 	"path"
 	"strings"
 )
@@ -28,6 +30,20 @@ func matchSegments(pattern, segments []string) bool {
 		pattern, segments = pattern[1:], segments[1:]
 	}
 	return len(segments) == 0
+}
+
+// ValidPattern returns an error when matchGlob cannot use a pattern, because matchGlob treats a malformed pattern as matching nothing.
+func ValidPattern(pattern string) error {
+	if pattern == "" {
+		return errors.New("pattern is empty")
+	}
+	for _, segment := range strings.Split(pattern, "/") {
+		// Match checks the whole pattern for syntax, even when the name does not match.
+		if _, err := path.Match(segment, ""); err != nil {
+			return fmt.Errorf("pattern %q: %w", pattern, err)
+		}
+	}
+	return nil
 }
 
 // matchSegment matches one segment with the syntax of path.Match, and a malformed pattern matches nothing.
