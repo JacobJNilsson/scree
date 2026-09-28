@@ -32,5 +32,6 @@ func Audit(ctx context.Context, root string, opts Options) (*Report, error) {
 		return nil, err
 	}
 	inv := inventory.Build(tree)
-	return report.New(inv, complexity.Measure(inv)), nil
+	metrics, findings := complexity.Measure(inv)
+	return report.New(inv, metrics, findings), nil
 }

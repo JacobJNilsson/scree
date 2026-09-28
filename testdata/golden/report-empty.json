@@ -71,8 +71,43 @@
       "value": 0,
       "unit": "count",
       "detail": {}
+    },
+    "erosion.eroded-count.production": {
+      "state": "complete",
+      "value": 0,
+      "unit": "count",
+      "detail": {}
+    },
+    "erosion.eroded-count.test": {
+      "state": "complete",
+      "value": 0,
+      "unit": "count",
+      "detail": {}
+    },
+    "erosion.eroded-share.production": {
+      "state": "not-applicable",
+      "unit": "ratio",
+      "detail": {}
+    },
+    "erosion.eroded-share.test": {
+      "state": "not-applicable",
+      "unit": "ratio",
+      "detail": {}
+    },
+    "erosion.mass.production": {
+      "state": "complete",
+      "value": 0,
+      "unit": "mass",
+      "detail": {}
+    },
+    "erosion.mass.test": {
+      "state": "complete",
+      "value": 0,
+      "unit": "mass",
+      "detail": {}
     }
   },
+  "findings": [],
   "inventory": {
     "functions": {
       "production": 0,

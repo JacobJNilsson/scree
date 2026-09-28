@@ -77,8 +77,110 @@
       "value": 3,
       "unit": "count",
       "detail": {}
+    },
+    "erosion.eroded-count.production": {
+      "state": "complete",
+      "value": 3,
+      "unit": "count",
+      "detail": {}
+    },
+    "erosion.eroded-count.test": {
+      "state": "complete",
+      "value": 1,
+      "unit": "count",
+      "detail": {}
+    },
+    "erosion.eroded-share.production": {
+      "state": "complete",
+      "value": 0.5179282607419493,
+      "unit": "ratio",
+      "numerator": 115.05255888325765,
+      "denominator": 222.13995181193832,
+      "detail": {}
+    },
+    "erosion.eroded-share.test": {
+      "state": "complete",
+      "value": 0.7712605870313493,
+      "unit": "ratio",
+      "numerator": 24,
+      "denominator": 31.11788726606417,
+      "detail": {}
+    },
+    "erosion.mass.production": {
+      "state": "complete",
+      "value": 222.13995181193832,
+      "unit": "mass",
+      "detail": {}
+    },
+    "erosion.mass.test": {
+      "state": "complete",
+      "value": 31.11788726606417,
+      "unit": "mass",
+      "detail": {}
     }
   },
+  "findings": [
+    {
+      "kind": "complexity.hotspot",
+      "path": "cc.go",
+      "startLine": 35,
+      "endLine": 70,
+      "identity": ".:Long",
+      "ambiguous": false,
+      "sourceSet": "production",
+      "facts": {
+        "cc": 11,
+        "nesting": 1,
+        "sloc": 36,
+        "mass": 66
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "cc.go",
+      "startLine": 73,
+      "endLine": 76,
+      "identity": ".:Short",
+      "ambiguous": false,
+      "sourceSet": "production",
+      "facts": {
+        "cc": 15,
+        "nesting": 0,
+        "sloc": 4,
+        "mass": 30
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "cc.go",
+      "startLine": 79,
+      "endLine": 81,
+      "identity": ".:wrap#1",
+      "ambiguous": true,
+      "sourceSet": "production",
+      "facts": {
+        "cc": 11,
+        "nesting": 0,
+        "sloc": 3,
+        "mass": 19.05255888325765
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "functions_test.go",
+      "startLine": 14,
+      "endLine": 17,
+      "identity": ".:allSet",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "cc": 12,
+        "nesting": 0,
+        "sloc": 4,
+        "mass": 24
+      }
+    }
+  ],
   "inventory": {
     "functions": {
       "production": 23,

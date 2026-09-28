@@ -28,10 +28,6 @@ func complete(value float64) contract.Metric {
 	return contract.Metric{State: contract.Complete, Value: value, Unit: "count"}
 }
 
-func notApplicable() contract.Metric {
-	return contract.Metric{State: contract.NotApplicable, Unit: "count"}
-}
-
 // checkMetrics compares the metrics whose ids start with prefix.
 func checkMetrics(t *testing.T, got map[string]contract.Metric, prefix string, want map[string]contract.Metric) {
 	t.Helper()
@@ -51,7 +47,7 @@ func checkMetrics(t *testing.T, got map[string]contract.Metric, prefix string, w
 
 // TestDistributionsFunctionsFixture checks numbers that a person derived by hand from the fixture source.
 func TestDistributionsFunctionsFixture(t *testing.T) {
-	got := Measure(build(t, "functions"))
+	got, _ := Measure(build(t, "functions"))
 	// Production CC ascending: seventeen 1s, then 2, 5, 10, 11, 11, 15. Rank 12 is 1, rank 21 is 11.
 	// Test CC ascending: 1, 2, 12. Rank 2 is 2, rank 3 is 12.
 	checkMetrics(t, got, "complexity.", map[string]contract.Metric{
@@ -67,12 +63,12 @@ func TestDistributionsFunctionsFixture(t *testing.T) {
 }
 
 func TestDistributionsEmptyFixture(t *testing.T) {
-	got := Measure(build(t, "empty"))
+	got, _ := Measure(build(t, "empty"))
 	want := map[string]contract.Metric{}
 	for _, set := range []string{"production", "test"} {
 		want["complexity.functions."+set] = complete(0)
 		for _, name := range []string{"p50", "p90", "max"} {
-			want["complexity.cc."+name+"."+set] = notApplicable()
+			want["complexity.cc."+name+"."+set] = contract.Metric{State: contract.NotApplicable, Unit: "count"}
 		}
 	}
 	checkMetrics(t, got, "complexity.", want)
@@ -80,15 +76,20 @@ func TestDistributionsEmptyFixture(t *testing.T) {
 
 // TestIncomplete asserts that every metric of a set with an error is incomplete and that its JSON has no number.
 func TestIncomplete(t *testing.T) {
-	got := Measure(build(t, "broken"))
+	got, _ := Measure(build(t, "broken"))
 	wantErrors := map[string][]string{"production": {"bad.go"}, "test": {"bad_test.go"}}
-	if len(got) == 0 {
-		t.Fatal("no metrics")
+	// Seven metrics for each of the two sets.
+	if len(got) != 14 {
+		t.Fatalf("%d metrics, want 14: %v", len(got), got)
 	}
 	for id, m := range got {
 		set := id[strings.LastIndex(id, ".")+1:]
 		if m.State != contract.Incomplete {
 			t.Errorf("%s: state %s, want incomplete", id, m.State)
+		}
+		// The set still holds a parsed function, so a stale count or CC would show here.
+		if m.Value != 0 || m.Numerator != 0 || m.Denominator != 0 {
+			t.Errorf("%s keeps numbers in memory: %+v", id, m)
 		}
 		if errs := m.Detail.Errors; !reflect.DeepEqual(errs, wantErrors[set]) {
 			t.Errorf("%s: detail.errors = %v, want %v", id, errs, wantErrors[set])
@@ -111,7 +112,7 @@ func TestIncompleteRootReadError(t *testing.T) {
 		{Kind: inventory.KindParse, Path: "a.go", Set: discover.Production},
 		{Kind: inventory.KindRead, Path: "locked"},
 	}}
-	got := Measure(inv)
+	got, _ := Measure(inv)
 	for id, want := range map[string][]string{
 		"complexity.functions.production": {"a.go", "locked"},
 		"complexity.functions.test":       {"locked"},

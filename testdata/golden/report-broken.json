@@ -101,8 +101,63 @@
           "bad_test.go"
         ]
       }
+    },
+    "erosion.eroded-count.production": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad.go"
+        ]
+      }
+    },
+    "erosion.eroded-count.test": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad_test.go"
+        ]
+      }
+    },
+    "erosion.eroded-share.production": {
+      "state": "incomplete",
+      "unit": "ratio",
+      "detail": {
+        "errors": [
+          "bad.go"
+        ]
+      }
+    },
+    "erosion.eroded-share.test": {
+      "state": "incomplete",
+      "unit": "ratio",
+      "detail": {
+        "errors": [
+          "bad_test.go"
+        ]
+      }
+    },
+    "erosion.mass.production": {
+      "state": "incomplete",
+      "unit": "mass",
+      "detail": {
+        "errors": [
+          "bad.go"
+        ]
+      }
+    },
+    "erosion.mass.test": {
+      "state": "incomplete",
+      "unit": "mass",
+      "detail": {
+        "errors": [
+          "bad_test.go"
+        ]
+      }
     }
   },
+  "findings": [],
   "inventory": {
     "functions": {
       "production": 1,

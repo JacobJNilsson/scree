@@ -12,11 +12,12 @@ import (
 )
 
 // Report is the result of one audit.
-// The inventory block is provisional until step 4, and the metrics block follows spec 003.
+// The inventory block is provisional until step 4, and the metrics and findings blocks follow spec 003.
 type Report struct {
 	Repo      Repo                       `json:"repo"`
 	Coverage  Coverage                   `json:"coverage"`
 	Metrics   map[string]contract.Metric `json:"metrics"`
+	Findings  []contract.Finding         `json:"findings"`
 	Inventory Inventory                  `json:"inventory"`
 }
 
@@ -55,8 +56,8 @@ type Inventory struct {
 	Errors    []inventory.Error          `json:"errors"`
 }
 
-// New builds the report of an inventory and its metrics.
-func New(inv *inventory.Inventory, metrics map[string]contract.Metric) *Report {
+// New builds the report of an inventory, its metrics, and its findings.
+func New(inv *inventory.Inventory, metrics map[string]contract.Metric, findings []contract.Finding) *Report {
 	tree := inv.Tree
 	measured := func(set discover.SourceSet) Measured {
 		return Measured{Files: tree.Coverage[set].Files, SLOC: inv.SLOC[set]}
@@ -79,6 +80,7 @@ func New(inv *inventory.Inventory, metrics map[string]contract.Metric) *Report {
 			NestedModules: tree.NestedModules,
 		},
 		Metrics:   metrics,
+		Findings:  findings,
 		Inventory: Inventory{Functions: functions, Errors: inv.Errors},
 	}
 }
