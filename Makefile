@@ -2,7 +2,7 @@
 COVERAGE_MIN ?= 90
 export COVERAGE_MIN
 
-.PHONY: build test gate-test lint lint-fast vet tidy tidy-check antislop check check-scoped setup clean golden
+.PHONY: build test gate-test lint lint-fast vet tidy tidy-check antislop check check-scoped setup clean golden selfcheck
 
 build:
 	go build ./...
@@ -39,7 +39,11 @@ tidy-check:
 antislop:
 	go run github.com/JacobJNilsson/anti-slop-go/cmd/antislop@v1.3.0 ./...
 
-check: tidy-check vet lint gate-test test build antislop
+# The self-audit fails the gate when scree cannot audit its own repository.
+selfcheck:
+	go run ./cmd/scree audit .
+
+check: tidy-check vet lint gate-test test build antislop selfcheck
 
 check-scoped:
 	sh scripts/precommit-check.sh
