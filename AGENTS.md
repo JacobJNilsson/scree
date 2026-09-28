@@ -20,8 +20,14 @@ fresh clone has no hooks until you run `make setup`.
 unchanged. It runs, in order: `go mod tidy -diff`, `go vet ./...`,
 `golangci-lint run ./...`, the coverage gate self-test, `go test -race ./...`
 with the coverage gate at `COVERAGE_MIN` (90), `go build ./...`, and
-`make selfcheck`, which audits this repository with its own binary and fails
-when the index rises above the committed budget.
+`make antislop`, which runs the anti-slop-go rules over the module.
+anti-slop-go v1.3.0 requires Go 1.24 or newer. With the default
+`GOTOOLCHAIN=auto`, the go command downloads a newer toolchain for
+`make antislop`. With `GOTOOLCHAIN=local` on a Go 1.23 host,
+`make antislop` fails.
+`make selfcheck` joins `make check` in step 4. It audits this repository
+with its own binary and fails when the index rises above the committed
+budget.
 
 The pre-commit tier, `make check-scoped`, runs vet, lint, and race tests on
 the packages a staged change touches, with the same coverage bar over the

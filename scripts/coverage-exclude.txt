@@ -1,0 +1,5 @@
+# Files the coverage gate ignores. One path substring per line.
+# Each entry needs a comment that says why the file needs no test.
+
+# main only calls run, and run_test.go covers run.
+cmd/scree/main.go
