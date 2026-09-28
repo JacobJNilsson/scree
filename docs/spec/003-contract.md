@@ -191,8 +191,10 @@ func LoadConfig(path string) (*Config, error)
 ```
 
 A refused comparison is a `Comparison` with `Comparable` false and a
-`Refusal`, not an error. `PolicyResult` carries `Failed`, `Reasons`, and
-`Skipped`.
+`Refusal`, not an error. `PolicyResult` carries `Failed`, `Reasons`,
+`Skipped`, and `Refusal`. A refused baseline sets `Refusal` and `Failed`
+whatever the policy declares, so the SDK and the command line agree on the
+same inputs.
 
 `Options` holds the config (loaded or in memory). `Audit` returns an
 operational error only for conditions that stop the audit. Incomplete
