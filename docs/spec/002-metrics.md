@@ -176,7 +176,8 @@ Metrics per set:
 - `duplication.duplicated-lines`: number of distinct code lines covered by at
   least one group member. A line covered by several members counts once.
 - `duplication.density`: `duplicated-lines / code lines in the set`, where
-  code lines are the lines that hold at least one non-comment token.
+  code lines are the SLOC of the set as the inventory counts them. The
+  numerator uses the same per-line rule, from one shared definition.
 
 Budgets. Before running, the detector checks the set against fixed caps:
 `DuplicationMaxTokens` (2,000,000) symbols per set and
