@@ -130,10 +130,12 @@ policy:
 - new, resolved, and persistent findings
 
 Finding matching is conservative. A named hotspot matches on identity;
-line numbers do not matter. An anonymous or ambiguous identity matches only
-when it is the sole finding of its kind on its path in both reports.
-Otherwise it is reported as one resolved and one new finding. A clone group
-matches on its group id.
+line numbers do not matter. An ambiguous identity matches in two cases:
+when it is the sole finding of its kind on its path in both reports, or
+when both reports hold a finding with the same identity string on the same
+path and the same facts. Otherwise it is reported as one resolved and one
+new finding, so an unchanged tree compared with itself always reports every
+finding as persistent. A clone group matches on its group id.
 
 ## Policy
 
@@ -182,10 +184,14 @@ package scree // import "github.com/JacobJNilsson/scree"
 
 func Audit(ctx context.Context, root string, opts Options) (*Report, error)
 func LoadReport(path string) (*Report, error)
-func Compare(before, after *Report) (*Comparison, error)
-func Evaluate(policy Policy, report *Report, baseline *Report) []Reason
+func Compare(before, after *Report) *Comparison
+func Evaluate(policy Policy, report *Report, baseline *Report) PolicyResult
 func LoadConfig(path string) (*Config, error)
 ```
+
+A refused comparison is a `Comparison` with `Comparable` false and a
+`Refusal`, not an error. `PolicyResult` carries `Failed`, `Reasons`, and
+`Skipped`.
 
 `Options` holds the config (loaded or in memory). `Audit` returns an
 operational error only for conditions that stop the audit. Incomplete
