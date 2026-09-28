@@ -1,4 +1,3 @@
-// Package duplication finds clone groups in the normalized token streams of the measured source sets.
 package duplication
 
 // This file builds a suffix array with SA-IS, from Nong, Zhang, and Chan, "Linear Suffix Array Construction by Almost Pure Induced-Sorting", 2009.

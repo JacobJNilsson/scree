@@ -6,8 +6,36 @@ import (
 	"io/fs"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"testing"
 )
+
+// TestAuditMergesMeasures asserts that a report holds the metrics and findings of both measures in the order of spec 002.
+func TestAuditMergesMeasures(t *testing.T) {
+	r, err := Audit(context.Background(), "testdata/fixtures/clones/nested", Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range r.Findings {
+		got = append(got, f.Kind+" "+f.Path+":"+strconv.Itoa(f.StartLine))
+	}
+	want := []string{
+		"complexity.hotspot a.go:4", "complexity.hotspot b.go:4",
+		"duplication.clone-group a.go:4", "duplication.clone-group a.go:6",
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("findings = %v, want %v", got, want)
+	}
+	for _, id := range []string{"complexity.functions.production", "duplication.groups.production"} {
+		if _, ok := r.Metrics[id]; !ok {
+			t.Errorf("metrics lack %s", id)
+		}
+	}
+	if r.Limits == nil || len(r.Limits) != 0 {
+		t.Errorf("limits = %#v, want an empty list", r.Limits)
+	}
+}
 
 func TestAuditOptions(t *testing.T) {
 	r, err := Audit(context.Background(), "testdata/fixtures/functions", Options{

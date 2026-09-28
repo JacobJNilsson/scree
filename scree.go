@@ -6,6 +6,7 @@ import (
 
 	"github.com/JacobJNilsson/scree/internal/complexity"
 	"github.com/JacobJNilsson/scree/internal/discover"
+	"github.com/JacobJNilsson/scree/internal/duplication"
 	"github.com/JacobJNilsson/scree/internal/inventory"
 	"github.com/JacobJNilsson/scree/internal/report"
 )
@@ -33,5 +34,11 @@ func Audit(ctx context.Context, root string, opts Options) (*Report, error) {
 	}
 	inv := inventory.Build(tree)
 	metrics, findings := complexity.Measure(inv)
-	return report.New(inv, metrics, findings), nil
+	dupMetrics, clones, limits := duplication.Measure(inv)
+	for id, m := range dupMetrics {
+		metrics[id] = m
+	}
+	// Each measure sorts its own findings, and every complexity kind sorts before the clone kind, so the joined list keeps the order of spec 002.
+	findings = append(findings, clones...)
+	return report.New(inv, metrics, findings, limits), nil
 }

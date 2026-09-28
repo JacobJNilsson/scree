@@ -39,6 +39,11 @@ func TestMetricJSON(t *testing.T) {
 			metric: Metric{State: Incomplete, Value: 1, Unit: "count", Detail: Detail{Errors: []string{"a.go"}}},
 			want:   `{"state":"incomplete","unit":"count","detail":{"errors":["a.go"]}}`,
 		},
+		{
+			name:   "limit",
+			metric: Metric{State: Incomplete, Unit: "count", Detail: Detail{Limit: &LimitDetail{Cap: "tokens", Observed: 7}}},
+			want:   `{"state":"incomplete","unit":"count","detail":{"limit":{"cap":"tokens","observed":7}}}`,
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			got, err := json.Marshal(tc.metric)

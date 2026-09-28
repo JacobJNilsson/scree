@@ -19,6 +19,7 @@ import (
 	"github.com/JacobJNilsson/scree/internal/complexity"
 	"github.com/JacobJNilsson/scree/internal/contract"
 	"github.com/JacobJNilsson/scree/internal/discover"
+	"github.com/JacobJNilsson/scree/internal/duplication"
 	"github.com/JacobJNilsson/scree/internal/inventory"
 )
 
@@ -28,9 +29,18 @@ func newReport(t *testing.T, fixture string) *Report {
 	if err != nil {
 		t.Fatal(err)
 	}
-	inv := inventory.Build(tree)
+	return measure(inventory.Build(tree))
+}
+
+// measure runs both measures over an inventory and merges their results the way scree.Audit does.
+func measure(inv *inventory.Inventory) *Report {
 	metrics, findings := complexity.Measure(inv)
-	return New(inv, metrics, findings)
+	dupMetrics, clones, limits := duplication.Measure(inv)
+	for id, m := range dupMetrics {
+		metrics[id] = m
+	}
+	findings = append(findings, clones...)
+	return New(inv, metrics, findings, limits)
 }
 
 var update = flag.Bool("update", false, "rewrite the golden files")
@@ -43,8 +53,7 @@ func TestDeterministicJSON(t *testing.T) {
 	}
 	inv := inventory.Build(tree)
 	marshal := func() []byte {
-		metrics, findings := complexity.Measure(inv)
-		data, err := json.Marshal(New(inv, metrics, findings))
+		data, err := json.Marshal(measure(inv))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -61,7 +70,10 @@ func TestDeterministicJSON(t *testing.T) {
 }
 
 func TestGolden(t *testing.T) {
-	for _, name := range []string{"sets", "functions", "broken", "empty"} {
+	for _, name := range []string{
+		"sets", "functions", "broken", "empty",
+		"clones/exact", "clones/renamed", "clones/fourway", "clones/idiom", "clones/near", "clones/within", "clones/nested", "clones/ladder",
+	} {
 		t.Run(name, func(t *testing.T) {
 			r := newReport(t, name)
 			got, err := json.MarshalIndent(r, "", "  ")
@@ -74,7 +86,7 @@ func TestGolden(t *testing.T) {
 			}
 			got = bytes.ReplaceAll(got, rootJSON, []byte(`"<root>"`))
 			got = append(got, '\n')
-			path := filepath.Join("..", "..", "testdata", "golden", "report-"+name+".json")
+			path := filepath.Join("..", "..", "testdata", "golden", "report-"+strings.ReplaceAll(name, "/", "-")+".json")
 			if *update {
 				if err := os.WriteFile(path, got, 0o644); err != nil {
 					t.Fatal(err)
@@ -275,5 +287,23 @@ func (failingWriter) Write([]byte) (int, error) { return 0, errWrite }
 func TestRenderWriteFailure(t *testing.T) {
 	if err := Render(failingWriter{}, &Report{}); !errors.Is(err, errWrite) {
 		t.Errorf("error = %v, want %v", err, errWrite)
+	}
+}
+
+// TestNewSortsLimits shuffles the limits of a report and asserts that New sorts them by metric id.
+func TestNewSortsLimits(t *testing.T) {
+	inv := inventory.Build(&discover.Tree{})
+	want := []contract.Limit{
+		{MetricID: "duplication.density.production", Reason: "work cap 1 exceeded"},
+		{MetricID: "duplication.groups.production", Reason: "work cap 1 exceeded"},
+		{MetricID: "duplication.groups.test", Reason: "tokens cap 1 exceeded"},
+	}
+	rng := rand.New(rand.NewSource(1))
+	for range 20 {
+		shuffled := append([]contract.Limit(nil), want...)
+		rng.Shuffle(len(shuffled), func(i, j int) { shuffled[i], shuffled[j] = shuffled[j], shuffled[i] })
+		if got := New(inv, nil, nil, shuffled).Limits; !reflect.DeepEqual(got, want) {
+			t.Fatalf("limits:\n got %v\nwant %v", got, want)
+		}
 	}
 }

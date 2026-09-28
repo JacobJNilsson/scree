@@ -48,8 +48,10 @@ type Inventory struct {
 	Tree      *discover.Tree `json:"tree"`
 	Functions []Function     `json:"functions"`
 	// SLOC counts the code lines of the parsed files per measured set.
-	SLOC   map[discover.SourceSet]int `json:"sloc"`
-	Errors []Error                    `json:"errors"`
+	SLOC map[discover.SourceSet]int `json:"sloc"`
+	// CodeLines marks the code lines of each parsed file by path, where CodeLines[path][l] is true for a code line l.
+	CodeLines map[string][]bool `json:"-"`
+	Errors    []Error           `json:"errors"`
 }
 
 // Incomplete reports whether an error touches the set.
@@ -72,7 +74,7 @@ func (inv *Inventory) ErrorPaths(set discover.SourceSet) []string {
 // declaration is a function declaration or a package-level var spec, with its closures.
 type declaration struct {
 	file     *discover.File
-	lines    map[int]bool
+	lines    []bool
 	identity string
 	// decl is nil for a var spec, which is not a function of its own.
 	decl *ast.FuncDecl
@@ -85,6 +87,7 @@ func Build(tree *discover.Tree) *Inventory {
 		Tree:      tree,
 		Functions: []Function{},
 		SLOC:      map[discover.SourceSet]int{discover.Production: 0, discover.Test: 0},
+		CodeLines: map[string][]bool{},
 		Errors:    []Error{},
 	}
 	for _, e := range tree.ReadErrors {
@@ -102,7 +105,12 @@ func Build(tree *discover.Tree) *Inventory {
 			continue
 		}
 		lines := codeLines(tree.Fset.File(f.Syntax.Pos()), f.Src)
-		inv.SLOC[f.Set] += len(lines)
+		inv.CodeLines[f.Path] = lines
+		for _, isCode := range lines {
+			if isCode {
+				inv.SLOC[f.Set]++
+			}
+		}
 		decls = append(decls, declarations(f, lines)...)
 	}
 	resolveCollisions(decls)
@@ -133,7 +141,7 @@ func firstError(f *discover.File) string {
 }
 
 // declarations lists the top-level declarations of a file that hold functions.
-func declarations(f *discover.File, lines map[int]bool) []*declaration {
+func declarations(f *discover.File, lines []bool) []*declaration {
 	dir := path.Dir(f.Path)
 	var out []*declaration
 	for _, decl := range f.Syntax.Decls {
