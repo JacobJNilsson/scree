@@ -155,10 +155,15 @@ Thresholds. A clone group needs at least `DuplicationMinTokens` (100)
 symbols and `DuplicationMinLines` (3) lines in every member.
 
 Grouping. A clone group is the set of every maximal run that shares one
-identical symbol sequence. A group needs at least two members after
-dropping members that lie inside another member of the same group in the
-same file. Repeats within one file count. Groups never merge through
-pairwise overlap.
+identical symbol sequence. A group needs at least two members. Repeats
+within one file count, and members of one group may overlap each other.
+Groups never merge through pairwise overlap.
+
+A group is subsumed when every one of its members lies inside a member of
+a longer group. Subsumed groups are dropped. A block that repeats only as
+part of a larger repeated block is not independent evidence. Periodic code,
+such as a switch table with many similar rows, otherwise yields one group
+per multiple of the row length, and this rule keeps only the longest.
 
 Metrics per set:
 
