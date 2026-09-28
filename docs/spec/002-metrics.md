@@ -67,11 +67,19 @@ Each function has a scoped identity, used by baseline comparison:
 - Named: `<package dir>:<receiver>.<name>` or `<package dir>:<name>`. The
   receiver is the type name with any pointer star removed.
 - Anonymous: `<enclosing identity>#<ordinal>`, where the ordinal counts
-  `FuncLit`s inside the enclosing declaration in source order. An anonymous
-  identity is ambiguous by definition.
-- When two named functions in one package share an identity, which happens
-  with build-tag variants of the same function in different files, each
-  identity gets the file base name appended after `@`. Only then.
+  `FuncLit`s inside the enclosing declaration in source order, starting at
+  1. For a closure outside any function, the enclosing identity is
+  `<package dir>:<name>` where the name is the first name of the `var` or
+  `const` spec that holds it. An anonymous identity is ambiguous by
+  definition.
+- Identities are unique within one source set. When two named functions,
+  or two package-level `var` specs that hold closures, in one package and
+  one set share an identity, which happens with build-tag variants in
+  different files, each identity gets the file base name appended after
+  `@`. Only then. Closures inside them inherit the suffix. When identities still
+  collide, which several `init` functions or several `var _` specs in one
+  file cause, each gets its source-order ordinal appended after a second
+  `@`.
 
 ## Complexity
 
@@ -92,8 +100,9 @@ body. A `case` clause adds no level of its own. Nested `FuncLit`s start
 their own count.
 
 SLOC per function is the number of lines within the function's source range
-that hold at least one token that is not a comment. SLOC per file uses the
-same rule over the whole file.
+that hold at least one token that is not a comment. A multi-line string
+literal counts every line it spans. SLOC per file uses the same rule over
+the whole file.
 
 Distributions per source set: `complexity.cc.p50`, `complexity.cc.p90`,
 `complexity.cc.max`, `complexity.functions` (count). Percentiles use the
