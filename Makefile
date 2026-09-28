@@ -2,7 +2,7 @@
 COVERAGE_MIN ?= 90
 export COVERAGE_MIN
 
-.PHONY: build test gate-test lint lint-fast vet tidy tidy-check antislop check check-scoped setup clean
+.PHONY: build test gate-test lint lint-fast vet tidy tidy-check antislop check check-scoped setup clean golden
 
 build:
 	go build ./...
@@ -10,6 +10,10 @@ build:
 test:
 	go test -race -coverprofile=coverage.out ./...
 	sh scripts/coverage-gate.sh coverage.out
+
+# Only packages with golden files define the -update flag.
+golden:
+	go test ./internal/inventory -update
 
 gate-test:
 	sh scripts/coverage-gate-test.sh

@@ -1,0 +1,131 @@
+{
+  "tree": {
+    "root": "<root>",
+    "module": "example.com/sets",
+    "files": [
+      {
+        "path": ".gitignore",
+        "set": "excluded"
+      },
+      {
+        "path": ".hidden.go",
+        "set": "excluded"
+      },
+      {
+        "path": ".hidden/h.go",
+        "set": "excluded"
+      },
+      {
+        "path": "README.md",
+        "set": "unsupported"
+      },
+      {
+        "path": "_skip.go",
+        "set": "excluded"
+      },
+      {
+        "path": "_skip/s.go",
+        "set": "excluded"
+      },
+      {
+        "path": "a.go",
+        "set": "production"
+      },
+      {
+        "path": "a_test.go",
+        "set": "test"
+      },
+      {
+        "path": "gen.go",
+        "set": "generated"
+      },
+      {
+        "path": "go.mod",
+        "set": "unsupported"
+      },
+      {
+        "path": "nested/.gitignore",
+        "set": "excluded"
+      },
+      {
+        "path": "nested/keep.go",
+        "set": "production"
+      },
+      {
+        "path": "testdata/t.go",
+        "set": "testdata"
+      },
+      {
+        "path": "vendor/x/x.go",
+        "set": "vendored"
+      }
+    ],
+    "nestedModules": [
+      "tools/gen"
+    ],
+    "readErrors": [],
+    "coverage": {
+      "excluded": {
+        "files": 6
+      },
+      "generated": {
+        "files": 1
+      },
+      "production": {
+        "files": 2
+      },
+      "test": {
+        "files": 1
+      },
+      "testdata": {
+        "files": 1
+      },
+      "unsupported": {
+        "files": 2
+      },
+      "vendored": {
+        "files": 1
+      }
+    }
+  },
+  "functions": [
+    {
+      "identity": ".:A",
+      "ambiguous": false,
+      "path": "a.go",
+      "set": "production",
+      "startLine": 4,
+      "endLine": 4,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 1
+    },
+    {
+      "identity": ".:TestA",
+      "ambiguous": false,
+      "path": "a_test.go",
+      "set": "test",
+      "startLine": 5,
+      "endLine": 9,
+      "cc": 2,
+      "nesting": 1,
+      "sloc": 5
+    },
+    {
+      "identity": "nested:Keep",
+      "ambiguous": false,
+      "path": "nested/keep.go",
+      "set": "production",
+      "startLine": 4,
+      "endLine": 4,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 1
+    }
+  ],
+  "sloc": {
+    "production": 4,
+    "test": 7
+  },
+  "errors": []
+}
