@@ -82,8 +82,9 @@ points in its body, excluding nested `FuncLit` bodies:
 Nothing else counts. Go has no ternary or null-coalescing operators.
 
 Maximum nesting depth per function is the deepest chain of nested `if`,
-`for`, `switch`, `select`, and `case` bodies, starting at 0 for the function
-body. Nested `FuncLit`s start their own count.
+`for`, `switch`, and `select` statements, starting at 0 for the function
+body. A `case` clause adds no level of its own. Nested `FuncLit`s start
+their own count.
 
 SLOC per function is the number of lines within the function's source range
 that hold at least one token that is not a comment. SLOC per file uses the
