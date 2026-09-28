@@ -17,20 +17,22 @@ import (
 	"strings"
 
 	gitignore "github.com/boyter/gocodewalker/go-gitignore"
+
+	"github.com/JacobJNilsson/scree/internal/contract"
 )
 
 // SourceSet names the group a file belongs to.
-type SourceSet string
+type SourceSet = contract.SourceSet
 
 // The source sets of spec 002, in the order a report lists them.
 const (
-	Production  SourceSet = "production"
-	Test        SourceSet = "test"
-	Generated   SourceSet = "generated"
-	Vendored    SourceSet = "vendored"
-	Testdata    SourceSet = "testdata"
-	Excluded    SourceSet = "excluded"
-	Unsupported SourceSet = "unsupported"
+	Production  = contract.Production
+	Test        = contract.Test
+	Generated   = contract.Generated
+	Vendored    = contract.Vendored
+	Testdata    = contract.Testdata
+	Excluded    = contract.Excluded
+	Unsupported = contract.Unsupported
 )
 
 // AllSets returns every source set in report order.
