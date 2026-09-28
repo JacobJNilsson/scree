@@ -168,7 +168,9 @@ scree version
 - `audit` measures, scores, evaluates the policy, and prints the report. The
   default renderer is terminal text. `--out` writes the report to a file and
   prints a one-line confirmation to stderr; `--quiet` suppresses the
-  confirmation. Policy reasons go to stderr.
+  confirmation. Policy reasons go to stderr. With `--baseline`, the JSON on
+  stdout carries a `comparison` block. A file written by `--out` never does,
+  so every saved report is a valid baseline for a later run.
 - `compare` reads two saved JSON reports and prints the comparison. It runs
   no audit.
 - Exit codes: `0` when the run passed, `2` when the policy failed or a
