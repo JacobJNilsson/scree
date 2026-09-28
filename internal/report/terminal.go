@@ -59,7 +59,7 @@ func renderIndex(b *strings.Builder, r *Report, base *Baseline) {
 	}
 	b.WriteString("\n")
 	if base != nil {
-		fmt.Fprintf(b, "       baseline %d  delta %s  new %d  resolved %d\n", base.Index, signed(base.Delta), base.New, base.Resolved)
+		fmt.Fprintf(b, "       baseline %d  delta %s  new %d  resolved %d\n", base.Index, Signed(base.Delta), base.New, base.Resolved)
 	}
 	if reasons := incompleteReasons(r); len(reasons) > 0 {
 		fmt.Fprintf(b, "incomplete: %s\n", strings.Join(reasons, ", "))
