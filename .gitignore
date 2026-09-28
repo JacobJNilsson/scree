@@ -2,3 +2,4 @@
 coverage.out
 coverage.scoped.out
 /scree
+.scree-self.json
