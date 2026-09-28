@@ -1,0 +1,89 @@
+{
+  "repo": {
+    "root": "<root>",
+    "module": "example.com/functions"
+  },
+  "coverage": {
+    "production": {
+      "files": 9,
+      "sloc": 146
+    },
+    "test": {
+      "files": 1,
+      "sloc": 13
+    },
+    "generated": {
+      "files": 0
+    },
+    "vendored": {
+      "files": 0
+    },
+    "testdata": {
+      "files": 0
+    },
+    "excluded": {
+      "files": 0
+    },
+    "unsupported": {
+      "files": 1
+    },
+    "nestedModules": []
+  },
+  "metrics": {
+    "complexity.cc.max.production": {
+      "state": "complete",
+      "value": 15,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.max.test": {
+      "state": "complete",
+      "value": 12,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.p50.production": {
+      "state": "complete",
+      "value": 1,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.p50.test": {
+      "state": "complete",
+      "value": 2,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.p90.production": {
+      "state": "complete",
+      "value": 11,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.p90.test": {
+      "state": "complete",
+      "value": 12,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.functions.production": {
+      "state": "complete",
+      "value": 23,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.functions.test": {
+      "state": "complete",
+      "value": 3,
+      "unit": "count",
+      "detail": {}
+    }
+  },
+  "inventory": {
+    "functions": {
+      "production": 23,
+      "test": 3
+    },
+    "errors": []
+  }
+}

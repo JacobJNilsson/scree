@@ -3,11 +3,16 @@ package report
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
+	"flag"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
 
+	"github.com/JacobJNilsson/scree/internal/complexity"
 	"github.com/JacobJNilsson/scree/internal/discover"
 	"github.com/JacobJNilsson/scree/internal/inventory"
 )
@@ -18,7 +23,41 @@ func newReport(t *testing.T, fixture string) *Report {
 	if err != nil {
 		t.Fatal(err)
 	}
-	return New(inventory.Build(tree))
+	inv := inventory.Build(tree)
+	return New(inv, complexity.Measure(inv))
+}
+
+var update = flag.Bool("update", false, "rewrite the golden files")
+
+func TestGolden(t *testing.T) {
+	for _, name := range []string{"sets", "functions", "broken", "empty"} {
+		t.Run(name, func(t *testing.T) {
+			r := newReport(t, name)
+			got, err := json.MarshalIndent(r, "", "  ")
+			if err != nil {
+				t.Fatal(err)
+			}
+			rootJSON, err := json.Marshal(r.Repo.Root)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got = bytes.ReplaceAll(got, rootJSON, []byte(`"<root>"`))
+			got = append(got, '\n')
+			path := filepath.Join("..", "..", "testdata", "golden", "report-"+name+".json")
+			if *update {
+				if err := os.WriteFile(path, got, 0o644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			want, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !bytes.Equal(got, want) {
+				t.Errorf("%s differs from the golden file, run make golden and review the diff:\n%s", path, got)
+			}
+		})
+	}
 }
 
 func TestNewSetsFixture(t *testing.T) {

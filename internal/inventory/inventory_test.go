@@ -45,6 +45,12 @@ func TestFunctionsFixture(t *testing.T) {
 	want := []Function{
 		// 1 + if + && + else if + || + for + range + case 1 + case int + case <-ch.
 		fn(".:Decide", "cc.go", p, 4, 32, 10, 1, 29),
+		// 1 + ten if statements, and all 36 lines hold code.
+		fn(".:Long", "cc.go", p, 35, 70, 11, 1, 36),
+		// 1 + thirteen && + one ||.
+		fn(".:Short", "cc.go", p, 73, 76, 15, 0, 4),
+		// 1 + ten &&, in a closure of a package-level var.
+		fn(".:wrap#1", "cc.go", p, 79, 81, 11, 0, 3),
 		fn(".:Nest", "closures.go", p, 4, 18, 1, 0, 15),
 		fn(".:Nest#1", "closures.go", p, 5, 16, 1, 0, 12),
 		fn(".:Nest#2", "closures.go", p, 6, 14, 1, 0, 9),
@@ -56,6 +62,8 @@ func TestFunctionsFixture(t *testing.T) {
 		fn(".:hook@f_windows.go#1", "f_windows.go", p, 7, 7, 1, 0, 1),
 		fn(".:TestDecide", "functions_test.go", ts, 5, 11, 1, 0, 7),
 		fn(".:TestDecide#1", "functions_test.go", ts, 6, 10, 2, 1, 5),
+		// 1 + ten && + one ||.
+		fn(".:allSet", "functions_test.go", ts, 14, 17, 12, 0, 4),
 		// Two init functions in one file get the file name, then their source-order ordinal.
 		fn(".:init@init.go@1", "init.go", p, 5, 7, 1, 0, 3),
 		fn(".:init@init.go@2", "init.go", p, 9, 11, 1, 0, 3),
@@ -75,8 +83,8 @@ func TestFunctionsFixture(t *testing.T) {
 		t.Errorf("functions:\n got %+v\nwant %+v", inv.Functions, want)
 	}
 	gotSLOC := inv.SLOC
-	// recv 18, closures 16, f_linux 3, f_windows 3, cc 30, init 8, nest 15, sloc 8, sub 2, and the test file 9.
-	wantSLOC := map[discover.SourceSet]int{p: 103, ts: 9}
+	// recv 18, closures 16, f_linux 3, f_windows 3, cc 73, init 8, nest 15, sloc 8, sub 2, and the test file 13.
+	wantSLOC := map[discover.SourceSet]int{p: 146, ts: 13}
 	if !reflect.DeepEqual(gotSLOC, wantSLOC) {
 		t.Errorf("SLOC = %v, want %v", gotSLOC, wantSLOC)
 	}
