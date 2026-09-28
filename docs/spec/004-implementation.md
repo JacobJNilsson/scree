@@ -24,7 +24,7 @@ No package imports a package to its right.
 
 ## Stack
 
-- Go 1.22 as the floor in `go.mod`.
+- Go 1.23 as the floor in `go.mod`. `go mod tidy -diff` needs 1.23.
 - Standard library for parsing (`go/parser`, `go/ast`, `go/scanner`,
   `go/token`) and for the CLI (`flag`).
 - `gopkg.in/yaml.v3` with `KnownFields(true)` for configuration.
