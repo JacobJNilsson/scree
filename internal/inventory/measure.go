@@ -74,9 +74,10 @@ func ifNesting(stmt *ast.IfStmt, depth int) int {
 	return deepest
 }
 
-// codeLines returns the lines of a file that hold at least one token that is not a comment.
-func codeLines(file *token.File, src []byte) map[int]bool {
-	lines := map[int]bool{}
+// codeLines marks the lines of a file that hold at least one token that is not a comment, indexed by line number.
+// A multi-line string literal marks every line it spans.
+func codeLines(file *token.File, src []byte) []bool {
+	var lines []bool
 	var s scanner.Scanner
 	s.Init(file, src, nil, 0)
 	for {
@@ -88,6 +89,9 @@ func codeLines(file *token.File, src []byte) map[int]bool {
 		end := start
 		if tok == token.STRING {
 			end += strings.Count(lit, "\n")
+		}
+		for len(lines) <= end {
+			lines = append(lines, false)
 		}
 		for line := start; line <= end; line++ {
 			lines[line] = true

@@ -14,12 +14,13 @@ import (
 )
 
 // Report is the result of one audit.
-// The inventory block is provisional until step 4, and the metrics and findings blocks follow spec 003.
+// The inventory block is provisional until step 4, and the metrics, findings, and limits blocks follow spec 003.
 type Report struct {
 	Repo      Repo                       `json:"repo"`
 	Coverage  Coverage                   `json:"coverage"`
 	Metrics   map[string]contract.Metric `json:"metrics"`
 	Findings  []contract.Finding         `json:"findings"`
+	Limits    []contract.Limit           `json:"limits"`
 	Inventory Inventory                  `json:"inventory"`
 }
 
@@ -58,8 +59,8 @@ type Inventory struct {
 	Errors    []inventory.Error          `json:"errors"`
 }
 
-// New builds the report of an inventory, its metrics, and its findings.
-func New(inv *inventory.Inventory, metrics map[string]contract.Metric, findings []contract.Finding) *Report {
+// New builds the report of an inventory, its metrics, its findings, and the limits sorted by metric id.
+func New(inv *inventory.Inventory, metrics map[string]contract.Metric, findings []contract.Finding, limits []contract.Limit) *Report {
 	tree := inv.Tree
 	measured := func(set discover.SourceSet) Measured {
 		return Measured{Files: tree.Coverage[set].Files, SLOC: inv.SLOC[set]}
@@ -69,6 +70,8 @@ func New(inv *inventory.Inventory, metrics map[string]contract.Metric, findings 
 	for _, f := range inv.Functions {
 		functions[f.Set]++
 	}
+	sorted := append([]contract.Limit{}, limits...)
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i].MetricID < sorted[j].MetricID })
 	return &Report{
 		Repo: Repo{Root: tree.Root, Module: tree.Module},
 		Coverage: Coverage{
@@ -83,6 +86,7 @@ func New(inv *inventory.Inventory, metrics map[string]contract.Metric, findings 
 		},
 		Metrics:   metrics,
 		Findings:  findings,
+		Limits:    sorted,
 		Inventory: Inventory{Functions: functions, Errors: inv.Errors},
 	}
 }

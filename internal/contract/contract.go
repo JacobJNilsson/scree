@@ -32,6 +32,20 @@ type Metric struct {
 type Detail struct {
 	// Errors lists the paths whose errors make the metric incomplete.
 	Errors []string `json:"errors,omitempty"`
+	// Limit names the budget cap that stopped the measurement.
+	Limit *LimitDetail `json:"limit,omitempty"`
+}
+
+// LimitDetail names a budget cap and the count that exceeded it.
+type LimitDetail struct {
+	Cap      string `json:"cap"`
+	Observed int    `json:"observed"`
+}
+
+// Limit is one entry of the limits list of spec 003, a metric that a budget cap stopped.
+type Limit struct {
+	MetricID string `json:"metricId"`
+	Reason   string `json:"reason"`
 }
 
 // MarshalJSON omits every number of a metric that is not complete, so that a report never shows an unmeasured value.

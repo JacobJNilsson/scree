@@ -102,6 +102,60 @@
         ]
       }
     },
+    "duplication.density.production": {
+      "state": "incomplete",
+      "unit": "ratio",
+      "detail": {
+        "errors": [
+          "bad.go"
+        ]
+      }
+    },
+    "duplication.density.test": {
+      "state": "incomplete",
+      "unit": "ratio",
+      "detail": {
+        "errors": [
+          "bad_test.go"
+        ]
+      }
+    },
+    "duplication.duplicated-lines.production": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad.go"
+        ]
+      }
+    },
+    "duplication.duplicated-lines.test": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad_test.go"
+        ]
+      }
+    },
+    "duplication.groups.production": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad.go"
+        ]
+      }
+    },
+    "duplication.groups.test": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad_test.go"
+        ]
+      }
+    },
     "erosion.eroded-count.production": {
       "state": "incomplete",
       "unit": "count",
@@ -158,6 +212,7 @@
     }
   },
   "findings": [],
+  "limits": [],
   "inventory": {
     "functions": {
       "production": 1,
