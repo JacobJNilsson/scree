@@ -139,7 +139,9 @@ func TestRender(t *testing.T) {
 		"",
 		"production        2 files        2 sloc      1 functions",
 		"  incomplete, 1 read or parse errors",
+		"  incomplete, 1 read or parse errors",
 		"test              2 files        5 sloc      1 functions",
+		"  incomplete, 1 read or parse errors",
 		"  incomplete, 1 read or parse errors",
 		"generated         0 files",
 		"vendored          0 files",
@@ -154,7 +156,10 @@ func TestRender(t *testing.T) {
 		"  parse error in bad_test.go (test): bad_test.go:4:5: missing condition in if statement",
 		"  read error in locked: open: permission denied",
 		"",
-		"hotspots (production): none",
+		"hotspots (production): not measured",
+		"hotspots (test): not measured",
+		"clones (production): not measured",
+		"clones (test): not measured",
 		"",
 	}, "\n")
 	if b.String() != want {
@@ -176,8 +181,10 @@ func TestRenderFunctionsFixture(t *testing.T) {
 	want := strings.Join([]string{
 		"production        9 files      146 sloc     23 functions",
 		"  cc p50 1  p90 11  max 15     eroded 3 of 23 (share 0.52)",
+		"  clones 0 groups  0 dup lines  density 0.000",
 		"test              1 files       13 sloc      3 functions",
 		"  cc p50 2  p90 12  max 12     eroded 1 of 3 (share 0.77)",
+		"  clones 0 groups  0 dup lines  density 0.000",
 	}, "\n")
 	if !strings.Contains(got, want) {
 		t.Errorf("render lacks the set summary:\n%s\nwant:\n%s", got, want)
@@ -190,6 +197,7 @@ func TestRenderFunctionsFixture(t *testing.T) {
 		"  cc.go:79-81  .:wrap#1  cc 11  nesting 0  sloc 3  mass 19.1",
 		"hotspots (test): showing 1 of 1, sorted by mass",
 		"  functions_test.go:14-17  .:allSet  cc 12  nesting 0  sloc 4  mass 24.0",
+		"clones (production): none",
 		"",
 	}, "\n")
 	if !strings.HasSuffix(got, wantHotspots) {
@@ -200,15 +208,17 @@ func TestRenderFunctionsFixture(t *testing.T) {
 func TestRenderEmptyFixture(t *testing.T) {
 	got := render(t, newReport(t, "empty"))
 	for _, line := range []string{
-		"production        0 files        0 sloc      0 functions\n  no functions\n",
-		"test              0 files        0 sloc      0 functions\n  no functions\n",
+		"production        0 files        0 sloc      0 functions\n  no functions\n  no code lines\n",
+		"test              0 files        0 sloc      0 functions\n  no functions\n  no code lines\n",
 	} {
 		if !strings.Contains(got, line) {
 			t.Errorf("render lacks %q:\n%s", line, got)
 		}
 	}
-	if strings.Contains(got, "hotspots (test)") {
-		t.Errorf("render prints test hotspots without any:\n%s", got)
+	for _, list := range []string{"hotspots (test)", "clones (test)"} {
+		if strings.Contains(got, list) {
+			t.Errorf("render prints %s without any:\n%s", list, got)
+		}
 	}
 }
 
@@ -305,5 +315,93 @@ func TestNewSortsLimits(t *testing.T) {
 		if got := New(inv, nil, nil, shuffled).Limits; !reflect.DeepEqual(got, want) {
 			t.Fatalf("limits:\n got %v\nwant %v", got, want)
 		}
+	}
+}
+
+func TestRenderClonesFixture(t *testing.T) {
+	got := render(t, newReport(t, "clones/nested"))
+	for _, want := range []string{
+		"  cc p50 17  p90 17  max 17    eroded 2 of 3 (share 0.88)\n  clones 2 groups  141 dup lines  density 0.946\n",
+		"test              0 files        0 sloc      0 functions\n  no functions\n  no code lines\n",
+		strings.Join([]string{
+			"clones (production): showing 2 of 2, sorted by tokens",
+			"  4801221e89fa382b  321 tokens  2 members",
+			"    a.go:4-62",
+			"    b.go:4-62",
+			"  a9131f502c4085e8  122 tokens  3 members",
+			"    a.go:6-28",
+			"    b.go:6-28",
+			"    light.go:7-29",
+			"",
+		}, "\n"),
+	} {
+		if !strings.Contains(got, want) {
+			t.Errorf("render lacks:\n%s\ngot:\n%s", want, got)
+		}
+	}
+	if !strings.HasSuffix(render(t, newReport(t, "clones/exact")), strings.Join([]string{
+		"clones (test): showing 1 of 1, sorted by tokens",
+		"  e9223f9221094ed5  120 tokens  2 members",
+		"    a_test.go:6-31",
+		"    b_test.go:4-29",
+		"",
+	}, "\n")) {
+		t.Errorf("render lacks the test clones")
+	}
+}
+
+// TestRenderCloneLimit prints the cap and the observed count of a set that a budget stopped.
+func TestRenderCloneLimit(t *testing.T) {
+	stopped := contract.Metric{State: contract.Incomplete, Unit: "count", Detail: contract.Detail{Limit: &contract.LimitDetail{Cap: "tokens", Observed: 2417311}}}
+	r := &Report{
+		Metrics: map[string]contract.Metric{"duplication.groups.production": stopped},
+		Limits:  []contract.Limit{{MetricID: "duplication.groups.production", Reason: "tokens cap 2000000 exceeded"}},
+	}
+	got := render(t, r)
+	if !strings.Contains(got, "functions\n  no functions\n  incomplete, tokens cap 2000000 exceeded (2417311)\n") {
+		t.Errorf("render lacks the cap:\n%s", got)
+	}
+	if !strings.HasSuffix(got, "\nhotspots (production): none\nclones (production): not measured\n") {
+		t.Errorf("render lacks the unmeasured clone list:\n%s", got)
+	}
+}
+
+// TestRenderCloneBound prints the ten largest clone groups of a set, keeps the report order between equal sizes, and prints the total.
+func TestRenderCloneBound(t *testing.T) {
+	r := &Report{}
+	for i := range 14 {
+		id := fmt.Sprintf("%016x", i)
+		r.Findings = append(r.Findings, contract.Finding{
+			Kind: duplication.KindCloneGroup, Path: fmt.Sprintf("f%02d.go", i), StartLine: 1, EndLine: 5, Identity: id,
+			SourceSet: contract.Production,
+			Facts: contract.Facts{Clone: &contract.CloneFacts{GroupID: id, Tokens: 100 + 10*(i/2), Members: []contract.CloneMember{
+				{Path: fmt.Sprintf("f%02d.go", i), StartLine: 1, EndLine: 5}, {Path: "z.go", StartLine: i + 1, EndLine: i + 5},
+			}}},
+		})
+	}
+	got := render(t, r)
+	want := "clones (production): showing 10 of 14, sorted by tokens\n" +
+		"  000000000000000c  160 tokens  2 members\n    f12.go:1-5\n    z.go:13-17\n" +
+		"  000000000000000d  160 tokens  2 members\n    f13.go:1-5\n    z.go:14-18\n" +
+		"  000000000000000a  150 tokens  2 members\n"
+	if !strings.Contains(got, want) {
+		t.Errorf("render lacks the bounded list:\n%s\nwant:\n%s", got, want)
+	}
+	if strings.Contains(got, "0000000000000003 ") || !strings.Contains(got, "0000000000000004 ") {
+		t.Errorf("render shows the wrong ten groups:\n%s", got)
+	}
+}
+
+// TestRenderCapWithErrors prints both reasons of a set that has parse errors and passes a cap.
+func TestRenderCapWithErrors(t *testing.T) {
+	r := &Report{
+		Metrics: map[string]contract.Metric{"duplication.groups.production": {
+			State: contract.Incomplete, Unit: "count",
+			Detail: contract.Detail{Errors: []string{"a.go", "b.go"}, Limit: &contract.LimitDetail{Cap: "tokens", Observed: 2417311}},
+		}},
+		Limits: []contract.Limit{{MetricID: "duplication.groups.production", Reason: "tokens cap 2000000 exceeded"}},
+	}
+	if got := render(t, r); !strings.Contains(got, "\n  incomplete, 2 read or parse errors, tokens cap 2000000 exceeded (2417311)\n") {
+		t.Errorf("render lacks both reasons:\n%s", got)
 	}
 }
