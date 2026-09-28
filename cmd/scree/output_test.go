@@ -10,7 +10,7 @@ import (
 )
 
 func TestHelpText(t *testing.T) {
-	for _, flag := range []string{"--json", "--md", "--out <file>", "--quiet", "--help"} {
+	for _, flag := range []string{"--config <file>", "--baseline <report.json>", "--json", "--md", "--out <file>", "--quiet", "--help"} {
 		if !strings.Contains(auditHelp, "\n  "+flag) {
 			t.Errorf("audit help lacks the flag %s:\n%s", flag, auditHelp)
 		}
@@ -31,7 +31,7 @@ func TestHelpText(t *testing.T) {
 			t.Errorf("term %s uses %d words, want under 20", name, n)
 		}
 	}
-	want := []string{"index", "production/test", "cc", "p50/p90/max", "eroded", "mass", "clones", "dup lines", "partial"}
+	want := []string{"index", "production/test", "cc", "p50/p90/max", "eroded", "mass", "clones", "dup lines", "partial", "baseline", "policy"}
 	if !slices.Equal(names, want) {
 		t.Errorf("terms = %q, want %q", names, want)
 	}

@@ -1,0 +1,22 @@
+scree 0.0.0-test  example.com/functions
+
+index  34/100  lower is better  scoring 0.1.0-provisional
+       baseline 0  delta +34  new 4  resolved 0
+       complexity-erosion 34  duplication 0
+
+                   files    sloc   funcs   cc p50/p90/max     eroded  clones    dup lines
+production             9     146      23          1/11/15    3 (52%)       0            0
+test                   1      13       3          2/12/12    1 (77%)       0            0
+other: unsupported 1
+
+hotspots (production, 3)
+  66.0  cc 11  cc.go:35-70  Long
+  30.0  cc 15  cc.go:73-76  Short
+  19.1  cc 11  cc.go:79-81  wrap#1
+
+clones (production, 0)
+
+hotspots (test, 1)
+  24.0  cc 12  functions_test.go:14-17  allSet
+
+clones (test, 0)
