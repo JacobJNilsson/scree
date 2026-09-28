@@ -83,16 +83,22 @@ func incompleteReasons(r *Report) []string {
 }
 
 func renderSet(b *strings.Builder, r *Report, set contract.SourceSet, size Measured) {
+	cells := setCells(r, set, size)
+	fmt.Fprintf(b, tableRow, cells[0], cells[1], cells[2], cells[3], cells[4], cells[5], cells[6], cells[7])
+}
+
+// setCells returns the table cells of one set: name, files, sloc, funcs, cc, eroded, clones, and dup lines.
+func setCells(r *Report, set contract.SourceSet, size Measured) []string {
 	metric := func(name string) contract.Metric { return r.Metrics[name+"."+string(set)] }
-	functions := metric("complexity.functions")
 	cc, eroded := unmeasured, unmeasured
 	if metric("complexity.cc.max").State == contract.Complete {
 		cc = fmt.Sprintf("%d/%d/%d", int(metric("complexity.cc.p50").Value), int(metric("complexity.cc.p90").Value), int(metric("complexity.cc.max").Value))
 		eroded = withShare(metric("erosion.eroded-count"), metric("erosion.eroded-share"))
 	}
-	lines := metric("duplication.duplicated-lines")
-	fmt.Fprintf(b, tableRow, set, strconv.Itoa(size.Files), strconv.Itoa(size.SLOC), count(functions), cc, eroded,
-		count(metric("duplication.groups")), withShare(lines, metric("duplication.density")))
+	return []string{
+		string(set), strconv.Itoa(size.Files), strconv.Itoa(size.SLOC), count(metric("complexity.functions")), cc, eroded,
+		count(metric("duplication.groups")), withShare(metric("duplication.duplicated-lines"), metric("duplication.density")),
+	}
 }
 
 // count prints a complete count, and the unmeasured mark otherwise.
@@ -112,8 +118,12 @@ func withShare(n, share contract.Metric) string {
 	return out
 }
 
-// renderOther prints the file counts of the unmeasured sets, and it always prints the unsupported count.
 func renderOther(b *strings.Builder, c Coverage) {
+	fmt.Fprintf(b, "other: %s\n", strings.Join(otherSets(c), "  "))
+}
+
+// otherSets lists the file counts of the unmeasured sets, and it always lists the unsupported count.
+func otherSets(c Coverage) []string {
 	var parts []string
 	for _, row := range []struct {
 		set   contract.SourceSet
@@ -126,8 +136,7 @@ func renderOther(b *strings.Builder, c Coverage) {
 			parts = append(parts, fmt.Sprintf("%s %d", row.set, row.files))
 		}
 	}
-	parts = append(parts, fmt.Sprintf("%s %d", contract.Unsupported, c.Unsupported.Files))
-	fmt.Fprintf(b, "other: %s\n", strings.Join(parts, "  "))
+	return append(parts, fmt.Sprintf("%s %d", contract.Unsupported, c.Unsupported.Files))
 }
 
 // list says how the terminal summary prints the findings of one kind.
@@ -177,8 +186,14 @@ func location(f contract.Finding) string {
 	return fmt.Sprintf("%s:%d-%d", f.Path, f.StartLine, f.EndLine)
 }
 
-// renderList prints the findings of one kind and set, largest first, and an unmeasured set shows the mark as its count.
 func renderList(b *strings.Builder, l list, r *Report, set contract.SourceSet) {
+	shown, total := selection(l, r, set)
+	fmt.Fprintf(b, "%s (%s, %s)\n", l.title, set, total)
+	l.write(b, shown)
+}
+
+// selection returns at most maxListed findings of one kind and set, largest first, and the total, which is the mark for an unmeasured set.
+func selection(l list, r *Report, set contract.SourceSet) ([]contract.Finding, string) {
 	var matched []contract.Finding
 	for _, f := range r.Findings {
 		if f.Kind == l.kind && f.SourceSet == set {
@@ -192,8 +207,7 @@ func renderList(b *strings.Builder, l list, r *Report, set contract.SourceSet) {
 	if len(matched) > maxListed {
 		total += fmt.Sprintf(", showing %d", maxListed)
 	}
-	fmt.Fprintf(b, "%s (%s, %s)\n", l.title, set, total)
 	// A stable sort keeps the report order between equal sizes, so the list never depends on map or input order.
 	sort.SliceStable(matched, func(i, j int) bool { return l.size(matched[i]) > l.size(matched[j]) })
-	l.write(b, matched[:min(len(matched), maxListed)])
+	return matched[:min(len(matched), maxListed)], total
 }
