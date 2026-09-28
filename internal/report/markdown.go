@@ -11,6 +11,11 @@ import (
 
 // RenderMarkdown prints the report as a bounded Markdown summary.
 func RenderMarkdown(w io.Writer, r *Report) error {
+	return RenderMarkdownCompared(w, r, nil)
+}
+
+// RenderMarkdownCompared prints the Markdown summary with a sentence on the baseline after the index, and a nil baseline prints none.
+func RenderMarkdownCompared(w io.Writer, r *Report, base *Baseline) error {
 	var b strings.Builder
 	module := r.Repo.Module
 	if module == "" {
@@ -22,6 +27,9 @@ func RenderMarkdown(w io.Writer, r *Report) error {
 		b.WriteString(", partial")
 	}
 	b.WriteString(".\n")
+	if base != nil {
+		fmt.Fprintf(&b, "Against the baseline index %d the delta is %s, with %d new and %d resolved findings.\n", base.Index, signed(base.Delta), base.New, base.Resolved)
+	}
 	if len(r.Score.Contributions) > 0 {
 		parts := make([]string, 0, len(r.Score.Contributions))
 		for _, c := range r.Score.Contributions {

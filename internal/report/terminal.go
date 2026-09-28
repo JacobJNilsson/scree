@@ -25,13 +25,18 @@ const tableRow = "%-10s%14s%8s%8s%17s%11s%8s%13s\n"
 
 // Render prints the report as a fixed-width terminal summary.
 func Render(w io.Writer, r *Report) error {
+	return RenderCompared(w, r, nil)
+}
+
+// RenderCompared prints the terminal summary with a line on the baseline under the index, and a nil baseline prints no line.
+func RenderCompared(w io.Writer, r *Report, base *Baseline) error {
 	var b strings.Builder
 	module := r.Repo.Module
 	if module == "" {
 		module = "(no go.mod)"
 	}
 	fmt.Fprintf(&b, "scree %s  %s\n\n", r.AnalyzerVersion, module)
-	renderIndex(&b, r)
+	renderIndex(&b, r, base)
 	b.WriteString("\n")
 	fmt.Fprintf(&b, tableRow, "", "files", "sloc", "funcs", "cc p50/p90/max", "eroded", "clones", "dup lines")
 	renderSet(&b, r, contract.Production, r.Coverage.Production)
@@ -47,12 +52,15 @@ func Render(w io.Writer, r *Report) error {
 	return err
 }
 
-func renderIndex(b *strings.Builder, r *Report) {
+func renderIndex(b *strings.Builder, r *Report, base *Baseline) {
 	fmt.Fprintf(b, "index  %d/100  lower is better  scoring %s", r.Score.Index, r.ScoringVersion)
 	if r.Score.Partial {
 		b.WriteString(" (partial)")
 	}
 	b.WriteString("\n")
+	if base != nil {
+		fmt.Fprintf(b, "       baseline %d  delta %s  new %d  resolved %d\n", base.Index, signed(base.Delta), base.New, base.Resolved)
+	}
 	if reasons := incompleteReasons(r); len(reasons) > 0 {
 		fmt.Fprintf(b, "incomplete: %s\n", strings.Join(reasons, ", "))
 	}
