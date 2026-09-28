@@ -30,8 +30,9 @@ No package imports a package to its right.
 - `gopkg.in/yaml.v3` with `KnownFields(true)` for configuration.
 - One small `.gitignore` matcher library, chosen in step 1 after a comparison
   of pattern conformance. No other runtime dependency.
-- `golangci-lint` v2 with the same linter set as `anti-slop-go`, plus
-  `anti-slop-go` itself as a module plugin.
+- `golangci-lint` v2 with the same linter set as `anti-slop-go`, plus the
+  `anti-slop-go` standalone binary run by `make antislop` at a pinned
+  version.
 
 ## Conventions
 
