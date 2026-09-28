@@ -75,7 +75,7 @@ reaches the output.
       "locations": [ { "path": "Makefile", "line": 12 } ],
       "notes": "core.hooksPath set by target setup; hook runs make check-scoped" }
   ],
-  "limits": [ { "metricId": "duplication.groups.test", "reason": "token cap 2000000 exceeded" } ],
+  "limits": [ { "metricId": "duplication.groups.test", "reason": "tokens cap 2000000 exceeded" } ],
   "meta": { "durationMs": 812 }
 }
 ```
