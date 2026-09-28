@@ -10,6 +10,7 @@ import (
 	"github.com/JacobJNilsson/scree/internal/complexity"
 	"github.com/JacobJNilsson/scree/internal/contract"
 	"github.com/JacobJNilsson/scree/internal/discover"
+	"github.com/JacobJNilsson/scree/internal/duplication"
 	"github.com/JacobJNilsson/scree/internal/inventory"
 )
 
@@ -102,8 +103,10 @@ func Render(w io.Writer, r *Report) error {
 	c := r.Coverage
 	fmt.Fprintf(&b, "%-12s %6d files %8d sloc %6d functions\n", "production", c.Production.Files, c.Production.SLOC, r.Inventory.Functions[discover.Production])
 	renderComplexity(&b, r.Metrics, discover.Production)
+	renderDuplication(&b, r, discover.Production)
 	fmt.Fprintf(&b, "%-12s %6d files %8d sloc %6d functions\n", "test", c.Test.Files, c.Test.SLOC, r.Inventory.Functions[discover.Test])
 	renderComplexity(&b, r.Metrics, discover.Test)
+	renderDuplication(&b, r, discover.Test)
 	for _, row := range []struct {
 		name  string
 		count Counted
@@ -126,14 +129,16 @@ func Render(w io.Writer, r *Report) error {
 		fmt.Fprintf(&b, "  %s error in %s: %s\n", e.Kind, where, e.Message)
 	}
 	b.WriteString("\n")
-	renderHotspots(&b, r.Findings, discover.Production, true)
-	renderHotspots(&b, r.Findings, discover.Test, false)
+	for _, l := range []list{hotspots, clones} {
+		renderList(&b, l, r, discover.Production, true)
+		renderList(&b, l, r, discover.Test, false)
+	}
 	_, err := io.WriteString(w, b.String())
 	return err
 }
 
-// maxHotspots bounds the hotspot list of each set in the terminal summary.
-const maxHotspots = 10
+// maxListed bounds each finding list of the terminal summary.
+const maxListed = 10
 
 // renderComplexity prints the CC distribution and the erosion of one set on one line.
 func renderComplexity(b *strings.Builder, metrics map[string]contract.Metric, set discover.SourceSet) {
@@ -150,26 +155,85 @@ func renderComplexity(b *strings.Builder, metrics map[string]contract.Metric, se
 	}
 }
 
-// renderHotspots prints the hotspots of one set with the largest mass first, and it prints nothing for a set without hotspots unless always is set.
-func renderHotspots(b *strings.Builder, findings []contract.Finding, set discover.SourceSet, always bool) {
-	var hotspots []contract.Finding
-	for _, f := range findings {
-		if f.Kind == complexity.KindHotspot && f.SourceSet == set {
-			hotspots = append(hotspots, f)
+// renderDuplication prints the clone groups, the duplicated lines, and the density of one set on one line.
+func renderDuplication(b *strings.Builder, r *Report, set discover.SourceSet) {
+	groupsID := "duplication.groups." + string(set)
+	groups := r.Metrics[groupsID]
+	if groups.State == contract.Incomplete {
+		var reasons []string
+		if n := len(groups.Detail.Errors); n > 0 {
+			reasons = append(reasons, fmt.Sprintf("%d read or parse errors", n))
+		}
+		for _, l := range r.Limits {
+			if l.MetricID == groupsID && groups.Detail.Limit != nil {
+				reasons = append(reasons, fmt.Sprintf("%s (%d)", l.Reason, groups.Detail.Limit.Observed))
+			}
+		}
+		fmt.Fprintf(b, "  incomplete, %s\n", strings.Join(reasons, ", "))
+		return
+	}
+	if r.Metrics["duplication.density."+string(set)].State != contract.Complete {
+		b.WriteString("  no code lines\n")
+		return
+	}
+	fmt.Fprintf(b, "  clones %d groups  %d dup lines  density %.3f\n",
+		int(groups.Value), int(r.Metrics["duplication.duplicated-lines."+string(set)].Value), r.Metrics["duplication.density."+string(set)].Value)
+}
+
+// list describes how the terminal summary prints the findings of one kind.
+type list struct {
+	kind, title, sortedBy string
+	// metric names the metric that is incomplete when the audit did not measure the set.
+	metric string
+	// size orders the list with the largest value first.
+	size  func(f contract.Finding) float64
+	write func(b *strings.Builder, f contract.Finding)
+}
+
+var hotspots = list{
+	kind: complexity.KindHotspot, title: "hotspots", sortedBy: "mass", metric: "complexity.functions",
+	size: func(f contract.Finding) float64 { return f.Facts.Hotspot.Mass },
+	write: func(b *strings.Builder, f contract.Finding) {
+		h := f.Facts.Hotspot
+		fmt.Fprintf(b, "  %s:%d-%d  %s  cc %d  nesting %d  sloc %d  mass %.1f\n", f.Path, f.StartLine, f.EndLine, f.Identity, h.CC, h.Nesting, h.SLOC, h.Mass)
+	},
+}
+
+var clones = list{
+	kind: duplication.KindCloneGroup, title: "clones", sortedBy: "tokens", metric: "duplication.groups",
+	size: func(f contract.Finding) float64 { return float64(f.Facts.Clone.Tokens) },
+	write: func(b *strings.Builder, f contract.Finding) {
+		c := f.Facts.Clone
+		fmt.Fprintf(b, "  %s  %d tokens  %d members\n", c.GroupID, c.Tokens, len(c.Members))
+		for _, m := range c.Members {
+			fmt.Fprintf(b, "    %s:%d-%d\n", m.Path, m.StartLine, m.EndLine)
+		}
+	},
+}
+
+// renderList prints the findings of one kind and set with the largest first.
+// An empty list prints "not measured" for an incomplete set, and "none" only when always is set.
+func renderList(b *strings.Builder, l list, r *Report, set discover.SourceSet, always bool) {
+	var matched []contract.Finding
+	for _, f := range r.Findings {
+		if f.Kind == l.kind && f.SourceSet == set {
+			matched = append(matched, f)
 		}
 	}
-	if len(hotspots) == 0 {
-		if always {
-			fmt.Fprintf(b, "hotspots (%s): none\n", set)
+	if len(matched) == 0 {
+		switch {
+		case r.Metrics[l.metric+"."+string(set)].State == contract.Incomplete:
+			fmt.Fprintf(b, "%s (%s): not measured\n", l.title, set)
+		case always:
+			fmt.Fprintf(b, "%s (%s): none\n", l.title, set)
 		}
 		return
 	}
-	// The findings arrive in their report order, so a stable sort keeps that order between equal masses.
-	sort.SliceStable(hotspots, func(i, j int) bool { return hotspots[i].Facts.Hotspot.Mass > hotspots[j].Facts.Hotspot.Mass })
-	shown := hotspots[:min(len(hotspots), maxHotspots)]
-	fmt.Fprintf(b, "hotspots (%s): showing %d of %d, sorted by mass\n", set, len(shown), len(hotspots))
+	// The findings arrive in their report order, so a stable sort keeps that order between equal sizes.
+	sort.SliceStable(matched, func(i, j int) bool { return l.size(matched[i]) > l.size(matched[j]) })
+	shown := matched[:min(len(matched), maxListed)]
+	fmt.Fprintf(b, "%s (%s): showing %d of %d, sorted by %s\n", l.title, set, len(shown), len(matched), l.sortedBy)
 	for _, f := range shown {
-		fmt.Fprintf(b, "  %s:%d-%d  %s  cc %d  nesting %d  sloc %d  mass %.1f\n",
-			f.Path, f.StartLine, f.EndLine, f.Identity, f.Facts.Hotspot.CC, f.Facts.Hotspot.Nesting, f.Facts.Hotspot.SLOC, f.Facts.Hotspot.Mass)
+		l.write(b, f)
 	}
 }
