@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/JacobJNilsson/scree/internal/config"
 	"github.com/JacobJNilsson/scree/internal/contract"
 	"github.com/JacobJNilsson/scree/internal/formula"
 	"github.com/JacobJNilsson/scree/internal/report"
@@ -45,8 +46,7 @@ func TestAuditMergesMeasures(t *testing.T) {
 
 func TestAuditOptions(t *testing.T) {
 	r, err := Audit(context.Background(), "testdata/fixtures/functions", Options{
-		Exclude:      []string{"sub/**"},
-		TestPatterns: []string{"cc.go"},
+		Config: &Config{Exclude: []string{"sub/**"}, Classify: config.Classify{Test: []string{"cc.go"}}},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -83,13 +83,14 @@ func TestAuditParseErrorIsNoError(t *testing.T) {
 }
 
 func TestAuditVersionsAndDigest(t *testing.T) {
-	opts := Options{Exclude: []string{"sub/**"}, TestPatterns: []string{"cc.go"}}
+	cfg := &Config{Exclude: []string{"sub/**"}, Classify: config.Classify{Test: []string{"cc.go"}}}
+	opts := Options{Config: cfg}
 	r, err := Audit(context.Background(), "testdata/fixtures/functions", opts)
 	if err != nil {
 		t.Fatal(err)
 	}
 	got := []string{r.SchemaVersion, r.AnalyzerVersion, r.ScoringVersion, r.ConfigDigest}
-	want := []string{"1.0.0", Version, formula.ScoringVersion, contract.Digest(contract.Config{Exclude: opts.Exclude, TestPatterns: opts.TestPatterns})}
+	want := []string{"1.0.0", Version, formula.ScoringVersion, contract.Digest(contract.Config{Exclude: cfg.Exclude, TestPatterns: cfg.Classify.Test})}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("versions and digest = %v, want %v", got, want)
 	}
