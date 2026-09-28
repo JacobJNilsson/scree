@@ -50,8 +50,10 @@ No package imports a package to its right.
   value is reported.
 - The coverage gate is the same two-tier `make check` and `make check-scoped`
   as `anti-slop-go`, with `COVERAGE_MIN` at 90.
-- `make selfcheck` runs `scree audit .` with the repository's own
-  `scree.yaml`. A rise in the repository's own index fails the gate.
+- `make selfcheck` runs `scree audit .` over this repository and is part of
+  `make check` from step 1 on. Each step extends what the self-audit prints.
+  From step 1 it must exit 0. From step 4 a rise in the repository's own
+  index above the committed budget in `scree.yaml` fails the gate.
 - No private repository names or identifiers in this repository. Corpus
   entries are public modules at pinned revisions.
 
@@ -67,6 +69,9 @@ pass, draft PR.
 1. Discover and inventory. Walk, `.gitignore`, source sets, coverage counts,
    parse, functions with identity, CC, nesting, SLOC. Golden tests over
    fixture modules including build-tag variants and nested `go.mod`.
+   `scree.Audit` and `scree audit <path> [--json]` exist from this step and
+   print the provisional summary: repo, coverage, function counts, parse
+   errors. `make selfcheck` runs it over this repository.
 2. Complexity and erosion. Distributions, mass, eroded share and count,
    hotspot findings, `not-applicable` on empty sets.
 3. Duplication. Token stream, SA-IS, Kasai, maximal repeats, groups,
