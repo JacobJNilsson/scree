@@ -57,6 +57,38 @@ func TestMetricJSON(t *testing.T) {
 	}
 }
 
+func TestScoreJSON(t *testing.T) {
+	s := Score{
+		Index: 25, Direction: "lower-is-better",
+		Contributions: []Contribution{{
+			Dimension: "complexity-erosion", Points: 25, Weight: 0.6,
+			Terms: []Term{
+				{MetricID: "erosion.eroded-share.production", State: Complete, Value: 0.18, SaturatesAt: 0.25, Score: 72},
+				{MetricID: "erosion.eroded-count.production", State: Complete, Value: 3, CountScale: 20, Score: 12.5},
+			},
+		}},
+	}
+	want := `{"index":25,"direction":"lower-is-better","partial":false,"contributions":[` +
+		`{"dimension":"complexity-erosion","points":25,"weight":0.6,"terms":[` +
+		`{"metricId":"erosion.eroded-share.production","state":"complete","value":0.18,"saturatesAt":0.25,"score":72},` +
+		`{"metricId":"erosion.eroded-count.production","state":"complete","value":3,"countScale":20,"score":12.5}]}]}`
+	got, err := json.Marshal(s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != want {
+		t.Errorf("JSON = %s\nwant   %s", got, want)
+	}
+	unmeasured := Term{MetricID: "duplication.groups.production", State: Incomplete, Value: 4, CountScale: 15, Score: 100}
+	got, err = json.Marshal(unmeasured)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := `{"metricId":"duplication.groups.production","state":"incomplete","countScale":15,"score":100}`; string(got) != want {
+		t.Errorf("incomplete term JSON = %s, want %s", got, want)
+	}
+}
+
 func TestFactsJSON(t *testing.T) {
 	hotspot := &HotspotFacts{CC: 11, Nesting: 2, SLOC: 9, Mass: 33}
 	clone := &CloneFacts{GroupID: "00ff", Tokens: 120, Members: []CloneMember{{Path: "a.go", StartLine: 3, EndLine: 9}}}
