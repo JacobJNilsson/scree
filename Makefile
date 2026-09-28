@@ -17,6 +17,7 @@ golden:
 
 gate-test:
 	sh scripts/coverage-gate-test.sh
+	sh scripts/index-budget-test.sh
 
 lint:
 	golangci-lint run ./...
@@ -39,9 +40,10 @@ tidy-check:
 antislop:
 	go run github.com/JacobJNilsson/anti-slop-go/cmd/antislop@v1.3.0 ./...
 
-# The self-audit fails the gate when scree cannot audit its own repository.
+# The self-audit fails the gate when scree cannot audit its own repository, when the index is partial, or when it rises above scree-budget.json.
 selfcheck:
-	go run ./cmd/scree audit .
+	go run ./cmd/scree audit . --json --quiet --out .scree-self.json
+	sh scripts/index-budget.sh .scree-self.json scree-budget.json
 
 check: tidy-check vet lint gate-test test build antislop selfcheck
 
@@ -52,4 +54,4 @@ setup:
 	git config core.hooksPath .githooks
 
 clean:
-	rm -f coverage.out coverage.scoped.out
+	rm -f coverage.out coverage.scoped.out .scree-self.json
