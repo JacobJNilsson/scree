@@ -57,12 +57,20 @@ reaches the output.
     }
   },
   "score": {
-    "index": 27,
+    "index": 25,
     "direction": "lower-is-better",
     "partial": false,
     "contributions": [
-      { "dimension": "complexity-erosion", "points": 19, "weight": 0.6,
-        "terms": [ { "metricId": "erosion.eroded-share.production", "value": 0.18, "saturatesAt": 0.25, "score": 72 } ] }
+      { "dimension": "complexity-erosion", "points": 25, "weight": 0.6,
+        "terms": [
+          { "metricId": "erosion.eroded-share.production", "state": "complete", "value": 0.18, "saturatesAt": 0.25, "score": 72 },
+          { "metricId": "erosion.eroded-count.production", "state": "complete", "value": 3, "countScale": 20, "score": 12.26 }
+        ] },
+      { "dimension": "duplication", "points": 0, "weight": 0.4,
+        "terms": [
+          { "metricId": "duplication.density.production", "state": "complete", "value": 0, "saturatesAt": 0.15, "score": 0 },
+          { "metricId": "duplication.groups.production", "state": "complete", "value": 0, "countScale": 15, "score": 0 }
+        ] }
     ]
   },
   "findings": [
