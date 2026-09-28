@@ -143,7 +143,8 @@ finding as persistent. A clone group matches on its group id.
 Each check runs independently; a better index cannot suppress a `failOnNew`
 failure.
 
-- `maxIndex`: fails when `report.score.index > maxIndex`.
+- `maxIndex`: fails when `report.score.index > maxIndex`, and always when
+  the score is `partial`. Missing analysis never passes a gate.
 - `budgets`: fails when a named metric's value exceeds `max`. A metric that
   is `incomplete` fails the budget; missing analysis never passes.
 - `regression`: requires a baseline. Fails when the index rose by more than
