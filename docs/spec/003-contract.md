@@ -82,7 +82,10 @@ reaches the output.
 
 Metric ids follow `<dimension>.<name>.<set>`. Every metric listed in
 [002-metrics.md](002-metrics.md) appears for both `production` and `test`,
-even when `not-applicable`. Unknown fields are rejected on load.
+even when `not-applicable`. Unknown fields are rejected on load. `detail`
+and `facts` are typed objects with a fixed shape per metric or finding kind,
+never open maps. `value`, `numerator`, and `denominator` appear only when
+the state is `complete`, and the pair appears only on ratios.
 
 ## Configuration
 
