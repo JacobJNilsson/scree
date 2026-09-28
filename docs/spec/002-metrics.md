@@ -165,6 +165,11 @@ part of a larger repeated block is not independent evidence. Periodic code,
 such as a switch table with many similar rows, otherwise yields one group
 per multiple of the row length, and this rule keeps only the longest.
 
+A run may begin on a semicolon that the scanner inserted at the end of the
+previous line. The reported line range starts at the first symbol that is
+not such a semicolon. The token count and the group id include every symbol
+of the run.
+
 Metrics per set:
 
 - `duplication.groups`: number of clone groups.
