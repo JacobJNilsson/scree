@@ -92,8 +92,10 @@ Metric ids follow `<dimension>.<name>.<set>`. Every metric listed in
 [002-metrics.md](002-metrics.md) appears for both `production` and `test`,
 even when `not-applicable`. Unknown fields are rejected on load. `detail`
 and `facts` are typed objects with a fixed shape per metric or finding kind,
-never open maps. `value`, `numerator`, and `denominator` appear only when
-the state is `complete`, and the pair appears only on ratios.
+never open maps, and a load rejects facts whose shape does not match the
+kind. `value`, `numerator`, and `denominator` appear only when the state is
+`complete`, and the pair appears only on ratios. A score term follows the
+same rule: `value` appears only when the term's state is `complete`.
 
 ## Configuration
 
