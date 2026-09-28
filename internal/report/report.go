@@ -4,8 +4,10 @@ package report
 import (
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 
+	"github.com/JacobJNilsson/scree/internal/complexity"
 	"github.com/JacobJNilsson/scree/internal/contract"
 	"github.com/JacobJNilsson/scree/internal/discover"
 	"github.com/JacobJNilsson/scree/internal/inventory"
@@ -95,7 +97,9 @@ func Render(w io.Writer, r *Report) error {
 	fmt.Fprintf(&b, "root    %s\nmodule  %s\n\n", r.Repo.Root, module)
 	c := r.Coverage
 	fmt.Fprintf(&b, "%-12s %6d files %8d sloc %6d functions\n", "production", c.Production.Files, c.Production.SLOC, r.Inventory.Functions[discover.Production])
+	renderComplexity(&b, r.Metrics, discover.Production)
 	fmt.Fprintf(&b, "%-12s %6d files %8d sloc %6d functions\n", "test", c.Test.Files, c.Test.SLOC, r.Inventory.Functions[discover.Test])
+	renderComplexity(&b, r.Metrics, discover.Test)
 	for _, row := range []struct {
 		name  string
 		count Counted
@@ -117,6 +121,51 @@ func Render(w io.Writer, r *Report) error {
 		}
 		fmt.Fprintf(&b, "  %s error in %s: %s\n", e.Kind, where, e.Message)
 	}
+	b.WriteString("\n")
+	renderHotspots(&b, r.Findings, discover.Production, true)
+	renderHotspots(&b, r.Findings, discover.Test, false)
 	_, err := io.WriteString(w, b.String())
 	return err
+}
+
+// maxHotspots bounds the hotspot list of each set in the terminal summary.
+const maxHotspots = 10
+
+// renderComplexity prints the CC distribution and the erosion of one set on one line.
+func renderComplexity(b *strings.Builder, metrics map[string]contract.Metric, set discover.SourceSet) {
+	metric := func(name string) contract.Metric { return metrics[name+"."+string(set)] }
+	functions := metric("complexity.functions")
+	switch {
+	case functions.State == contract.Incomplete:
+		fmt.Fprintf(b, "  incomplete, %d read or parse errors\n", len(functions.Detail.Errors))
+	case metric("complexity.cc.max").State != contract.Complete:
+		b.WriteString("  no functions\n")
+	default:
+		cc := fmt.Sprintf("cc p50 %d  p90 %d  max %d", int(metric("complexity.cc.p50").Value), int(metric("complexity.cc.p90").Value), int(metric("complexity.cc.max").Value))
+		fmt.Fprintf(b, "  %-29seroded %d of %d (share %.2f)\n", cc, int(metric("erosion.eroded-count").Value), int(functions.Value), metric("erosion.eroded-share").Value)
+	}
+}
+
+// renderHotspots prints the hotspots of one set with the largest mass first, and it prints nothing for a set without hotspots unless always is set.
+func renderHotspots(b *strings.Builder, findings []contract.Finding, set discover.SourceSet, always bool) {
+	var hotspots []contract.Finding
+	for _, f := range findings {
+		if f.Kind == complexity.KindHotspot && f.SourceSet == set {
+			hotspots = append(hotspots, f)
+		}
+	}
+	if len(hotspots) == 0 {
+		if always {
+			fmt.Fprintf(b, "hotspots (%s): none\n", set)
+		}
+		return
+	}
+	// The findings arrive in their report order, so a stable sort keeps that order between equal masses.
+	sort.SliceStable(hotspots, func(i, j int) bool { return hotspots[i].Facts.Mass > hotspots[j].Facts.Mass })
+	shown := hotspots[:min(len(hotspots), maxHotspots)]
+	fmt.Fprintf(b, "hotspots (%s): showing %d of %d, sorted by mass\n", set, len(shown), len(hotspots))
+	for _, f := range shown {
+		fmt.Fprintf(b, "  %s:%d-%d  %s  cc %d  nesting %d  sloc %d  mass %.1f\n",
+			f.Path, f.StartLine, f.EndLine, f.Identity, f.Facts.CC, f.Facts.Nesting, f.Facts.SLOC, f.Facts.Mass)
+	}
 }
