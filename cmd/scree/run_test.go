@@ -47,7 +47,16 @@ func TestRun(t *testing.T) {
 			wantCode:   1,
 		},
 		{name: "extra argument", args: []string{"version", "x"}, wantStderr: usage + "\n", wantCode: 1},
-		{name: "help flag", args: []string{"-h"}, wantStderr: usage + "\n", wantCode: 1},
+		{name: "help flag", args: []string{"-h"}, wantStdout: help},
+		{name: "long help flag", args: []string{"--help"}, wantStdout: help},
+		{name: "audit help flag", args: []string{"audit", "-h"}, wantStdout: auditHelp},
+		{name: "audit long help flag", args: []string{"audit", ".", "--help"}, wantStdout: auditHelp},
+		{
+			name:       "json and md",
+			args:       []string{"audit", "--json", "--md", "."},
+			wantStderr: "scree: --json and --md are exclusive\n",
+			wantCode:   1,
+		},
 		{
 			name:       "unknown flag",
 			args:       []string{"-x"},
