@@ -43,3 +43,16 @@ func TestMatchGlob(t *testing.T) {
 		}
 	}
 }
+
+func TestValidPattern(t *testing.T) {
+	for _, p := range []string{"a/*.go", "**/gen/**", "internal/[a-z]*/x.go", `a\*b`} {
+		if err := ValidPattern(p); err != nil {
+			t.Errorf("ValidPattern(%q) = %v, want nil", p, err)
+		}
+	}
+	for _, p := range []string{"", "internal/[gen", `a/b\`, "["} {
+		if err := ValidPattern(p); err == nil {
+			t.Errorf("ValidPattern(%q) = nil, want an error", p)
+		}
+	}
+}
