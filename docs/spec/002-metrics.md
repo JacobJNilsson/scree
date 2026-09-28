@@ -107,7 +107,8 @@ the whole file.
 Distributions per source set: `complexity.cc.p50`, `complexity.cc.p90`,
 `complexity.cc.max`, `complexity.functions` (count). Percentiles use the
 nearest-rank method over the sorted CC values. A source set with no
-functions reports these as `not-applicable`.
+functions reports the percentiles and the maximum as `not-applicable` and
+`complexity.functions` as `0`, `complete`.
 
 ## Erosion
 
@@ -116,11 +117,16 @@ a small tangled one.
 
 - Function mass is `CC × sqrt(SLOC)`.
 - A function is eroded when its CC exceeds `ErosionCCThreshold` (10).
-- `erosion.mass`: sum of mass over all functions in the set.
+- `erosion.mass`: sum of mass over all functions in the set. `0`,
+  `complete` on an empty set.
 - `erosion.eroded-count`: number of eroded functions.
 - `erosion.eroded-share`: sum of mass over eroded functions divided by
   `erosion.mass`. A set with zero mass reports `not-applicable` for the share
   and `0` for the count.
+
+Every floating-point sum in a report adds its terms in ascending numeric
+order, with ties in any order. The result then depends only on the values,
+so a file rename never moves a metric.
 
 Aggregation from files to the set sums masses. It never averages ratios, so
 one large package cannot be diluted by many small clean ones.

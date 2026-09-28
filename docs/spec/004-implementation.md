@@ -11,8 +11,9 @@ scree/
 │  ├─ inventory/          # one parse per file; functions with identity, CC, nesting, SLOC
 │  ├─ complexity/         # distributions, erosion, hotspot findings
 │  ├─ duplication/        # token stream, suffix array, LCP, groups, line accounting
+│  ├─ contract/           # shared metric, finding, and report types; imports nothing internal
 │  ├─ formula/            # every constant and the scoring function
-│  ├─ report/             # Report type, JSON round-trip, terminal and Markdown renderers
+│  ├─ report/             # report assembly, JSON round-trip, terminal and Markdown renderers
 │  ├─ config/             # scree.yaml load and strict validation
 │  ├─ compare/            # report comparison and policy evaluation
 │  └─ safeguards/         # configuration inspection
@@ -20,7 +21,9 @@ scree/
 ```
 
 The pipeline runs one way: discover → inventory → measure → score → report.
-No package imports a package to its right.
+No package imports a package to its right. `contract` and `formula` are
+leaves: every stage may import them, and they import no other internal
+package.
 
 ## Stack
 
