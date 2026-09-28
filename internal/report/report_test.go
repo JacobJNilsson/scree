@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -24,10 +25,36 @@ func newReport(t *testing.T, fixture string) *Report {
 		t.Fatal(err)
 	}
 	inv := inventory.Build(tree)
-	return New(inv, complexity.Measure(inv))
+	metrics, findings := complexity.Measure(inv)
+	return New(inv, metrics, findings)
 }
 
 var update = flag.Bool("update", false, "rewrite the golden files")
+
+// TestDeterministicJSON shuffles the functions behind the findings and asserts byte-equal JSON.
+func TestDeterministicJSON(t *testing.T) {
+	tree, err := discover.Walk(context.Background(), "../../testdata/fixtures/functions", discover.Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	inv := inventory.Build(tree)
+	marshal := func() []byte {
+		metrics, findings := complexity.Measure(inv)
+		data, err := json.Marshal(New(inv, metrics, findings))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return data
+	}
+	want := marshal()
+	rng := rand.New(rand.NewSource(1))
+	for range 10 {
+		rng.Shuffle(len(inv.Functions), func(i, j int) { inv.Functions[i], inv.Functions[j] = inv.Functions[j], inv.Functions[i] })
+		if got := marshal(); !bytes.Equal(got, want) {
+			t.Fatalf("JSON after a shuffle differs:\n%s\nwant:\n%s", got, want)
+		}
+	}
+}
 
 func TestGolden(t *testing.T) {
 	for _, name := range []string{"sets", "functions", "broken", "empty"} {

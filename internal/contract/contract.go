@@ -49,6 +49,26 @@ func (m Metric) MarshalJSON() ([]byte, error) {
 	return json.Marshal(out)
 }
 
+// Finding is one located piece of evidence.
+type Finding struct {
+	Kind      string       `json:"kind"`
+	Path      string       `json:"path"`
+	StartLine int          `json:"startLine"`
+	EndLine   int          `json:"endLine"`
+	Identity  string       `json:"identity"`
+	Ambiguous bool         `json:"ambiguous"`
+	SourceSet SourceSet    `json:"sourceSet"`
+	Facts     HotspotFacts `json:"facts"`
+}
+
+// HotspotFacts are the measurements of the function behind a complexity hotspot.
+type HotspotFacts struct {
+	CC      int     `json:"cc"`
+	Nesting int     `json:"nesting"`
+	SLOC    int     `json:"sloc"`
+	Mass    float64 `json:"mass"`
+}
+
 // SourceSet names the group a file belongs to.
 type SourceSet string
 
