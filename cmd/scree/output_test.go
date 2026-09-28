@@ -35,7 +35,7 @@ func TestHelpText(t *testing.T) {
 	if !slices.Equal(names, want) {
 		t.Errorf("terms = %q, want %q", names, want)
 	}
-	for _, command := range []string{"\n  audit <path>", "\n  version"} {
+	for _, command := range []string{"\n  audit <path>", "\n  compare <before.json> <after.json>", "\n  version"} {
 		if !strings.Contains(help, command) {
 			t.Errorf("help lacks %q:\n%s", command, help)
 		}

@@ -10,8 +10,8 @@ type Baseline struct {
 	Resolved int
 }
 
-// signed prints a delta with its sign, so a rise reads as +3 and no change as 0.
-func signed(delta int) string {
+// Signed prints a delta with its sign, so a rise reads as +3 and no change as 0.
+func Signed(delta int) string {
 	if delta > 0 {
 		return "+" + strconv.Itoa(delta)
 	}

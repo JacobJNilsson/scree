@@ -63,16 +63,9 @@ func parseAudit(args []string, stderr io.Writer) (auditFlags, bool) {
 	fs.BoolVar(&f.quiet, "quiet", false, "do not name the written file")
 	fs.StringVar(&f.config, "config", "", "read the configuration from the file")
 	fs.StringVar(&f.baseline, "baseline", "", "compare with a saved JSON report")
-	// The flag package stops at the first argument, so a flag after the path needs a second parse.
-	var paths []string
-	for err := fs.Parse(args); ; err = fs.Parse(fs.Args()[1:]) {
-		if err != nil {
-			return f, false
-		}
-		if fs.NArg() == 0 {
-			break
-		}
-		paths = append(paths, fs.Arg(0))
+	paths, ok := parseInterleaved(fs, args)
+	if !ok {
+		return f, false
 	}
 	f.help = *wantHelp
 	if len(paths) != 1 && !f.help {

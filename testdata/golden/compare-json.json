@@ -1,0 +1,422 @@
+{
+  "comparable": true,
+  "before": {
+    "index": 0,
+    "partial": false,
+    "analyzerVersion": "0.0.0-test",
+    "scoringVersion": "0.1.0-provisional",
+    "schemaVersion": "1.0.0",
+    "configDigest": "sha256:4c50bb6e6bc006a5b9243824f1685a5379c85d70169e618006d2edfe7d505d66"
+  },
+  "after": {
+    "index": 34,
+    "partial": false,
+    "analyzerVersion": "0.0.0-test",
+    "scoringVersion": "0.1.0-provisional",
+    "schemaVersion": "1.0.0",
+    "configDigest": "sha256:4c50bb6e6bc006a5b9243824f1685a5379c85d70169e618006d2edfe7d505d66"
+  },
+  "indexDelta": 34,
+  "metrics": [
+    {
+      "id": "complexity.cc.max.production",
+      "before": {
+        "state": "complete",
+        "value": 1,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 15,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 14
+    },
+    {
+      "id": "complexity.cc.max.test",
+      "before": {
+        "state": "complete",
+        "value": 2,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 12,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 10
+    },
+    {
+      "id": "complexity.cc.p50.production",
+      "before": {
+        "state": "complete",
+        "value": 1,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 1,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 0
+    },
+    {
+      "id": "complexity.cc.p50.test",
+      "before": {
+        "state": "complete",
+        "value": 2,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 2,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 0
+    },
+    {
+      "id": "complexity.cc.p90.production",
+      "before": {
+        "state": "complete",
+        "value": 1,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 11,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 10
+    },
+    {
+      "id": "complexity.cc.p90.test",
+      "before": {
+        "state": "complete",
+        "value": 2,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 12,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 10
+    },
+    {
+      "id": "complexity.functions.production",
+      "before": {
+        "state": "complete",
+        "value": 2,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 23,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 21
+    },
+    {
+      "id": "complexity.functions.test",
+      "before": {
+        "state": "complete",
+        "value": 1,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 3,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 2
+    },
+    {
+      "id": "duplication.density.production",
+      "before": {
+        "state": "complete",
+        "value": 0,
+        "unit": "ratio",
+        "numerator": 0,
+        "denominator": 4,
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 0,
+        "unit": "ratio",
+        "numerator": 0,
+        "denominator": 146,
+        "detail": {}
+      },
+      "delta": 0
+    },
+    {
+      "id": "duplication.density.test",
+      "before": {
+        "state": "complete",
+        "value": 0,
+        "unit": "ratio",
+        "numerator": 0,
+        "denominator": 7,
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 0,
+        "unit": "ratio",
+        "numerator": 0,
+        "denominator": 13,
+        "detail": {}
+      },
+      "delta": 0
+    },
+    {
+      "id": "duplication.duplicated-lines.production",
+      "before": {
+        "state": "complete",
+        "value": 0,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 0,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 0
+    },
+    {
+      "id": "duplication.duplicated-lines.test",
+      "before": {
+        "state": "complete",
+        "value": 0,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 0,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 0
+    },
+    {
+      "id": "duplication.groups.production",
+      "before": {
+        "state": "complete",
+        "value": 0,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 0,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 0
+    },
+    {
+      "id": "duplication.groups.test",
+      "before": {
+        "state": "complete",
+        "value": 0,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 0,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 0
+    },
+    {
+      "id": "erosion.eroded-count.production",
+      "before": {
+        "state": "complete",
+        "value": 0,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 3,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 3
+    },
+    {
+      "id": "erosion.eroded-count.test",
+      "before": {
+        "state": "complete",
+        "value": 0,
+        "unit": "count",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 1,
+        "unit": "count",
+        "detail": {}
+      },
+      "delta": 1
+    },
+    {
+      "id": "erosion.eroded-share.production",
+      "before": {
+        "state": "complete",
+        "value": 0,
+        "unit": "ratio",
+        "numerator": 0,
+        "denominator": 2,
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 0.5179282607419493,
+        "unit": "ratio",
+        "numerator": 115.05255888325765,
+        "denominator": 222.13995181193832,
+        "detail": {}
+      },
+      "delta": 0.5179282607419493
+    },
+    {
+      "id": "erosion.eroded-share.test",
+      "before": {
+        "state": "complete",
+        "value": 0,
+        "unit": "ratio",
+        "numerator": 0,
+        "denominator": 4.47213595499958,
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 0.7712605870313493,
+        "unit": "ratio",
+        "numerator": 24,
+        "denominator": 31.11788726606417,
+        "detail": {}
+      },
+      "delta": 0.7712605870313493
+    },
+    {
+      "id": "erosion.mass.production",
+      "before": {
+        "state": "complete",
+        "value": 2,
+        "unit": "mass",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 222.13995181193832,
+        "unit": "mass",
+        "detail": {}
+      },
+      "delta": 220.13995181193832
+    },
+    {
+      "id": "erosion.mass.test",
+      "before": {
+        "state": "complete",
+        "value": 4.47213595499958,
+        "unit": "mass",
+        "detail": {}
+      },
+      "after": {
+        "state": "complete",
+        "value": 31.11788726606417,
+        "unit": "mass",
+        "detail": {}
+      },
+      "delta": 26.64575131106459
+    }
+  ],
+  "new": [
+    {
+      "kind": "complexity.hotspot",
+      "path": "cc.go",
+      "startLine": 35,
+      "endLine": 70,
+      "identity": ".:Long",
+      "ambiguous": false,
+      "sourceSet": "production",
+      "facts": {
+        "cc": 11,
+        "nesting": 1,
+        "sloc": 36,
+        "mass": 66
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "cc.go",
+      "startLine": 73,
+      "endLine": 76,
+      "identity": ".:Short",
+      "ambiguous": false,
+      "sourceSet": "production",
+      "facts": {
+        "cc": 15,
+        "nesting": 0,
+        "sloc": 4,
+        "mass": 30
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "cc.go",
+      "startLine": 79,
+      "endLine": 81,
+      "identity": ".:wrap#1",
+      "ambiguous": true,
+      "sourceSet": "production",
+      "facts": {
+        "cc": 11,
+        "nesting": 0,
+        "sloc": 3,
+        "mass": 19.05255888325765
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "functions_test.go",
+      "startLine": 14,
+      "endLine": 17,
+      "identity": ".:allSet",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "cc": 12,
+        "nesting": 0,
+        "sloc": 4,
+        "mass": 24
+      }
+    }
+  ],
+  "resolved": [],
+  "persistent": []
+}

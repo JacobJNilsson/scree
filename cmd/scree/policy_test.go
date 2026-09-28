@@ -195,19 +195,7 @@ func TestBaselineGolden(t *testing.T) {
 		if err := r(&out, after, cmp); err != nil {
 			t.Fatal(err)
 		}
-		path := filepath.Join(goldens, name)
-		if *update {
-			if err := os.WriteFile(path, out.Bytes(), 0o644); err != nil {
-				t.Fatal(err)
-			}
-		}
-		want, err := os.ReadFile(path)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !bytes.Equal(out.Bytes(), want) {
-			t.Errorf("%s differs from the golden file, run make golden and review the diff:\n%s", path, out.String())
-		}
+		compareGolden(t, name, out.Bytes())
 	}
 }
 

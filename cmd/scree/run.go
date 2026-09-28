@@ -9,15 +9,27 @@ import (
 	"github.com/JacobJNilsson/scree"
 )
 
-const usage = "usage: scree audit <path> [--config <file>] [--baseline <report.json>] [--json|--md] [--out <file>] [--quiet]\n       scree version"
+const usage = "usage: scree audit <path> [--config <file>] [--baseline <report.json>] [--json|--md] [--out <file>] [--quiet]\n       scree compare <before.json> <after.json> [--json|--md]\n       scree version"
 
 const help = `usage: scree <command>
 
 commands:
-  audit <path>  measure the Go module at path and print the report
-  version       print the scree version
+  audit <path>                        measure the Go module at path and print the report
+  compare <before.json> <after.json>  compare two saved JSON reports and print the comparison
+  version                             print the scree version
 
 Run scree audit --help for the audit flags and terms.
+`
+
+const compareHelp = `usage: scree compare <before.json> <after.json> [--json|--md]
+
+The command compares two reports that scree audit --out saved. It runs no audit.
+Exit code 2 means the reports are not comparable.
+
+flags:
+  --json      print the comparison as JSON
+  --md        print the comparison as Markdown
+  --help, -h  print this help
 `
 
 const auditHelp = `usage: scree audit <path> [--config <file>] [--baseline <report.json>] [--json|--md] [--out <file>] [--quiet]
@@ -64,6 +76,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return writeText(stdout, "scree "+scree.Version+"\n")
 	case fs.NArg() > 0 && fs.Arg(0) == "audit":
 		return audit(fs.Args()[1:], stdout, stderr)
+	case fs.NArg() > 0 && fs.Arg(0) == "compare":
+		return compareCommand(fs.Args()[1:], stdout, stderr)
 	}
 	fs.Usage()
 	return 1
