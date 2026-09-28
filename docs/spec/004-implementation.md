@@ -24,12 +24,17 @@ No package imports a package to its right.
 
 ## Stack
 
-- Go 1.23 as the floor in `go.mod`. `go mod tidy -diff` needs 1.23.
+- Go 1.23 as the floor in `go.mod`. `go mod tidy -diff` needs 1.23, and so
+  does the `.gitignore` matcher chosen in step 1.
 - Standard library for parsing (`go/parser`, `go/ast`, `go/scanner`,
   `go/token`) and for the CLI (`flag`).
 - `gopkg.in/yaml.v3` with `KnownFields(true)` for configuration.
-- One small `.gitignore` matcher library, chosen in step 1 after a comparison
-  of pattern conformance. No other runtime dependency.
+- `github.com/boyter/gocodewalker/go-gitignore` for `.gitignore` matching.
+  It matched `git check-ignore` on every case of a 26-file conformance
+  fixture with nested ignore files, negation, anchors, `**`, directory-only
+  patterns, and escaped trailing spaces, with two transitive modules. Call
+  `repo.Match(path).Ignore()`; the promoted `repo.Ignore(path)` always
+  returns false. No other runtime dependency.
 - `golangci-lint` v2 with the same linter set as `anti-slop-go`, plus the
   `anti-slop-go` standalone binary run by `make antislop` at a pinned
   version.
