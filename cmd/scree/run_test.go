@@ -2,9 +2,17 @@ package main
 
 import (
 	"bytes"
+	"context"
+	"encoding/json"
 	"errors"
+	"path/filepath"
+	"strings"
 	"testing"
+
+	"github.com/JacobJNilsson/scree"
 )
+
+const fixtures = "../../testdata/fixtures"
 
 func TestRun(t *testing.T) {
 	cases := []struct {
@@ -16,7 +24,27 @@ func TestRun(t *testing.T) {
 	}{
 		{name: "version", args: []string{"version"}, wantStdout: "scree 0.1.0-dev\n"},
 		{name: "missing subcommand", wantStderr: usage + "\n", wantCode: 1},
-		{name: "unknown subcommand", args: []string{"audit"}, wantStderr: usage + "\n", wantCode: 1},
+		{name: "unknown subcommand", args: []string{"inspect"}, wantStderr: usage + "\n", wantCode: 1},
+		{name: "audit without path", args: []string{"audit"}, wantStderr: usage + "\n", wantCode: 1},
+		{name: "audit with two paths", args: []string{"audit", "a", "b"}, wantStderr: usage + "\n", wantCode: 1},
+		{
+			name:       "audit unknown flag",
+			args:       []string{"audit", "-x"},
+			wantStderr: "flag provided but not defined: -x\n" + usage + "\n",
+			wantCode:   1,
+		},
+		{
+			name:       "audit unknown flag after path",
+			args:       []string{"audit", ".", "-x"},
+			wantStderr: "flag provided but not defined: -x\n" + usage + "\n",
+			wantCode:   1,
+		},
+		{
+			name:       "audit missing path",
+			args:       []string{"audit", "/nonexistent-scree-path"},
+			wantStderr: "scree: stat /nonexistent-scree-path: no such file or directory\n",
+			wantCode:   1,
+		},
 		{name: "extra argument", args: []string{"version", "x"}, wantStderr: usage + "\n", wantCode: 1},
 		{name: "help flag", args: []string{"-h"}, wantStderr: usage + "\n", wantCode: 1},
 		{
@@ -51,5 +79,50 @@ func TestRunVersionWriteFailure(t *testing.T) {
 	var stderr bytes.Buffer
 	if code := run([]string{"version"}, failingWriter{}, &stderr); code != 1 {
 		t.Errorf("exit code = %d, want 1", code)
+	}
+}
+
+// TestAuditJSONParity proves that the CLI prints the marshalled report of scree.Audit.
+func TestAuditJSONParity(t *testing.T) {
+	root := filepath.Join(fixtures, "functions")
+	r, err := scree.Audit(context.Background(), root, scree.Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want, err := json.MarshalIndent(r, "", "  ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want = append(want, '\n')
+	for _, args := range [][]string{{"audit", "--json", root}, {"audit", root, "--json"}} {
+		var stdout, stderr bytes.Buffer
+		if code := run(args, &stdout, &stderr); code != 0 {
+			t.Fatalf("%v: exit code %d, stderr %q", args, code, stderr.String())
+		}
+		if !bytes.Equal(stdout.Bytes(), want) {
+			t.Errorf("%v: stdout differs from json.MarshalIndent of scree.Audit:\n%s", args, stdout.String())
+		}
+	}
+}
+
+func TestAuditTerminal(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	if code := run([]string{"audit", filepath.Join(fixtures, "broken")}, &stdout, &stderr); code != 0 {
+		t.Fatalf("exit code %d, stderr %q", code, stderr.String())
+	}
+	if !strings.Contains(stdout.String(), "errors: 2\n") {
+		t.Errorf("stdout lacks the parse error count:\n%s", stdout.String())
+	}
+}
+
+func TestAuditWriteFailure(t *testing.T) {
+	for _, args := range [][]string{{"audit", fixtures}, {"audit", "--json", fixtures}} {
+		var stderr bytes.Buffer
+		if code := run(args, failingWriter{}, &stderr); code != 1 {
+			t.Errorf("%v: exit code = %d, want 1", args, code)
+		}
+		if want := "scree: write failed\n"; stderr.String() != want {
+			t.Errorf("%v: stderr = %q, want %q", args, stderr.String(), want)
+		}
 	}
 }
