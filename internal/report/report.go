@@ -6,16 +6,18 @@ import (
 	"io"
 	"strings"
 
+	"github.com/JacobJNilsson/scree/internal/contract"
 	"github.com/JacobJNilsson/scree/internal/discover"
 	"github.com/JacobJNilsson/scree/internal/inventory"
 )
 
 // Report is the result of one audit.
-// Provisional shape until step 4.
+// The inventory block is provisional until step 4, and the metrics block follows spec 003.
 type Report struct {
-	Repo      Repo      `json:"repo"`
-	Coverage  Coverage  `json:"coverage"`
-	Inventory Inventory `json:"inventory"`
+	Repo      Repo                       `json:"repo"`
+	Coverage  Coverage                   `json:"coverage"`
+	Metrics   map[string]contract.Metric `json:"metrics"`
+	Inventory Inventory                  `json:"inventory"`
 }
 
 // Repo names the audited root.
@@ -53,8 +55,8 @@ type Inventory struct {
 	Errors    []inventory.Error          `json:"errors"`
 }
 
-// New builds the report of an inventory.
-func New(inv *inventory.Inventory) *Report {
+// New builds the report of an inventory and its metrics.
+func New(inv *inventory.Inventory, metrics map[string]contract.Metric) *Report {
 	tree := inv.Tree
 	measured := func(set discover.SourceSet) Measured {
 		return Measured{Files: tree.Coverage[set].Files, SLOC: inv.SLOC[set]}
@@ -76,6 +78,7 @@ func New(inv *inventory.Inventory) *Report {
 			Unsupported:   counted(discover.Unsupported),
 			NestedModules: tree.NestedModules,
 		},
+		Metrics:   metrics,
 		Inventory: Inventory{Functions: functions, Errors: inv.Errors},
 	}
 }

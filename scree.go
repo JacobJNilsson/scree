@@ -4,6 +4,7 @@ package scree
 import (
 	"context"
 
+	"github.com/JacobJNilsson/scree/internal/complexity"
 	"github.com/JacobJNilsson/scree/internal/discover"
 	"github.com/JacobJNilsson/scree/internal/inventory"
 	"github.com/JacobJNilsson/scree/internal/report"
@@ -30,5 +31,6 @@ func Audit(ctx context.Context, root string, opts Options) (*Report, error) {
 	if err != nil {
 		return nil, err
 	}
-	return report.New(inventory.Build(tree)), nil
+	inv := inventory.Build(tree)
+	return report.New(inv, complexity.Measure(inv)), nil
 }

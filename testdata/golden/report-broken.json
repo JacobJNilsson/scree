@@ -1,0 +1,126 @@
+{
+  "repo": {
+    "root": "<root>",
+    "module": "example.com/broken"
+  },
+  "coverage": {
+    "production": {
+      "files": 2,
+      "sloc": 2
+    },
+    "test": {
+      "files": 2,
+      "sloc": 5
+    },
+    "generated": {
+      "files": 0
+    },
+    "vendored": {
+      "files": 0
+    },
+    "testdata": {
+      "files": 0
+    },
+    "excluded": {
+      "files": 0
+    },
+    "unsupported": {
+      "files": 1
+    },
+    "nestedModules": []
+  },
+  "metrics": {
+    "complexity.cc.max.production": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad.go"
+        ]
+      }
+    },
+    "complexity.cc.max.test": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad_test.go"
+        ]
+      }
+    },
+    "complexity.cc.p50.production": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad.go"
+        ]
+      }
+    },
+    "complexity.cc.p50.test": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad_test.go"
+        ]
+      }
+    },
+    "complexity.cc.p90.production": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad.go"
+        ]
+      }
+    },
+    "complexity.cc.p90.test": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad_test.go"
+        ]
+      }
+    },
+    "complexity.functions.production": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad.go"
+        ]
+      }
+    },
+    "complexity.functions.test": {
+      "state": "incomplete",
+      "unit": "count",
+      "detail": {
+        "errors": [
+          "bad_test.go"
+        ]
+      }
+    }
+  },
+  "inventory": {
+    "functions": {
+      "production": 1,
+      "test": 1
+    },
+    "errors": [
+      {
+        "kind": "parse",
+        "path": "bad.go",
+        "set": "production",
+        "message": "bad.go:3:11: expected ')', found '{'"
+      },
+      {
+        "kind": "parse",
+        "path": "bad_test.go",
+        "set": "test",
+        "message": "bad_test.go:4:5: missing condition in if statement"
+      }
+    ]
+  }
+}

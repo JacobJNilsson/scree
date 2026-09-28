@@ -87,6 +87,39 @@
       "sloc": 29
     },
     {
+      "identity": ".:Long",
+      "ambiguous": false,
+      "path": "cc.go",
+      "set": "production",
+      "startLine": 35,
+      "endLine": 70,
+      "cc": 11,
+      "nesting": 1,
+      "sloc": 36
+    },
+    {
+      "identity": ".:Short",
+      "ambiguous": false,
+      "path": "cc.go",
+      "set": "production",
+      "startLine": 73,
+      "endLine": 76,
+      "cc": 15,
+      "nesting": 0,
+      "sloc": 4
+    },
+    {
+      "identity": ".:wrap#1",
+      "ambiguous": true,
+      "path": "cc.go",
+      "set": "production",
+      "startLine": 79,
+      "endLine": 81,
+      "cc": 11,
+      "nesting": 0,
+      "sloc": 3
+    },
+    {
       "identity": ".:Nest",
       "ambiguous": false,
       "path": "closures.go",
@@ -195,6 +228,17 @@
       "cc": 2,
       "nesting": 1,
       "sloc": 5
+    },
+    {
+      "identity": ".:allSet",
+      "ambiguous": false,
+      "path": "functions_test.go",
+      "set": "test",
+      "startLine": 14,
+      "endLine": 17,
+      "cc": 12,
+      "nesting": 0,
+      "sloc": 4
     },
     {
       "identity": ".:init@init.go@1",
@@ -319,8 +363,8 @@
     }
   ],
   "sloc": {
-    "production": 103,
-    "test": 9
+    "production": 146,
+    "test": 13
   },
   "errors": []
 }
