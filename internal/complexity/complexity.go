@@ -130,7 +130,7 @@ func hotspots(fns []inventory.Function) []contract.Finding {
 		out = append(out, contract.Finding{
 			Kind: KindHotspot, Path: f.Path, StartLine: f.StartLine, EndLine: f.EndLine,
 			Identity: f.Identity, Ambiguous: f.Ambiguous, SourceSet: f.Set,
-			Facts: contract.HotspotFacts{CC: f.CC, Nesting: f.Nesting, SLOC: f.SLOC, Mass: functionMass(f)},
+			Facts: contract.Facts{Hotspot: &contract.HotspotFacts{CC: f.CC, Nesting: f.Nesting, SLOC: f.SLOC, Mass: functionMass(f)}},
 		})
 	}
 	return out

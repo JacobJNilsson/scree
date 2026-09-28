@@ -51,7 +51,7 @@ func TestErosionFunctionsFixture(t *testing.T) {
 	hotspot := func(identity, path string, set contract.SourceSet, start, end, cc, nesting, sloc int, mass float64) contract.Finding {
 		return contract.Finding{
 			Kind: KindHotspot, Path: path, StartLine: start, EndLine: end, Identity: identity, SourceSet: set,
-			Facts: contract.HotspotFacts{CC: cc, Nesting: nesting, SLOC: sloc, Mass: mass},
+			Facts: contract.Facts{Hotspot: &contract.HotspotFacts{CC: cc, Nesting: nesting, SLOC: sloc, Mass: mass}},
 		}
 	}
 	closure := hotspot(".:wrap#1", "cc.go", contract.Production, 79, 81, 11, 0, 3, wrapMass)

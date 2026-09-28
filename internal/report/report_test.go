@@ -208,12 +208,12 @@ func TestRenderHotspotTies(t *testing.T) {
 		findings = append(findings, contract.Finding{
 			Kind: complexity.KindHotspot, Path: fmt.Sprintf("f%02d.go", i/2), StartLine: 1 + i%2, EndLine: 2,
 			Identity: fmt.Sprintf(".:F%02d", i), SourceSet: contract.Production,
-			Facts: contract.HotspotFacts{CC: 11, SLOC: 1, Mass: float64(11 - 6*(i%2))},
+			Facts: contract.Facts{Hotspot: &contract.HotspotFacts{CC: 11, SLOC: 1, Mass: float64(11 - 6*(i%2))}},
 		})
 	}
 	var want []string
 	for _, f := range findings {
-		if len(want) == 10 || f.Facts.Mass != 11 {
+		if len(want) == 10 || f.Facts.Hotspot.Mass != 11 {
 			continue
 		}
 		want = append(want, fmt.Sprintf("  %s:%d-2  %s  ", f.Path, f.StartLine, f.Identity))
@@ -244,7 +244,7 @@ func TestRenderHotspotBound(t *testing.T) {
 		r.Findings = append(r.Findings, contract.Finding{
 			Kind: complexity.KindHotspot, Path: fmt.Sprintf("f%02d.go", i), StartLine: 1, EndLine: 2,
 			Identity: fmt.Sprintf(".:F%02d", i), SourceSet: contract.Production,
-			Facts: contract.HotspotFacts{CC: 11, SLOC: i + 1, Mass: float64(i)},
+			Facts: contract.Facts{Hotspot: &contract.HotspotFacts{CC: 11, SLOC: i + 1, Mass: float64(i)}},
 		})
 	}
 	got := render(t, r)
