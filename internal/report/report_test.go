@@ -40,7 +40,7 @@ func measure(inv *inventory.Inventory) *Report {
 		metrics[id] = m
 	}
 	findings = append(findings, clones...)
-	return New(inv, metrics, findings, limits)
+	return New(inv, metrics, findings, limits, Run{AnalyzerVersion: testAnalyzer})
 }
 
 var update = flag.Bool("update", false, "rewrite the golden files")
@@ -69,11 +69,17 @@ func TestDeterministicJSON(t *testing.T) {
 	}
 }
 
+// testAnalyzer stands in for scree.Version, which this package cannot import.
+const testAnalyzer = "0.0.0-test"
+
+// fixtures lists the fixture modules that have a golden report.
+var fixtures = []string{
+	"sets", "functions", "broken", "empty",
+	"clones/exact", "clones/renamed", "clones/fourway", "clones/idiom", "clones/near", "clones/within", "clones/nested", "clones/ladder",
+}
+
 func TestGolden(t *testing.T) {
-	for _, name := range []string{
-		"sets", "functions", "broken", "empty",
-		"clones/exact", "clones/renamed", "clones/fourway", "clones/idiom", "clones/near", "clones/within", "clones/nested", "clones/ladder",
-	} {
+	for _, name := range fixtures {
 		t.Run(name, func(t *testing.T) {
 			r := newReport(t, name)
 			got, err := json.MarshalIndent(r, "", "  ")
@@ -118,9 +124,8 @@ func TestNewSetsFixture(t *testing.T) {
 	if !reflect.DeepEqual(r.Coverage, want) {
 		t.Errorf("coverage:\n got %+v\nwant %+v", r.Coverage, want)
 	}
-	wantFunctions := map[discover.SourceSet]int{discover.Production: 2, discover.Test: 1}
-	if !reflect.DeepEqual(r.Inventory.Functions, wantFunctions) {
-		t.Errorf("functions = %v, want %v", r.Inventory.Functions, wantFunctions)
+	if got := []int{functionCount(r, discover.Production), functionCount(r, discover.Test)}; !reflect.DeepEqual(got, []int{2, 1}) {
+		t.Errorf("functions = %v, want [2 1]", got)
 	}
 }
 
@@ -128,7 +133,7 @@ func TestRender(t *testing.T) {
 	r := newReport(t, "broken")
 	r.Repo.Root = "/r"
 	r.Coverage.NestedModules = []string{"tools/gen"}
-	r.Inventory.Errors = append(r.Inventory.Errors, inventory.Error{Kind: inventory.KindRead, Path: "locked", Message: "open: permission denied"})
+	r.Metrics["erosion.mass.test"] = contract.Metric{State: contract.Incomplete, Detail: contract.Detail{Errors: []string{"bad_test.go", "locked"}}}
 	var b bytes.Buffer
 	if err := Render(&b, r); err != nil {
 		t.Fatal(err)
@@ -137,10 +142,10 @@ func TestRender(t *testing.T) {
 		"root    /r",
 		"module  example.com/broken",
 		"",
-		"production        2 files        2 sloc      1 functions",
+		"production        2 files        2 sloc      0 functions",
 		"  incomplete, 1 read or parse errors",
 		"  incomplete, 1 read or parse errors",
-		"test              2 files        5 sloc      1 functions",
+		"test              2 files        5 sloc      0 functions",
 		"  incomplete, 1 read or parse errors",
 		"  incomplete, 1 read or parse errors",
 		"generated         0 files",
@@ -152,9 +157,9 @@ func TestRender(t *testing.T) {
 		"nested modules: 1",
 		"  tools/gen",
 		"errors: 3",
-		"  parse error in bad.go (production): bad.go:3:11: expected ')', found '{'",
-		"  parse error in bad_test.go (test): bad_test.go:4:5: missing condition in if statement",
-		"  read error in locked: open: permission denied",
+		"  bad.go",
+		"  bad_test.go",
+		"  locked",
 		"",
 		"hotspots (production): not measured",
 		"hotspots (test): not measured",
@@ -312,7 +317,7 @@ func TestNewSortsLimits(t *testing.T) {
 	for range 20 {
 		shuffled := append([]contract.Limit(nil), want...)
 		rng.Shuffle(len(shuffled), func(i, j int) { shuffled[i], shuffled[j] = shuffled[j], shuffled[i] })
-		if got := New(inv, nil, nil, shuffled).Limits; !reflect.DeepEqual(got, want) {
+		if got := New(inv, nil, nil, shuffled, Run{}).Limits; !reflect.DeepEqual(got, want) {
 			t.Fatalf("limits:\n got %v\nwant %v", got, want)
 		}
 	}

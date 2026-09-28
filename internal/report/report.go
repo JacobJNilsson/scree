@@ -4,6 +4,7 @@ package report
 import (
 	"fmt"
 	"io"
+	"slices"
 	"sort"
 	"strings"
 
@@ -11,18 +12,47 @@ import (
 	"github.com/JacobJNilsson/scree/internal/contract"
 	"github.com/JacobJNilsson/scree/internal/discover"
 	"github.com/JacobJNilsson/scree/internal/duplication"
+	"github.com/JacobJNilsson/scree/internal/formula"
 	"github.com/JacobJNilsson/scree/internal/inventory"
 )
 
-// Report is the result of one audit.
-// The inventory block is provisional until step 4, and the metrics, findings, and limits blocks follow spec 003.
+// SchemaVersion is the version of the report shape of spec 003.
+const SchemaVersion = "1.0.0"
+
+// Completeness says whether every production metric was measured.
+type Completeness string
+
+// The completeness values of spec 003.
+const (
+	Complete   Completeness = "complete"
+	Incomplete Completeness = "incomplete"
+)
+
+// Report is the result of one audit, in the shape of spec 003.
 type Report struct {
-	Repo      Repo                       `json:"repo"`
-	Coverage  Coverage                   `json:"coverage"`
-	Metrics   map[string]contract.Metric `json:"metrics"`
-	Findings  []contract.Finding         `json:"findings"`
-	Limits    []contract.Limit           `json:"limits"`
-	Inventory Inventory                  `json:"inventory"`
+	SchemaVersion   string                     `json:"schemaVersion"`
+	AnalyzerVersion string                     `json:"analyzerVersion"`
+	ScoringVersion  string                     `json:"scoringVersion"`
+	Repo            Repo                       `json:"repo"`
+	ConfigDigest    string                     `json:"configDigest"`
+	Coverage        Coverage                   `json:"coverage"`
+	Completeness    Completeness               `json:"completeness"`
+	Metrics         map[string]contract.Metric `json:"metrics"`
+	Score           contract.Score             `json:"score"`
+	Findings        []contract.Finding         `json:"findings"`
+	Limits          []contract.Limit           `json:"limits"`
+	Meta            Meta                       `json:"meta"`
+}
+
+// Meta holds the facts of one run that two equal audits may not share.
+type Meta struct {
+	DurationMs int64 `json:"durationMs"`
+}
+
+// Run names what produced a report besides the inventory.
+type Run struct {
+	AnalyzerVersion string
+	Config          contract.Config
 }
 
 // Repo names the audited root.
@@ -54,27 +84,21 @@ type Coverage struct {
 	NestedModules []string `json:"nestedModules"`
 }
 
-// Inventory summarises the function inventory.
-type Inventory struct {
-	Functions map[discover.SourceSet]int `json:"functions"`
-	Errors    []inventory.Error          `json:"errors"`
-}
-
-// New builds the report of an inventory, its metrics, its findings, and the limits sorted by metric id.
-func New(inv *inventory.Inventory, metrics map[string]contract.Metric, findings []contract.Finding, limits []contract.Limit) *Report {
+// New builds the report of an inventory, its metrics, its findings, and the limits sorted by metric id, and it leaves Meta zero.
+func New(inv *inventory.Inventory, metrics map[string]contract.Metric, findings []contract.Finding, limits []contract.Limit, run Run) *Report {
 	tree := inv.Tree
 	measured := func(set discover.SourceSet) Measured {
 		return Measured{Files: tree.Coverage[set].Files, SLOC: inv.SLOC[set]}
 	}
 	counted := func(set discover.SourceSet) Counted { return Counted{Files: tree.Coverage[set].Files} }
-	functions := map[discover.SourceSet]int{discover.Production: 0, discover.Test: 0}
-	for _, f := range inv.Functions {
-		functions[f.Set]++
-	}
 	sorted := append([]contract.Limit{}, limits...)
 	sort.Slice(sorted, func(i, j int) bool { return sorted[i].MetricID < sorted[j].MetricID })
 	return &Report{
-		Repo: Repo{Root: tree.Root, Module: tree.Module},
+		SchemaVersion:   SchemaVersion,
+		AnalyzerVersion: run.AnalyzerVersion,
+		ScoringVersion:  formula.ScoringVersion,
+		Repo:            Repo{Root: tree.Root, Module: tree.Module},
+		ConfigDigest:    contract.Digest(run.Config),
 		Coverage: Coverage{
 			Production:    measured(discover.Production),
 			Test:          measured(discover.Test),
@@ -85,10 +109,11 @@ func New(inv *inventory.Inventory, metrics map[string]contract.Metric, findings 
 			Unsupported:   counted(discover.Unsupported),
 			NestedModules: tree.NestedModules,
 		},
-		Metrics:   metrics,
-		Findings:  findings,
-		Limits:    sorted,
-		Inventory: Inventory{Functions: functions, Errors: inv.Errors},
+		Completeness: completeness(metrics),
+		Metrics:      metrics,
+		Score:        formula.Score(metrics),
+		Findings:     findings,
+		Limits:       sorted,
 	}
 }
 
@@ -101,10 +126,10 @@ func Render(w io.Writer, r *Report) error {
 	}
 	fmt.Fprintf(&b, "root    %s\nmodule  %s\n\n", r.Repo.Root, module)
 	c := r.Coverage
-	fmt.Fprintf(&b, "%-12s %6d files %8d sloc %6d functions\n", "production", c.Production.Files, c.Production.SLOC, r.Inventory.Functions[discover.Production])
+	fmt.Fprintf(&b, "%-12s %6d files %8d sloc %6d functions\n", "production", c.Production.Files, c.Production.SLOC, functionCount(r, discover.Production))
 	renderComplexity(&b, r.Metrics, discover.Production)
 	renderDuplication(&b, r, discover.Production)
-	fmt.Fprintf(&b, "%-12s %6d files %8d sloc %6d functions\n", "test", c.Test.Files, c.Test.SLOC, r.Inventory.Functions[discover.Test])
+	fmt.Fprintf(&b, "%-12s %6d files %8d sloc %6d functions\n", "test", c.Test.Files, c.Test.SLOC, functionCount(r, discover.Test))
 	renderComplexity(&b, r.Metrics, discover.Test)
 	renderDuplication(&b, r, discover.Test)
 	for _, row := range []struct {
@@ -120,13 +145,10 @@ func Render(w io.Writer, r *Report) error {
 	for _, m := range c.NestedModules {
 		fmt.Fprintf(&b, "  %s\n", m)
 	}
-	fmt.Fprintf(&b, "errors: %d\n", len(r.Inventory.Errors))
-	for _, e := range r.Inventory.Errors {
-		where := e.Path
-		if e.Set != "" {
-			where += " (" + string(e.Set) + ")"
-		}
-		fmt.Fprintf(&b, "  %s error in %s: %s\n", e.Kind, where, e.Message)
+	paths := errorPaths(r)
+	fmt.Fprintf(&b, "errors: %d\n", len(paths))
+	for _, p := range paths {
+		fmt.Fprintf(&b, "  %s\n", p)
 	}
 	b.WriteString("\n")
 	for _, l := range []list{hotspots, clones} {
@@ -135,6 +157,31 @@ func Render(w io.Writer, r *Report) error {
 	}
 	_, err := io.WriteString(w, b.String())
 	return err
+}
+
+// completeness is incomplete when any production metric is incomplete.
+func completeness(metrics map[string]contract.Metric) Completeness {
+	for id, m := range metrics {
+		if strings.HasSuffix(id, "."+string(contract.Production)) && m.State == contract.Incomplete {
+			return Incomplete
+		}
+	}
+	return Complete
+}
+
+// functionCount is the function count of a set, and 0 when the set was not measured.
+func functionCount(r *Report, set discover.SourceSet) int {
+	return int(r.Metrics["complexity.functions."+string(set)].Value)
+}
+
+// errorPaths lists the paths whose read or parse errors made a metric incomplete, sorted and without repeats.
+func errorPaths(r *Report) []string {
+	var paths []string
+	for _, m := range r.Metrics {
+		paths = append(paths, m.Detail.Errors...)
+	}
+	slices.Sort(paths)
+	return slices.Compact(paths)
 }
 
 // maxListed bounds each finding list of the terminal summary.

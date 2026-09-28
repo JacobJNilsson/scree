@@ -1,13 +1,19 @@
 package scree
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"io/fs"
 	"path/filepath"
 	"reflect"
 	"strconv"
 	"testing"
+
+	"github.com/JacobJNilsson/scree/internal/contract"
+	"github.com/JacobJNilsson/scree/internal/formula"
+	"github.com/JacobJNilsson/scree/internal/report"
 )
 
 // TestAuditMergesMeasures asserts that a report holds the metrics and findings of both measures in the order of spec 002.
@@ -71,7 +77,44 @@ func TestAuditParseErrorIsNoError(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(r.Inventory.Errors) != 2 {
-		t.Errorf("errors = %v, want two", r.Inventory.Errors)
+	if r.Completeness != report.Incomplete || !r.Score.Partial {
+		t.Errorf("completeness %q, partial %v, want incomplete and partial", r.Completeness, r.Score.Partial)
+	}
+}
+
+func TestAuditVersionsAndDigest(t *testing.T) {
+	opts := Options{Exclude: []string{"sub/**"}, TestPatterns: []string{"cc.go"}}
+	r, err := Audit(context.Background(), "testdata/fixtures/functions", opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := []string{r.SchemaVersion, r.AnalyzerVersion, r.ScoringVersion, r.ConfigDigest}
+	want := []string{"1.0.0", Version, formula.ScoringVersion, contract.Digest(contract.Config{Exclude: opts.Exclude, TestPatterns: opts.TestPatterns})}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("versions and digest = %v, want %v", got, want)
+	}
+	if r.Score.Index != formula.Score(r.Metrics).Index {
+		t.Errorf("index %d, want the formula index", r.Score.Index)
+	}
+}
+
+// TestAuditDeterministic audits one fixture twice and asserts byte-equal JSON once meta is zeroed.
+func TestAuditDeterministic(t *testing.T) {
+	var outputs [2][]byte
+	for i := range outputs {
+		r, err := Audit(context.Background(), "testdata/fixtures/clones/nested", Options{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if r.Meta.DurationMs < 0 {
+			t.Errorf("duration %d ms is negative", r.Meta.DurationMs)
+		}
+		r.Meta = report.Meta{}
+		if outputs[i], err = json.Marshal(r); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !bytes.Equal(outputs[0], outputs[1]) {
+		t.Errorf("two audits differ:\n%s\n%s", outputs[0], outputs[1])
 	}
 }
