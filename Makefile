@@ -17,7 +17,6 @@ golden:
 
 gate-test:
 	sh scripts/coverage-gate-test.sh
-	sh scripts/index-budget-test.sh
 
 lint:
 	golangci-lint run ./...
@@ -40,10 +39,11 @@ tidy-check:
 antislop:
 	go run github.com/JacobJNilsson/anti-slop-go/cmd/antislop@v1.3.0 ./...
 
-# The self-audit fails the gate when scree cannot audit its own repository, when the index is partial, or when it rises above scree-budget.json.
+# The self-audit fails the gate when scree cannot audit its own repository or when the policy in scree.yaml fails.
+# The sed line prints the index, because the score block holds the only "index" key at four spaces of indent.
 selfcheck:
-	go run ./cmd/scree audit . --json --quiet --out .scree-self.json
-	sh scripts/index-budget.sh .scree-self.json scree-budget.json
+	go run ./cmd/scree audit . --out .scree-self.json
+	@sed -nE 's/^    "index": ([0-9]+),$$/self-audit index \1 (.scree-self.json)/p' .scree-self.json
 
 check: tidy-check vet lint gate-test test build antislop selfcheck
 

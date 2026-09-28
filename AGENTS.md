@@ -26,8 +26,8 @@ anti-slop-go v1.3.0 requires Go 1.24 or newer. With the default
 `make antislop`. With `GOTOOLCHAIN=local` on a Go 1.23 host,
 `make antislop` fails.
 `make selfcheck` audits this repository with its own binary and is part of
-`make check` from step 1 on. From step 4 it fails when the index rises
-above the committed budget.
+`make check` from step 1 on. It fails when the policy in `scree.yaml`
+fails, for example when the index rises above `maxIndex`.
 
 The pre-commit tier, `make check-scoped`, runs vet, lint, and race tests on
 the packages a staged change touches, with the same coverage bar over the
