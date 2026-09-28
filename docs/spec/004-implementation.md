@@ -33,8 +33,15 @@ No package imports a package to its right.
   It matched `git check-ignore` on every case of a 26-file conformance
   fixture with nested ignore files, negation, anchors, `**`, directory-only
   patterns, and escaped trailing spaces, with two transitive modules. Call
-  `repo.Match(path).Ignore()`; the promoted `repo.Ignore(path)` always
-  returns false. No other runtime dependency.
+  `repo.Absolute(path, isDir).Ignore()` on a repository opened with the
+  file name `./.gitignore`. The promoted `repo.Ignore` and
+  `repo.MatchIsDir` never match, and the exact name `.gitignore`
+  makes the library read `.git/info/exclude` as well. The walk checks each
+  `.gitignore` itself before the library opens it, because the library
+  reports a failed open and a mid-read error only through its pattern
+  error handler. Known gaps against Git: the library rejects `a/**b`, `***`,
+  and a lone `!`, which Git applies. A symlinked `.gitignore` is a read
+  error, as in Git. No other runtime dependency.
 - `golangci-lint` v2 with the same linter set as `anti-slop-go`, plus the
   `anti-slop-go` standalone binary run by `make antislop` at a pinned
   version.

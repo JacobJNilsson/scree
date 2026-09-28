@@ -11,10 +11,14 @@ is audited the same way and recorded as unnamed.
 
 The audit walks the root in lexical order and visits every regular file.
 A directory that holds its own `go.mod` below the root is a nested module.
-The walk skips it and counts it once under coverage as `nested-module`.
+The walk skips it and counts it once under coverage as `nested-module`. A
+directory that the source-set rules below place in `vendored`, `testdata`,
+or `excluded` is never a nested module, whatever it holds.
 
 The walk skips files and directories that `.gitignore` files under the root
-exclude, with the same pattern semantics as Git. A `.git` directory is
+exclude, with the same pattern semantics as Git. Only `.gitignore` files
+are read. Git's `.git/info/exclude` and the global excludes file are state
+of one machine and never apply. A `.git` entry, file or directory, is
 skipped. Nothing else is skipped by name.
 
 Build constraints do not matter. A file named `foo_windows.go` or one that
@@ -26,11 +30,12 @@ machine it runs on.
 
 Each file belongs to exactly one source set. The first matching rule wins.
 
-1. `vendored`: any path with a `vendor` directory segment.
-2. `testdata`: any path with a `testdata` directory segment. The Go tool
+1. `testdata`: any path with a `testdata` directory segment. The Go tool
    ignores these directories, and their contents are fixtures, not code.
+2. `vendored`: any path with a `vendor` directory segment.
 3. `excluded`: a path matched by an `exclude` pattern in `scree.yaml`, or
-   with a directory segment that starts with `.` or `_`.
+   with a directory segment or file name that starts with `.` or `_`. The
+   Go tool ignores such files and directories.
 4. `unsupported`: a file whose name does not end in `.go`.
 5. `generated`: a `.go` file that `ast.IsGenerated` recognises.
 6. `test`: a file whose name ends in `_test.go`, or a `.go` file matched by
@@ -181,7 +186,13 @@ Every metric carries one state:
 - `complete`: measured over its whole intended scope.
 - `incomplete`: part of the scope was not measured. The detail says what and
   where. A parse error in a file makes every metric of that file's set
-  `incomplete` and lists the file.
+  `incomplete` and lists the file. A file or directory that cannot be read
+  is listed the same way. Its contents are unknown, so it makes both
+  measured sets `incomplete`, unless the path rules already place it in
+  `testdata`, `vendored`, or `excluded`. An unreadable `.gitignore`, or one
+  that is not a regular file, is a read error too, because the files it
+  names are then measured. A read
+  error never stops the audit.
 - `not-applicable`: the scope is genuinely empty, for example a set with no
   functions.
 - `unsupported` is a coverage category, not a metric state.
