@@ -120,8 +120,8 @@ func TestAuditTerminal(t *testing.T) {
 	if code := run([]string{"audit", filepath.Join(fixtures, "broken")}, &stdout, &stderr); code != 0 {
 		t.Fatalf("exit code %d, stderr %q", code, stderr.String())
 	}
-	if !strings.Contains(stdout.String(), "errors: 2\n") {
-		t.Errorf("stdout lacks the parse error count:\n%s", stdout.String())
+	if !strings.Contains(stdout.String(), "\nincomplete: bad.go, bad_test.go\n") {
+		t.Errorf("stdout lacks the error paths:\n%s", stdout.String())
 	}
 }
 

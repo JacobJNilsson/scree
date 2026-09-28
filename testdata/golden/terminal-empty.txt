@@ -1,0 +1,17 @@
+scree 0.0.0-test  example.com/empty
+
+index  0/100  lower is better  scoring 0.1.0-provisional
+       complexity-erosion 0  duplication 0
+
+                   files    sloc   funcs   cc p50/p90/max     eroded  clones    dup lines
+production             0       0       0                -          -       0            0
+test                   0       0       0                -          -       0            0
+other: unsupported 1
+
+hotspots (production, 0)
+
+clones (production, 0)
+
+hotspots (test, 0)
+
+clones (test, 0)

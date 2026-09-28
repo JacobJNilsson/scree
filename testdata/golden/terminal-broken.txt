@@ -1,0 +1,18 @@
+scree 0.0.0-test  example.com/broken
+
+index  100/100  lower is better  scoring 0.1.0-provisional (partial)
+incomplete: bad.go, bad_test.go
+       complexity-erosion 60  duplication 40
+
+                   files    sloc   funcs   cc p50/p90/max     eroded  clones    dup lines
+production             2       2       -                -          -       -            -
+test                   2       5       -                -          -       -            -
+other: unsupported 1
+
+hotspots (production, -)
+
+clones (production, -)
+
+hotspots (test, -)
+
+clones (test, -)

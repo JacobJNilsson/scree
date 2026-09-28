@@ -1,0 +1,26 @@
+scree 0.0.0-test  example.com/clones/nested
+
+index  55/100  lower is better  scoring 0.1.0-provisional
+       complexity-erosion 33  duplication 22
+
+                   files    sloc   funcs   cc p50/p90/max     eroded  clones    dup lines
+production             3     149       3         17/17/17    2 (88%)       2    141 (95%)
+test                   0       0       0                -          -       0            0
+other: unsupported 1
+
+hotspots (production, 2)
+  130.6  cc 17  a.go:4-62  Heavy
+  130.6  cc 17  b.go:4-62  HeavyCopy
+
+clones (production, 2)
+  321 tokens  2 members  4801221e89fa382b
+    a.go:4-62
+    b.go:4-62
+  122 tokens  3 members  a9131f502c4085e8
+    a.go:6-28
+    b.go:6-28
+    light.go:7-29
+
+hotspots (test, 0)
+
+clones (test, 0)
