@@ -248,7 +248,8 @@ coverage, and safeguards never enter it.
   and the report marks the index `partial`. Missing analysis is never zero
   debt.
 
-Every renderer shows the index as `N/100 · lower is better · scoring <version>`.
+Every renderer shows the index as `N/100`, the words `lower is better`, and
+`scoring <version>` on one line.
 The index is not a percentage of bad code and is never shown as one.
 
 Every constant in this file, the weights, saturation points, count scales,
