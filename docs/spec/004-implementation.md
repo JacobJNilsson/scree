@@ -15,7 +15,8 @@ scree/
 │  ├─ formula/            # every constant and the scoring function
 │  ├─ report/             # report assembly, JSON round-trip, terminal and Markdown renderers
 │  ├─ config/             # scree.yaml load and strict validation
-│  ├─ compare/            # report comparison and policy evaluation
+│  ├─ compare/            # report comparison
+│  ├─ policy/             # policy evaluation over a report and a comparison
 │  └─ safeguards/         # configuration inspection
 └─ docs/spec/
 ```
