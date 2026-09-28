@@ -42,7 +42,7 @@ func Measure(inv *inventory.Inventory) (map[string]contract.Metric, []contract.F
 		}
 		findings = append(findings, hotspots(fns)...)
 	}
-	sortFindings(findings)
+	contract.SortFindings(findings)
 	return metrics, findings
 }
 
@@ -123,21 +123,4 @@ func hotspots(fns []inventory.Function) []contract.Finding {
 		})
 	}
 	return out
-}
-
-// sortFindings orders findings by kind, path, start line, and identity, as spec 002 demands.
-func sortFindings(findings []contract.Finding) {
-	sort.Slice(findings, func(i, j int) bool {
-		a, b := findings[i], findings[j]
-		if a.Kind != b.Kind {
-			return a.Kind < b.Kind
-		}
-		if a.Path != b.Path {
-			return a.Path < b.Path
-		}
-		if a.StartLine != b.StartLine {
-			return a.StartLine < b.StartLine
-		}
-		return a.Identity < b.Identity
-	})
 }
