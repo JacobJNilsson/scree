@@ -161,11 +161,11 @@ func renderHotspots(b *strings.Builder, findings []contract.Finding, set discove
 		return
 	}
 	// The findings arrive in their report order, so a stable sort keeps that order between equal masses.
-	sort.SliceStable(hotspots, func(i, j int) bool { return hotspots[i].Facts.Mass > hotspots[j].Facts.Mass })
+	sort.SliceStable(hotspots, func(i, j int) bool { return hotspots[i].Facts.Hotspot.Mass > hotspots[j].Facts.Hotspot.Mass })
 	shown := hotspots[:min(len(hotspots), maxHotspots)]
 	fmt.Fprintf(b, "hotspots (%s): showing %d of %d, sorted by mass\n", set, len(shown), len(hotspots))
 	for _, f := range shown {
 		fmt.Fprintf(b, "  %s:%d-%d  %s  cc %d  nesting %d  sloc %d  mass %.1f\n",
-			f.Path, f.StartLine, f.EndLine, f.Identity, f.Facts.CC, f.Facts.Nesting, f.Facts.SLOC, f.Facts.Mass)
+			f.Path, f.StartLine, f.EndLine, f.Identity, f.Facts.Hotspot.CC, f.Facts.Hotspot.Nesting, f.Facts.Hotspot.SLOC, f.Facts.Hotspot.Mass)
 	}
 }

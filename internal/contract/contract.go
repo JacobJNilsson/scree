@@ -1,7 +1,10 @@
 // Package contract holds the types that several pipeline stages share, and it imports no other internal package.
 package contract
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"errors"
+)
 
 // MetricState says how much of its scope a metric measured.
 type MetricState string
@@ -51,14 +54,34 @@ func (m Metric) MarshalJSON() ([]byte, error) {
 
 // Finding is one located piece of evidence.
 type Finding struct {
-	Kind      string       `json:"kind"`
-	Path      string       `json:"path"`
-	StartLine int          `json:"startLine"`
-	EndLine   int          `json:"endLine"`
-	Identity  string       `json:"identity"`
-	Ambiguous bool         `json:"ambiguous"`
-	SourceSet SourceSet    `json:"sourceSet"`
-	Facts     HotspotFacts `json:"facts"`
+	Kind      string    `json:"kind"`
+	Path      string    `json:"path"`
+	StartLine int       `json:"startLine"`
+	EndLine   int       `json:"endLine"`
+	Identity  string    `json:"identity"`
+	Ambiguous bool      `json:"ambiguous"`
+	SourceSet SourceSet `json:"sourceSet"`
+	Facts     Facts     `json:"facts"`
+}
+
+// Facts holds the measurements of one finding, and only the field of the finding kind is set.
+type Facts struct {
+	Hotspot *HotspotFacts
+	Clone   *CloneFacts
+}
+
+// errFacts reports facts that do not hold exactly one kind.
+var errFacts = errors.New("contract: finding facts must hold exactly one kind")
+
+// MarshalJSON emits the facts of the one kind that is set, so that the JSON shape depends on the finding kind alone.
+func (f Facts) MarshalJSON() ([]byte, error) {
+	switch {
+	case f.Hotspot != nil && f.Clone == nil:
+		return json.Marshal(f.Hotspot)
+	case f.Clone != nil && f.Hotspot == nil:
+		return json.Marshal(f.Clone)
+	}
+	return nil, errFacts
 }
 
 // HotspotFacts are the measurements of the function behind a complexity hotspot.
@@ -67,6 +90,20 @@ type HotspotFacts struct {
 	Nesting int     `json:"nesting"`
 	SLOC    int     `json:"sloc"`
 	Mass    float64 `json:"mass"`
+}
+
+// CloneFacts are the measurements of a clone group.
+type CloneFacts struct {
+	GroupID string        `json:"groupId"`
+	Tokens  int           `json:"tokens"`
+	Members []CloneMember `json:"members"`
+}
+
+// CloneMember is one located copy of a clone group.
+type CloneMember struct {
+	Path      string `json:"path"`
+	StartLine int    `json:"startLine"`
+	EndLine   int    `json:"endLine"`
 }
 
 // SourceSet names the group a file belongs to.
