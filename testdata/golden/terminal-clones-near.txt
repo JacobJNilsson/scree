@@ -1,0 +1,22 @@
+scree 0.0.0-test  example.com/clones/near
+
+index  54/100  lower is better  scoring 0.1.0-provisional
+       complexity-erosion 33  duplication 21
+
+                   files    sloc   funcs   cc p50/p90/max     eroded  clones    dup lines
+production             2      80       2         11/11/11   2 (100%)       1     44 (55%)
+test                   0       0       0                -          -       0            0
+other: unsupported 1
+
+hotspots (production, 2)
+  68.7  cc 11  a.go:4-42  Score
+  68.7  cc 11  b.go:4-42  ScoreCopy
+
+clones (production, 1)
+  125 tokens  2 members  806501b520ea2592
+    a.go:4-25
+    b.go:4-25
+
+hotspots (test, 0)
+
+clones (test, 0)

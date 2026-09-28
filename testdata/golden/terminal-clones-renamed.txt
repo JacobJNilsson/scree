@@ -1,0 +1,20 @@
+scree 0.0.0-test  example.com/clones/renamed
+
+index  21/100  lower is better  scoring 0.1.0-provisional
+       complexity-erosion 0  duplication 21
+
+                   files    sloc   funcs   cc p50/p90/max     eroded  clones    dup lines
+production             2      54       4            1/7/7          0       1     44 (81%)
+test                   0       0       0                -          -       0            0
+other: unsupported 1
+
+hotspots (production, 0)
+
+clones (production, 1)
+  120 tokens  2 members  e9223f9221094ed5
+    a.go:6-27
+    b.go:4-25
+
+hotspots (test, 0)
+
+clones (test, 0)

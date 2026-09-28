@@ -1,0 +1,21 @@
+scree 0.0.0-test  example.com/clones/within
+
+index  21/100  lower is better  scoring 0.1.0-provisional
+       complexity-erosion 0  duplication 21
+
+                   files    sloc   funcs   cc p50/p90/max     eroded  clones    dup lines
+production             1      67       3            7/7/7          0       1     66 (99%)
+test                   0       0       0                -          -       0            0
+other: unsupported 1
+
+hotspots (production, 0)
+
+clones (production, 1)
+  118 tokens  3 members  3aa4d00373694a3b
+    within.go:4-25
+    within.go:27-48
+    within.go:50-71
+
+hotspots (test, 0)
+
+clones (test, 0)

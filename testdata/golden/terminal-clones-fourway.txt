@@ -1,0 +1,22 @@
+scree 0.0.0-test  example.com/clones/fourway
+
+index  21/100  lower is better  scoring 0.1.0-provisional
+       complexity-erosion 0  duplication 21
+
+                   files    sloc   funcs   cc p50/p90/max     eroded  clones    dup lines
+production             4      92       4            7/7/7          0       1     88 (96%)
+test                   0       0       0                -          -       0            0
+other: unsupported 1
+
+hotspots (production, 0)
+
+clones (production, 1)
+  120 tokens  4 members  e9223f9221094ed5
+    a.go:4-25
+    b.go:4-25
+    c.go:4-25
+    d.go:4-25
+
+hotspots (test, 0)
+
+clones (test, 0)
