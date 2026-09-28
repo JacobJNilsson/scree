@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/JacobJNilsson/scree"
+	"github.com/JacobJNilsson/scree/internal/report"
 )
 
 const fixtures = "../../testdata/fixtures"
@@ -89,17 +90,26 @@ func TestAuditJSONParity(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	r.Meta = report.Meta{}
 	want, err := json.MarshalIndent(r, "", "  ")
 	if err != nil {
 		t.Fatal(err)
 	}
-	want = append(want, '\n')
 	for _, args := range [][]string{{"audit", "--json", root}, {"audit", root, "--json"}} {
 		var stdout, stderr bytes.Buffer
 		if code := run(args, &stdout, &stderr); code != 0 {
 			t.Fatalf("%v: exit code %d, stderr %q", args, code, stderr.String())
 		}
-		if !bytes.Equal(stdout.Bytes(), want) {
+		printed, err := report.Load(&stdout)
+		if err != nil {
+			t.Fatalf("%v: %v", args, err)
+		}
+		printed.Meta = report.Meta{}
+		got, err := json.MarshalIndent(printed, "", "  ")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Equal(got, want) {
 			t.Errorf("%v: stdout differs from json.MarshalIndent of scree.Audit:\n%s", args, stdout.String())
 		}
 	}

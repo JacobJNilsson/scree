@@ -3,8 +3,10 @@ package scree
 
 import (
 	"context"
+	"time"
 
 	"github.com/JacobJNilsson/scree/internal/complexity"
+	"github.com/JacobJNilsson/scree/internal/contract"
 	"github.com/JacobJNilsson/scree/internal/discover"
 	"github.com/JacobJNilsson/scree/internal/duplication"
 	"github.com/JacobJNilsson/scree/internal/inventory"
@@ -28,6 +30,7 @@ type Options struct {
 // Audit measures the Go module at root.
 // A parse error is part of the report and not an error.
 func Audit(ctx context.Context, root string, opts Options) (*Report, error) {
+	start := time.Now()
 	tree, err := discover.Walk(ctx, root, discover.Options{Exclude: opts.Exclude, TestPatterns: opts.TestPatterns})
 	if err != nil {
 		return nil, err
@@ -40,5 +43,8 @@ func Audit(ctx context.Context, root string, opts Options) (*Report, error) {
 	}
 	// Each measure sorts its own findings, and every complexity kind sorts before the clone kind, so the joined list keeps the order of spec 002.
 	findings = append(findings, clones...)
-	return report.New(inv, metrics, findings, limits), nil
+	run := report.Run{AnalyzerVersion: Version, Config: contract.Config{Exclude: opts.Exclude, TestPatterns: opts.TestPatterns}}
+	r := report.New(inv, metrics, findings, limits, run)
+	r.Meta.DurationMs = time.Since(start).Milliseconds()
+	return r, nil
 }

@@ -1,8 +1,12 @@
 {
+  "schemaVersion": "1.0.0",
+  "analyzerVersion": "0.0.0-test",
+  "scoringVersion": "0.1.0-provisional",
   "repo": {
     "root": "<root>",
     "module": "example.com/empty"
   },
+  "configDigest": "sha256:4c50bb6e6bc006a5b9243824f1685a5379c85d70169e618006d2edfe7d505d66",
   "coverage": {
     "production": {
       "files": 0,
@@ -29,6 +33,7 @@
     },
     "nestedModules": []
   },
+  "completeness": "complete",
   "metrics": {
     "complexity.cc.max.production": {
       "state": "not-applicable",
@@ -141,13 +146,56 @@
       "detail": {}
     }
   },
+  "score": {
+    "index": 0,
+    "direction": "lower-is-better",
+    "partial": false,
+    "contributions": [
+      {
+        "dimension": "complexity-erosion",
+        "points": 0,
+        "weight": 0.6,
+        "terms": [
+          {
+            "metricId": "erosion.eroded-share.production",
+            "state": "not-applicable",
+            "saturatesAt": 0.25,
+            "score": 0
+          },
+          {
+            "metricId": "erosion.eroded-count.production",
+            "state": "complete",
+            "value": 0,
+            "countScale": 20,
+            "score": 0
+          }
+        ]
+      },
+      {
+        "dimension": "duplication",
+        "points": 0,
+        "weight": 0.4,
+        "terms": [
+          {
+            "metricId": "duplication.density.production",
+            "state": "not-applicable",
+            "saturatesAt": 0.15,
+            "score": 0
+          },
+          {
+            "metricId": "duplication.groups.production",
+            "state": "complete",
+            "value": 0,
+            "countScale": 15,
+            "score": 0
+          }
+        ]
+      }
+    ]
+  },
   "findings": [],
   "limits": [],
-  "inventory": {
-    "functions": {
-      "production": 0,
-      "test": 0
-    },
-    "errors": []
+  "meta": {
+    "durationMs": 0
   }
 }

@@ -1,8 +1,12 @@
 {
+  "schemaVersion": "1.0.0",
+  "analyzerVersion": "0.0.0-test",
+  "scoringVersion": "0.1.0-provisional",
   "repo": {
     "root": "<root>",
     "module": "example.com/clones/ladder"
   },
+  "configDigest": "sha256:4c50bb6e6bc006a5b9243824f1685a5379c85d70169e618006d2edfe7d505d66",
   "coverage": {
     "production": {
       "files": 1,
@@ -29,6 +33,7 @@
     },
     "nestedModules": []
   },
+  "completeness": "complete",
   "metrics": {
     "complexity.cc.max.production": {
       "state": "complete",
@@ -150,6 +155,55 @@
       "detail": {}
     }
   },
+  "score": {
+    "index": 53,
+    "direction": "lower-is-better",
+    "partial": false,
+    "contributions": [
+      {
+        "dimension": "complexity-erosion",
+        "points": 32,
+        "weight": 0.6,
+        "terms": [
+          {
+            "metricId": "erosion.eroded-share.production",
+            "state": "complete",
+            "value": 0.9859169096953574,
+            "saturatesAt": 0.25,
+            "score": 100
+          },
+          {
+            "metricId": "erosion.eroded-count.production",
+            "state": "complete",
+            "value": 1,
+            "countScale": 20,
+            "score": 4.652042499661543
+          }
+        ]
+      },
+      {
+        "dimension": "duplication",
+        "points": 21,
+        "weight": 0.4,
+        "terms": [
+          {
+            "metricId": "duplication.density.production",
+            "state": "complete",
+            "value": 0.75,
+            "saturatesAt": 0.15,
+            "score": 100
+          },
+          {
+            "metricId": "duplication.groups.production",
+            "state": "complete",
+            "value": 1,
+            "countScale": 15,
+            "score": 6.062582034946465
+          }
+        ]
+      }
+    ]
+  },
   "findings": [
     {
       "kind": "complexity.hotspot",
@@ -193,11 +247,7 @@
     }
   ],
   "limits": [],
-  "inventory": {
-    "functions": {
-      "production": 2,
-      "test": 0
-    },
-    "errors": []
+  "meta": {
+    "durationMs": 0
   }
 }

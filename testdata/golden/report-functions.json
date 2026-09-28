@@ -1,8 +1,12 @@
 {
+  "schemaVersion": "1.0.0",
+  "analyzerVersion": "0.0.0-test",
+  "scoringVersion": "0.1.0-provisional",
   "repo": {
     "root": "<root>",
     "module": "example.com/functions"
   },
+  "configDigest": "sha256:4c50bb6e6bc006a5b9243824f1685a5379c85d70169e618006d2edfe7d505d66",
   "coverage": {
     "production": {
       "files": 9,
@@ -29,6 +33,7 @@
     },
     "nestedModules": []
   },
+  "completeness": "complete",
   "metrics": {
     "complexity.cc.max.production": {
       "state": "complete",
@@ -159,6 +164,55 @@
       "detail": {}
     }
   },
+  "score": {
+    "index": 34,
+    "direction": "lower-is-better",
+    "partial": false,
+    "contributions": [
+      {
+        "dimension": "complexity-erosion",
+        "points": 34,
+        "weight": 0.6,
+        "terms": [
+          {
+            "metricId": "erosion.eroded-share.production",
+            "state": "complete",
+            "value": 0.5179282607419493,
+            "saturatesAt": 0.25,
+            "score": 100
+          },
+          {
+            "metricId": "erosion.eroded-count.production",
+            "state": "complete",
+            "value": 3,
+            "countScale": 20,
+            "score": 12.26238016720471
+          }
+        ]
+      },
+      {
+        "dimension": "duplication",
+        "points": 0,
+        "weight": 0.4,
+        "terms": [
+          {
+            "metricId": "duplication.density.production",
+            "state": "complete",
+            "value": 0,
+            "saturatesAt": 0.15,
+            "score": 0
+          },
+          {
+            "metricId": "duplication.groups.production",
+            "state": "complete",
+            "value": 0,
+            "countScale": 15,
+            "score": 0
+          }
+        ]
+      }
+    ]
+  },
   "findings": [
     {
       "kind": "complexity.hotspot",
@@ -222,11 +276,7 @@
     }
   ],
   "limits": [],
-  "inventory": {
-    "functions": {
-      "production": 23,
-      "test": 3
-    },
-    "errors": []
+  "meta": {
+    "durationMs": 0
   }
 }

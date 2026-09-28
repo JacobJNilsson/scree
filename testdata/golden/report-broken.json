@@ -1,8 +1,12 @@
 {
+  "schemaVersion": "1.0.0",
+  "analyzerVersion": "0.0.0-test",
+  "scoringVersion": "0.1.0-provisional",
   "repo": {
     "root": "<root>",
     "module": "example.com/broken"
   },
+  "configDigest": "sha256:4c50bb6e6bc006a5b9243824f1685a5379c85d70169e618006d2edfe7d505d66",
   "coverage": {
     "production": {
       "files": 2,
@@ -29,6 +33,7 @@
     },
     "nestedModules": []
   },
+  "completeness": "incomplete",
   "metrics": {
     "complexity.cc.max.production": {
       "state": "incomplete",
@@ -211,26 +216,54 @@
       }
     }
   },
-  "findings": [],
-  "limits": [],
-  "inventory": {
-    "functions": {
-      "production": 1,
-      "test": 1
-    },
-    "errors": [
+  "score": {
+    "index": 100,
+    "direction": "lower-is-better",
+    "partial": true,
+    "contributions": [
       {
-        "kind": "parse",
-        "path": "bad.go",
-        "set": "production",
-        "message": "bad.go:3:11: expected ')', found '{'"
+        "dimension": "complexity-erosion",
+        "points": 60,
+        "weight": 0.6,
+        "terms": [
+          {
+            "metricId": "erosion.eroded-share.production",
+            "state": "incomplete",
+            "saturatesAt": 0.25,
+            "score": 100
+          },
+          {
+            "metricId": "erosion.eroded-count.production",
+            "state": "incomplete",
+            "countScale": 20,
+            "score": 100
+          }
+        ]
       },
       {
-        "kind": "parse",
-        "path": "bad_test.go",
-        "set": "test",
-        "message": "bad_test.go:4:5: missing condition in if statement"
+        "dimension": "duplication",
+        "points": 40,
+        "weight": 0.4,
+        "terms": [
+          {
+            "metricId": "duplication.density.production",
+            "state": "incomplete",
+            "saturatesAt": 0.15,
+            "score": 100
+          },
+          {
+            "metricId": "duplication.groups.production",
+            "state": "incomplete",
+            "countScale": 15,
+            "score": 100
+          }
+        ]
       }
     ]
+  },
+  "findings": [],
+  "limits": [],
+  "meta": {
+    "durationMs": 0
   }
 }
