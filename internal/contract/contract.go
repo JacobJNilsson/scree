@@ -67,6 +67,54 @@ func (m Metric) MarshalJSON() ([]byte, error) {
 	return json.Marshal(out)
 }
 
+// Score is the score block of spec 003.
+type Score struct {
+	Index     int    `json:"index"`
+	Direction string `json:"direction"`
+	// Partial is true when a dimension scored its full weight because a required metric was not measured.
+	Partial       bool           `json:"partial"`
+	Contributions []Contribution `json:"contributions"`
+}
+
+// Contribution is the share of the index that one dimension adds.
+type Contribution struct {
+	Dimension string  `json:"dimension"`
+	Points    int     `json:"points"`
+	Weight    float64 `json:"weight"`
+	Terms     []Term  `json:"terms"`
+}
+
+// Term is one metric of a dimension with the score it earned.
+type Term struct {
+	MetricID string      `json:"metricId"`
+	State    MetricState `json:"state"`
+	// Value is 0 for a metric that is not complete.
+	Value float64
+	// Exactly one of SaturatesAt and CountScale is set.
+	SaturatesAt float64
+	CountScale  float64
+	Score       float64
+}
+
+// termJSON is the wire shape of a term, and Value is nil unless the term is complete.
+type termJSON struct {
+	MetricID    string      `json:"metricId"`
+	State       MetricState `json:"state"`
+	Value       *float64    `json:"value,omitempty"`
+	SaturatesAt float64     `json:"saturatesAt,omitempty"`
+	CountScale  float64     `json:"countScale,omitempty"`
+	Score       float64     `json:"score"`
+}
+
+// MarshalJSON omits the value of a term that is not complete, so that an unmeasured metric never shows as zero.
+func (t Term) MarshalJSON() ([]byte, error) {
+	out := termJSON{MetricID: t.MetricID, State: t.State, SaturatesAt: t.SaturatesAt, CountScale: t.CountScale, Score: t.Score}
+	if t.State == Complete {
+		out.Value = &t.Value
+	}
+	return json.Marshal(out)
+}
+
 // Finding is one located piece of evidence.
 type Finding struct {
 	Kind      string    `json:"kind"`
