@@ -1,0 +1,25 @@
+# scree report
+
+example.com/sets, scree 0.0.0-test.
+
+The index is 0/100, lower is better, scoring 0.1.0-provisional.
+Contributions: complexity-erosion 0, duplication 0.
+
+| set | files | sloc | funcs | cc p50/p90/max | eroded | clones | dup lines |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| production | 2 | 4 | 2 | 1/1/1 | 0 | 0 | 0 |
+| test | 1 | 7 | 1 | 2/2/2 | 0 | 0 | 0 |
+
+Other files: generated 1, vendored 1, testdata 1, excluded 6, unsupported 2.
+
+## Hotspots
+
+### production (0)
+
+### test (0)
+
+## Clones
+
+### production (0)
+
+### test (0)

@@ -1,0 +1,30 @@
+# scree report
+
+example.com/broken, scree 0.0.0-test.
+
+The index is 100/100, lower is better, scoring 0.1.0-provisional, partial.
+Contributions: complexity-erosion 60, duplication 40.
+
+| set | files | sloc | funcs | cc p50/p90/max | eroded | clones | dup lines |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| production | 2 | 2 | - | - | - | - | - |
+| test | 2 | 5 | - | - | - | - | - |
+
+Other files: unsupported 1.
+
+## Hotspots
+
+### production (-)
+
+### test (-)
+
+## Clones
+
+### production (-)
+
+### test (-)
+
+## Incomplete
+
+- bad.go
+- bad_test.go
