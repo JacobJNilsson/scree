@@ -1,0 +1,95 @@
+{
+  "tree": {
+    "root": "<root>",
+    "module": "example.com/broken",
+    "files": [
+      {
+        "path": "bad.go",
+        "set": "production"
+      },
+      {
+        "path": "bad_test.go",
+        "set": "test"
+      },
+      {
+        "path": "go.mod",
+        "set": "unsupported"
+      },
+      {
+        "path": "ok.go",
+        "set": "production"
+      },
+      {
+        "path": "ok_test.go",
+        "set": "test"
+      }
+    ],
+    "nestedModules": [],
+    "readErrors": [],
+    "coverage": {
+      "excluded": {
+        "files": 0
+      },
+      "generated": {
+        "files": 0
+      },
+      "production": {
+        "files": 2
+      },
+      "test": {
+        "files": 2
+      },
+      "testdata": {
+        "files": 0
+      },
+      "unsupported": {
+        "files": 1
+      },
+      "vendored": {
+        "files": 0
+      }
+    }
+  },
+  "functions": [
+    {
+      "identity": ".:OK",
+      "ambiguous": false,
+      "path": "ok.go",
+      "set": "production",
+      "startLine": 4,
+      "endLine": 4,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 1
+    },
+    {
+      "identity": ".:TestOK",
+      "ambiguous": false,
+      "path": "ok_test.go",
+      "set": "test",
+      "startLine": 5,
+      "endLine": 7,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 3
+    }
+  ],
+  "sloc": {
+    "production": 2,
+    "test": 5
+  },
+  "errors": [
+    {
+      "kind": "parse",
+      "path": "bad.go",
+      "set": "production",
+      "message": "bad.go:3:11: expected ')', found '{'"
+    },
+    {
+      "kind": "parse",
+      "path": "bad_test.go",
+      "set": "test",
+      "message": "bad_test.go:4:5: missing condition in if statement"
+    }
+  ]
+}

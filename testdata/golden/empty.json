@@ -1,0 +1,43 @@
+{
+  "tree": {
+    "root": "<root>",
+    "module": "example.com/empty",
+    "files": [
+      {
+        "path": "go.mod",
+        "set": "unsupported"
+      }
+    ],
+    "nestedModules": [],
+    "readErrors": [],
+    "coverage": {
+      "excluded": {
+        "files": 0
+      },
+      "generated": {
+        "files": 0
+      },
+      "production": {
+        "files": 0
+      },
+      "test": {
+        "files": 0
+      },
+      "testdata": {
+        "files": 0
+      },
+      "unsupported": {
+        "files": 1
+      },
+      "vendored": {
+        "files": 0
+      }
+    }
+  },
+  "functions": [],
+  "sloc": {
+    "production": 0,
+    "test": 0
+  },
+  "errors": []
+}

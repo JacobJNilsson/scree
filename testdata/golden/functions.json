@@ -1,0 +1,326 @@
+{
+  "tree": {
+    "root": "<root>",
+    "module": "example.com/functions",
+    "files": [
+      {
+        "path": "cc.go",
+        "set": "production"
+      },
+      {
+        "path": "closures.go",
+        "set": "production"
+      },
+      {
+        "path": "f_linux.go",
+        "set": "production"
+      },
+      {
+        "path": "f_windows.go",
+        "set": "production"
+      },
+      {
+        "path": "functions_test.go",
+        "set": "test"
+      },
+      {
+        "path": "go.mod",
+        "set": "unsupported"
+      },
+      {
+        "path": "init.go",
+        "set": "production"
+      },
+      {
+        "path": "nest.go",
+        "set": "production"
+      },
+      {
+        "path": "recv.go",
+        "set": "production"
+      },
+      {
+        "path": "sloc.go",
+        "set": "production"
+      },
+      {
+        "path": "sub/sub.go",
+        "set": "production"
+      }
+    ],
+    "nestedModules": [],
+    "readErrors": [],
+    "coverage": {
+      "excluded": {
+        "files": 0
+      },
+      "generated": {
+        "files": 0
+      },
+      "production": {
+        "files": 9
+      },
+      "test": {
+        "files": 1
+      },
+      "testdata": {
+        "files": 0
+      },
+      "unsupported": {
+        "files": 1
+      },
+      "vendored": {
+        "files": 0
+      }
+    }
+  },
+  "functions": [
+    {
+      "identity": ".:Decide",
+      "ambiguous": false,
+      "path": "cc.go",
+      "set": "production",
+      "startLine": 4,
+      "endLine": 32,
+      "cc": 10,
+      "nesting": 1,
+      "sloc": 29
+    },
+    {
+      "identity": ".:Nest",
+      "ambiguous": false,
+      "path": "closures.go",
+      "set": "production",
+      "startLine": 4,
+      "endLine": 18,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 15
+    },
+    {
+      "identity": ".:Nest#1",
+      "ambiguous": true,
+      "path": "closures.go",
+      "set": "production",
+      "startLine": 5,
+      "endLine": 16,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 12
+    },
+    {
+      "identity": ".:Nest#2",
+      "ambiguous": true,
+      "path": "closures.go",
+      "set": "production",
+      "startLine": 6,
+      "endLine": 14,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 9
+    },
+    {
+      "identity": ".:Nest#3",
+      "ambiguous": true,
+      "path": "closures.go",
+      "set": "production",
+      "startLine": 7,
+      "endLine": 12,
+      "cc": 2,
+      "nesting": 1,
+      "sloc": 6
+    },
+    {
+      "identity": ".:platform@f_linux.go",
+      "ambiguous": false,
+      "path": "f_linux.go",
+      "set": "production",
+      "startLine": 5,
+      "endLine": 5,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 1
+    },
+    {
+      "identity": ".:hook@f_linux.go#1",
+      "ambiguous": true,
+      "path": "f_linux.go",
+      "set": "production",
+      "startLine": 7,
+      "endLine": 7,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 1
+    },
+    {
+      "identity": ".:platform@f_windows.go",
+      "ambiguous": false,
+      "path": "f_windows.go",
+      "set": "production",
+      "startLine": 5,
+      "endLine": 5,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 1
+    },
+    {
+      "identity": ".:hook@f_windows.go#1",
+      "ambiguous": true,
+      "path": "f_windows.go",
+      "set": "production",
+      "startLine": 7,
+      "endLine": 7,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 1
+    },
+    {
+      "identity": ".:TestDecide",
+      "ambiguous": false,
+      "path": "functions_test.go",
+      "set": "test",
+      "startLine": 5,
+      "endLine": 11,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 7
+    },
+    {
+      "identity": ".:TestDecide#1",
+      "ambiguous": true,
+      "path": "functions_test.go",
+      "set": "test",
+      "startLine": 6,
+      "endLine": 10,
+      "cc": 2,
+      "nesting": 1,
+      "sloc": 5
+    },
+    {
+      "identity": ".:init@init.go@1",
+      "ambiguous": false,
+      "path": "init.go",
+      "set": "production",
+      "startLine": 5,
+      "endLine": 7,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 3
+    },
+    {
+      "identity": ".:init@init.go@2",
+      "ambiguous": false,
+      "path": "init.go",
+      "set": "production",
+      "startLine": 9,
+      "endLine": 11,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 3
+    },
+    {
+      "identity": ".:Deep",
+      "ambiguous": false,
+      "path": "nest.go",
+      "set": "production",
+      "startLine": 4,
+      "endLine": 17,
+      "cc": 5,
+      "nesting": 4,
+      "sloc": 14
+    },
+    {
+      "identity": ".:T.Value",
+      "ambiguous": false,
+      "path": "recv.go",
+      "set": "production",
+      "startLine": 7,
+      "endLine": 7,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 1
+    },
+    {
+      "identity": ".:T.Pointer",
+      "ambiguous": false,
+      "path": "recv.go",
+      "set": "production",
+      "startLine": 10,
+      "endLine": 15,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 6
+    },
+    {
+      "identity": ".:T.Pointer#1",
+      "ambiguous": true,
+      "path": "recv.go",
+      "set": "production",
+      "startLine": 11,
+      "endLine": 13,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 3
+    },
+    {
+      "identity": ".:Pair.Key",
+      "ambiguous": false,
+      "path": "recv.go",
+      "set": "production",
+      "startLine": 24,
+      "endLine": 24,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 1
+    },
+    {
+      "identity": ".:Box.Get",
+      "ambiguous": false,
+      "path": "recv.go",
+      "set": "production",
+      "startLine": 30,
+      "endLine": 30,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 1
+    },
+    {
+      "identity": ".:callback#1",
+      "ambiguous": true,
+      "path": "recv.go",
+      "set": "production",
+      "startLine": 35,
+      "endLine": 35,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 1
+    },
+    {
+      "identity": ".:Text",
+      "ambiguous": false,
+      "path": "sloc.go",
+      "set": "production",
+      "startLine": 4,
+      "endLine": 15,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 7
+    },
+    {
+      "identity": "sub:Run",
+      "ambiguous": false,
+      "path": "sub/sub.go",
+      "set": "production",
+      "startLine": 4,
+      "endLine": 4,
+      "cc": 1,
+      "nesting": 0,
+      "sloc": 1
+    }
+  ],
+  "sloc": {
+    "production": 103,
+    "test": 9
+  },
+  "errors": []
+}
