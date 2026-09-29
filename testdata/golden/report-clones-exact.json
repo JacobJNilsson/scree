@@ -265,6 +265,56 @@
       }
     }
   ],
+  "safeguards": [
+    {
+      "id": "agent-hooks",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No agent hook is declared."
+    },
+    {
+      "id": "ci-workflow",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No workflow file has a step."
+    },
+    {
+      "id": "coverage-budget",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No Makefile exists."
+    },
+    {
+      "id": "lint-config",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No .golangci file exists."
+    },
+    {
+      "id": "pre-commit-hook",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No hook file or hook tool declares pre-commit."
+    },
+    {
+      "id": "pre-push-hook",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No hook file or hook tool declares pre-push."
+    },
+    {
+      "id": "test-check",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No Makefile recipe runs go test."
+    },
+    {
+      "id": "vet-check",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No Makefile recipe runs go vet."
+    }
+  ],
   "limits": [],
   "meta": {
     "durationMs": 0

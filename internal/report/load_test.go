@@ -89,6 +89,8 @@ func TestLoadRejects(t *testing.T) {
 		{"trailing bracket", `"meta":{"durationMs":0}}`, `"meta":{"durationMs":0}}]`, "(end)"},
 		{"term value", `"metricId":"erosion.eroded-share.production","state":"complete"`, `"metricId":"erosion.eroded-share.production","state":"incomplete"`, "value"},
 		{"metric unit", `"unit":"count",`, ``, "unit"},
+		{"null locations", `"locations":[]`, `"locations":null`, "locations"},
+		{"missing notes", `,"notes":"No agent hook is declared."`, ``, "notes"},
 		{"finding kind", `"kind":"complexity.hotspot"`, `"kind":"complexity.spot"`, "findings[0].kind"},
 		{"finding set", `"sourceSet":"production"`, `"sourceSet":"generated"`, "findings[0].sourceSet"},
 	} {
@@ -116,6 +118,14 @@ func TestLoadValidates(t *testing.T) {
 		{"findings order", func(r *Report) { r.Findings[0], r.Findings[1] = r.Findings[1], r.Findings[0] }, "findings[1]"},
 		{"clone facts on a hotspot", func(r *Report) { r.Findings[0].Facts = r.Findings[2].Facts }, "findings[0].facts"},
 		{"hotspot facts on a clone", func(r *Report) { r.Findings[2].Facts = r.Findings[0].Facts }, "findings[2].facts"},
+		{"safeguard evidence", func(r *Report) { r.Safeguards[0].Evidence = "wired" }, "safeguards[0].evidence"},
+		{"safeguard order", func(r *Report) { r.Safeguards[0], r.Safeguards[1] = r.Safeguards[1], r.Safeguards[0] }, "safeguards[0].id"},
+		{"safeguard repeat", func(r *Report) { r.Safeguards[1].ID = r.Safeguards[0].ID }, "safeguards[1].id"},
+		{"unknown safeguard", func(r *Report) { r.Safeguards[7].ID = "zz-check" }, "safeguards[7].id"},
+		{"missing safeguard", func(r *Report) { r.Safeguards = r.Safeguards[1:] }, "safeguards"},
+		{"negative location line", func(r *Report) { r.Safeguards[0].Locations = []contract.Location{{Path: "a", Line: -1}} }, "safeguards[0].locations[0].line"},
+		{"finding without identity", func(r *Report) { r.Findings[0].Identity = "" }, "findings[0].identity"},
+		{"extra safeguard", func(r *Report) { r.Safeguards = append(r.Safeguards, r.Safeguards[7]) }, "safeguards"},
 		{"broken reference with a set", func(r *Report) { r.Findings = []contract.Finding{brokenReference(contract.Production)} }, "findings[0].sourceSet"},
 		{"broken reference with a bogus set", func(r *Report) { r.Findings = []contract.Finding{brokenReference("bogus")} }, "findings[0].sourceSet"},
 		{"hotspot facts on a broken reference", func(r *Report) {

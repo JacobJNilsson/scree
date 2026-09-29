@@ -15,3 +15,13 @@ clones (production, 0)
 hotspots (test, 0)
 
 clones (test, 0)
+
+safeguards
+  agent-hooks        absent
+  ci-workflow        absent
+  coverage-budget    absent
+  lint-config        absent
+  pre-commit-hook    absent
+  pre-push-hook      absent
+  test-check         absent
+  vet-check          absent

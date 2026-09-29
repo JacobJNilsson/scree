@@ -20,3 +20,13 @@ hotspots (test, 1)
   24.0  cc 12  functions_test.go:14-17  allSet
 
 clones (test, 0)
+
+safeguards
+  agent-hooks        absent
+  ci-workflow        absent
+  coverage-budget    absent
+  lint-config        absent
+  pre-commit-hook    absent
+  pre-push-hook      absent
+  test-check         absent
+  vet-check          absent

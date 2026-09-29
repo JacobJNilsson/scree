@@ -35,6 +35,15 @@ func evaluate(t *testing.T, files map[string]string) (map[string]contract.Safegu
 	return byID, findings
 }
 
+func TestInspect(t *testing.T) {
+	tree := walk(t, filepath.Join(testdata, "fixtures", "safeguards", "odd"))
+	gotS, gotF := Inspect(tree)
+	wantS, wantF := Evaluate(read(t, tree), treeExists(tree))
+	if !reflect.DeepEqual(gotS, wantS) || !reflect.DeepEqual(gotF, wantF) {
+		t.Errorf("Inspect differs from Read and Evaluate")
+	}
+}
+
 func TestEvaluateGolden(t *testing.T) {
 	for _, name := range []string{"wired", "loose", "odd", "empty"} {
 		t.Run(name, func(t *testing.T) {
@@ -70,7 +79,7 @@ func TestEvaluateFixtures(t *testing.T) {
 		wired   = contract.EvidenceStructurallyWired
 		unknown = contract.EvidenceUnknown
 	)
-	ids := []string{IDAgentHooks, IDCIWorkflow, IDCoverageBudget, IDLintConfig, IDPreCommitHook, IDPrePushHook, IDTestCheck, IDVetCheck}
+	ids := IDs
 	for name, want := range map[string][]contract.Evidence{
 		"wired": {conf, wired, wired, wired, wired, wired, wired, wired},
 		"loose": {absent, absent, absent, absent, absent, absent, conf, absent},

@@ -21,6 +21,9 @@ const (
 	IDVetCheck       = "vet-check"
 )
 
+// IDs lists the eight safeguard ids in the order that a report lists them.
+var IDs = []string{IDAgentHooks, IDCIWorkflow, IDCoverageBudget, IDLintConfig, IDPreCommitHook, IDPrePushHook, IDTestCheck, IDVetCheck}
+
 // result is the level that one rule reaches, with the locations and the note that explain it.
 type result struct {
 	level     contract.Evidence

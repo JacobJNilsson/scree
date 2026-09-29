@@ -21,3 +21,13 @@ clones (test, 1)
   120 tokens  2 members  e9223f9221094ed5
     a_test.go:6-31
     b_test.go:4-29
+
+safeguards
+  agent-hooks        absent
+  ci-workflow        absent
+  coverage-budget    absent
+  lint-config        absent
+  pre-commit-hook    absent
+  pre-push-hook      absent
+  test-check         absent
+  vet-check          absent

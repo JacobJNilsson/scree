@@ -35,6 +35,7 @@ type Report struct {
 	Metrics         map[string]contract.Metric `json:"metrics"`
 	Score           contract.Score             `json:"score"`
 	Findings        []contract.Finding         `json:"findings"`
+	Safeguards      []contract.Safeguard       `json:"safeguards"`
 	Limits          []contract.Limit           `json:"limits"`
 	Meta            Meta                       `json:"meta"`
 }
@@ -79,8 +80,8 @@ type Coverage struct {
 	NestedModules []string `json:"nestedModules"`
 }
 
-// New builds the report of an inventory, its metrics, its findings, and the limits sorted by metric id, and it leaves Meta zero.
-func New(inv *inventory.Inventory, metrics map[string]contract.Metric, findings []contract.Finding, limits []contract.Limit, run Run) *Report {
+// New builds the report of an inventory, its metrics, findings, limits, and safeguards, sorts the limits by metric id, and leaves Meta zero.
+func New(inv *inventory.Inventory, metrics map[string]contract.Metric, findings []contract.Finding, limits []contract.Limit, guards []contract.Safeguard, run Run) *Report {
 	tree := inv.Tree
 	measured := func(set discover.SourceSet) Measured {
 		return Measured{Files: tree.Coverage[set].Files, SLOC: inv.SLOC[set]}
@@ -108,6 +109,7 @@ func New(inv *inventory.Inventory, metrics map[string]contract.Metric, findings 
 		Metrics:      metrics,
 		Score:        formula.Score(metrics),
 		Findings:     findings,
+		Safeguards:   append([]contract.Safeguard{}, guards...),
 		Limits:       sorted,
 	}
 }

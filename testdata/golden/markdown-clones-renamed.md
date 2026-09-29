@@ -27,3 +27,16 @@ Other files: unsupported 1.
 | e9223f9221094ed5 | 120 | a.go:6-27<br>b.go:4-25 |
 
 ### test (0)
+
+## Safeguards
+
+| id | evidence | locations | notes |
+| --- | --- | --- | --- |
+| agent-hooks | absent |  | No agent hook is declared. |
+| ci-workflow | absent |  | No workflow file has a step. |
+| coverage-budget | absent |  | No Makefile exists. |
+| lint-config | absent |  | No .golangci file exists. |
+| pre-commit-hook | absent |  | No hook file or hook tool declares pre-commit. |
+| pre-push-hook | absent |  | No hook file or hook tool declares pre-push. |
+| test-check | absent |  | No Makefile recipe runs go test. |
+| vet-check | absent |  | No Makefile recipe runs go vet. |

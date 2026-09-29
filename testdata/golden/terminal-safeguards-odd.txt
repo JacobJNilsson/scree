@@ -1,4 +1,4 @@
-scree 0.0.0-test  example.com/empty
+scree 0.0.0-test  example.com/odd
 
 index  0/100  lower is better  scoring 0.1.0-provisional
        complexity-erosion 0  duplication 0
@@ -6,7 +6,7 @@ index  0/100  lower is better  scoring 0.1.0-provisional
                    files    sloc   funcs   cc p50/p90/max     eroded  clones    dup lines
 production             0       0       0                -          -       0            0
 test                   0       0       0                -          -       0            0
-other: unsupported 1
+other: excluded 3  unsupported 3
 
 hotspots (production, 0)
 
@@ -18,10 +18,14 @@ clones (test, 0)
 
 safeguards
   agent-hooks        absent
-  ci-workflow        absent
+  ci-workflow        unknown             .github/workflows/test.yml
   coverage-budget    absent
   lint-config        absent
-  pre-commit-hook    absent
-  pre-push-hook      absent
-  test-check         absent
-  vet-check          absent
+  pre-commit-hook    unknown             .githooks/pre-commit:5
+  pre-push-hook      configured          .husky/pre-push
+  test-check         unknown             .github/workflows/test.yml:8
+  vet-check          unknown             .github/workflows/test.yml:9 .github/workflows/test.yml:11
+
+broken references (2)
+  .githooks/pre-commit:3  make verify
+  .githooks/pre-commit:4  sh scripts/missing.sh
