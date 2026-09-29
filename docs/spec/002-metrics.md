@@ -292,3 +292,76 @@ Safeguard ids: `pre-commit-hook`, `pre-push-hook`, `lint-config`,
 `vet-check`, `test-check`, `coverage-budget`, `ci-workflow`, `agent-hooks`.
 A broken reference, such as a hook that names a missing script, is a
 `safeguard.broken-reference` finding with path and line.
+
+### Surface models
+
+The inspector reads each surface into a line-located model. It reads text
+only. Nothing is executed, included, or expanded.
+
+- Makefile: targets with their prerequisite names and recipe lines. A line
+  that holds `$(shell`, `include`, or a backtick makes its target `unknown`.
+  Variable assignments of the form `NAME ?= value` or `NAME = value` are
+  recorded by name.
+- Workflow: for each file, the top-level `on` keys and, for each step, the
+  `run` lines and the `uses` value. A `run` line that holds `${{` is
+  recorded as unverified text.
+- Hook files: a file named `pre-commit` or `pre-push` in a directory that a
+  Makefile recipe names in `git config core.hooksPath <dir>`, or under
+  `.husky/`. `.git/hooks` is never read, because it is untracked state of
+  one clone. Hook lines are commands.
+- Hook tools: `lefthook.yml`, `lefthook.yaml`, `.lefthook.yml`,
+  `.lefthook.yaml`, and `.pre-commit-config.yaml`. Presence and the hook
+  names they declare.
+- Lint config: presence of a `.golangci.*` file.
+- Agent hooks: `.claude/settings.json` parsed as JSON, the `hooks` key.
+
+### Commands
+
+A command is one recipe or hook line. The inspector understands these
+forms and nothing else:
+
+- `make <target>`, with optional flags before the target
+- `sh <path>`, `bash <path>`, `./<path>`
+- `go vet`, `go test`, `go build`, `go run`, `golangci-lint`, `gofmt`
+- `git config core.hooksPath <dir>`
+
+A reference is a make target name or a script path. A reference resolves
+when the target exists in the Makefile or the path exists under the root.
+A reference that does not resolve is a `safeguard.broken-reference` finding
+with the path and line of the command. A line in any other form is
+unverified, and the safeguard that reads it is `unknown`.
+
+Reachability follows `make <target>` through the target's prerequisites and
+recipe, with a visited set, so a cycle ends the walk.
+
+### Evidence rules
+
+- `pre-commit-hook`, `pre-push-hook`: `configured` when a hook file exists
+  or a hook tool declares the hook. `structurally-wired` when, in addition,
+  a Makefile recipe sets `core.hooksPath` to the hook file's directory, or
+  a Makefile recipe or workflow step runs `lefthook install`,
+  `pre-commit install`, or uses `pre-commit/action`, and every command in
+  the hook file resolves. `unknown` when a hook line is in no understood
+  form. A hook file under `.git/hooks` never counts.
+- `lint-config`: `configured` when a `.golangci.*` file exists.
+  `structurally-wired` when a workflow step or a hook file reaches a
+  `golangci-lint` command, directly or through `make`.
+- `vet-check`, `test-check`: `configured` when a Makefile recipe holds
+  `go vet` or `go test`. `structurally-wired` when a workflow step or a hook
+  file reaches it, directly or through `make`.
+- `coverage-budget`: `configured` when a Makefile assigns a variable whose
+  name holds `COVERAGE`, or a recipe holds `-coverprofile=<file>` followed
+  in the same recipe by a command that names `<file>`. `structurally-wired`
+  when a workflow step or hook file reaches that recipe.
+- `ci-workflow`: `configured` when a workflow file has at least one `run`
+  or `uses` step. `structurally-wired` when its `on` keys include `push` or
+  `pull_request` and every `run` line is understood. `unknown` when `on` is
+  missing or a `run` line is unverified.
+- `agent-hooks`: `configured` when the `hooks` map is present and not empty.
+  Never `structurally-wired`, because no enforcement point is verifiable.
+
+Evidence for one id is the highest level its rules reach, except that
+`unknown` wins over `configured` when an unverified line sits on the path
+that would have made it `structurally-wired`. Each safeguard lists the
+locations that produced its level and a one-sentence note. Safeguards are
+sorted by id.
