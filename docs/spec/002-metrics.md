@@ -268,7 +268,7 @@ Surfaces read:
 
 - `Makefile` and `GNUmakefile` at the root: target names and recipe lines.
 - `.golangci.yml`, `.golangci.yaml`, `.golangci.toml`, `.golangci.json`:
-  presence and, for YAML, the enabled linter list.
+  presence.
 - `.github/workflows/*.yml`: `run:` scalar and block values and `uses:`
   values. Expressions and conditionals are never evaluated.
 - Git hooks: a `git config core.hooksPath <dir>` line in a Makefile recipe,
@@ -330,14 +330,18 @@ only. Nothing is executed, included, or expanded.
 
 A command is one recipe or hook line. A line is first split at `&&`, and
 each part is one command. A line that holds any other shell operator (`||`,
-`|`, `;`, `>`, `<`, or a backtick) is `other` as a whole. The inspector
+`|`, `;`, `&`, `>`, `<`, or a backtick) is `other` as a whole. The inspector
 understands these forms and nothing else:
 
 - `make <target>...`, with optional flags before the targets. Every named
-  target is followed. The flags `-f`, `-I`, `-o`, `-W`, and `-j` and their long
-  forms take one argument, joined or separate, which is skipped. A `-C` or
+  target is followed. A flag is one token that starts with `-`. The flags
+  `-f`, `-I`, `-o`, `-W`, and `-j`, and their long forms, take one argument
+  as the next token or joined with `=`, which is skipped. A `-C` or
   `--directory` flag in any form runs another Makefile, so the line is
-  `other`.
+  `other`. A combined short flag (`-sC`, `-kj`) and a bare `-j` or `-l`
+  followed by a target name are ambiguous, so any short flag token longer
+  than two characters that is not a known joined form, and any `-j` or `-l`
+  whose next token is not a number, make the line `other`.
 - `sh <path>`, `bash <path>`, `./<path>`
 - `go vet`, `go test`, `go build`, `go run`, `golangci-lint`, `gofmt`
 - `git config core.hooksPath <dir>`
@@ -377,11 +381,12 @@ recipe, with a visited set, so a cycle ends the walk.
   file reaches it, directly or through `make`.
 - `coverage-budget`: `configured` when a Makefile assigns a variable whose
   name holds `COVERAGE`, or a recipe holds `-coverprofile=<file>` followed
-  in the same recipe by a command that names `<file>`. `structurally-wired`
+  in the same recipe by a line whose text contains `<file>`, as a word or
+  inside a flag such as `-func=<file>`. `structurally-wired`
   when a workflow step or hook file reaches that recipe.
 - `ci-workflow`: `configured` when a workflow file has at least one `run`
   or `uses` step. `structurally-wired` when its `on` keys include `push` or
-  `pull_request` and every `run` line is understood. `unknown` when `on` is
+  `pull_request` and no `run` line holds `${{`. `unknown` when `on` is
   missing or a `run` line is unverified.
 - `agent-hooks`: `configured` when the `hooks` map is present and not empty.
   Never `structurally-wired`, because no enforcement point is verifiable.
@@ -389,7 +394,10 @@ recipe, with a visited set, so a cycle ends the walk.
 
 Evidence for one id is the highest level its rules reach, except that
 `unknown` wins over `configured` when an unverified line sits on the path
-that would have made it `structurally-wired`.
+that would have made it `structurally-wired`. A hook line that is `other`
+hides what it runs, so every check that a Makefile configures is at most
+`unknown` when such a hook is the only enforcement point that could reach
+it, and its note says which hook line hides it.
 
 The report always holds exactly the eight safeguards, sorted by id. The
 terminal and Markdown renderers list broken references under the
