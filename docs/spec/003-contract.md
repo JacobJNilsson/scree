@@ -90,6 +90,10 @@ reaches the output.
 }
 ```
 
+A `safeguard.broken-reference` finding has no `sourceSet`, because it sits
+in a configuration file and not in measured code. Every other finding kind
+carries one.
+
 Metric ids follow `<dimension>.<name>.<set>`. Every metric listed in
 [002-metrics.md](002-metrics.md) appears for both `production` and `test`,
 even when `not-applicable`. Unknown fields are rejected on load. `detail`

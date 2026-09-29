@@ -395,12 +395,25 @@ recipe, with a visited set, so a cycle ends the walk.
   Never `structurally-wired`, because no enforcement point is verifiable.
   The note counts hook entries across every matcher group.
 
+An enforcement point is a step of a workflow whose `on` keys include
+`push` or `pull_request`, or a hook file whose directory a Makefile recipe
+sets as `core.hooksPath`. A workflow without `on` still reaches commands,
+but only as unverified, so it can raise a safeguard to `unknown` and never
+to `structurally-wired`. A hook set from a workflow does not count, because
+CI runs in a fresh clone.
+
 Evidence for one id is the highest level its rules reach, except that
 `unknown` wins over `configured` when an unverified line sits on the path
 that would have made it `structurally-wired`. A hook line that is `other`
 hides what it runs, so every check that a Makefile configures is at most
 `unknown` when such a hook is the only enforcement point that could reach
-it, and its note says which hook line hides it.
+it, and its note says which hook line hides it. A read error on a surface
+makes every safeguard that reads that surface `unknown`, with the error in
+its note, unless another surface already makes it `structurally-wired`.
+The Makefile and hook files feed every safeguard except `agent-hooks` and
+`ci-workflow`. A workflow feeds every safeguard except `agent-hooks`. A hook
+tool feeds only the two hook safeguards. The agent settings file feeds only
+`agent-hooks`.
 
 The report always holds exactly the eight safeguards, sorted by id. The
 terminal and Markdown renderers list broken references under the
