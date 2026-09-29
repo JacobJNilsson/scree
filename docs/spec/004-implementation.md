@@ -17,7 +17,9 @@ scree/
 │  ├─ config/             # scree.yaml load and strict validation
 │  ├─ compare/            # report comparison
 │  ├─ policy/             # policy evaluation over a report and a comparison
-│  └─ safeguards/         # configuration inspection
+│  ├─ safeguards/         # configuration inspection
+│  └─ corpus/             # corpus list, download, and results table for make corpus
+├─ corpus/                # modules.txt and the recorded results.md
 └─ docs/spec/
 ```
 
@@ -96,10 +98,48 @@ pass, draft PR.
 5. Config, compare, policy, CLI. `scree.yaml`, `Compare`, `Evaluate`,
    `cmd/scree` with exit codes, CLI-to-package parity test.
 6. Safeguards. Every surface in 002, evidence levels, broken references.
-7. Corpus and calibration. A fixed list of public Go modules at pinned
-   revisions, paired refactor fixtures, recorded indexes. Adjust constants
-   with a scoring version bump when the index moves the wrong way on a
-   paired refactor. Tag `v0.1.0` after this step.
+7. Corpus and calibration, as the next section states. Tag `v0.1.0`
+   after this step.
+
+## Calibration
+
+Step 7 checks the scoring constants against paired refactors and records
+the index over a corpus of public modules.
+
+A paired refactor is two fixture modules, `before` and `after`, under
+`testdata/fixtures/pairs/<name>/`. A test in `make check` audits both and
+asserts the direction of the index.
+
+| Pair | Change from `before` to `after` | Index |
+|---|---|---|
+| `extract-clone` | Two copies of a function become one shared function. | lower |
+| `split-function` | A function with cc above 10 becomes functions with cc 10 or less. | lower |
+| `add-clone` | A function gets a copy in another file. | higher |
+| `add-branches` | A function with cc 10 or less gets branches to cc above 10. | higher |
+| `rename` | Every identifier and literal gets a new name or value. | equal |
+| `move` | A function moves to a file in another package. | equal |
+| `tests-only` | A test file with a clone group and an eroded function appears. | equal |
+| `comments` | Comments and blank lines appear. | equal |
+
+Lower and higher mean a move of at least one index point. Each `before`
+module scores above 0. An index that moves in the other direction, or
+does not move, is a calibration defect. The fix changes a constant in
+`internal/formula` and raises `ScoringVersion`. The fix never edits a
+fixture to fit the constants.
+
+`corpus/modules.txt` lists public Go modules, one `path@version` per line,
+from under 2,000 production code lines to over 50,000. `make corpus`
+downloads each module through the Go module proxy and audits the module
+directory with no configuration. The audit sees the files of the module
+zip. `make corpus` writes `corpus/results.md` with one row per module:
+path, version, index, the two contributions, production code lines,
+production functions, eroded functions, clone groups, and completeness.
+The repository commits that file. `make corpus` needs the network, so
+`make check` does not run it.
+
+The corpus shows how the index spreads over real code. It never changes a
+constant by itself. When every pair passes, `ScoringVersion` drops the
+`-provisional` suffix.
 
 Deferred to a later version: SQLite history, fleet over `targets.yaml`, a
 scored dimension over the package graph.
