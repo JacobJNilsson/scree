@@ -1,0 +1,28 @@
+{
+  "makefile": {
+    "path": "Makefile",
+    "targets": [
+      {
+        "name": "test",
+        "line": 1,
+        "prereqs": [],
+        "recipe": [
+          {
+            "line": 2,
+            "text": "go test ./...",
+            "kind": "go-test"
+          }
+        ],
+        "unknown": false
+      }
+    ],
+    "vars": [],
+    "includes": false
+  },
+  "workflows": [],
+  "hookFiles": [],
+  "hookTools": [],
+  "lintConfig": null,
+  "agentHooks": null,
+  "errors": []
+}

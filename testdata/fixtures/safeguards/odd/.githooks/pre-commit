@@ -1,0 +1,5 @@
+#!/bin/sh
+# The hook names a target and a script that do not exist.
+make verify
+sh scripts/missing.sh
+if [ -n "$CI" ]; then exit 0; fi

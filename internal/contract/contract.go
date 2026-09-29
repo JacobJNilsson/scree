@@ -186,6 +186,12 @@ type CloneMember struct {
 	EndLine   int    `json:"endLine"`
 }
 
+// Location is a repo-relative path with an optional 1-based line.
+type Location struct {
+	Path string `json:"path"`
+	Line int    `json:"line,omitempty"`
+}
+
 // SourceSet names the group a file belongs to.
 type SourceSet string
 
