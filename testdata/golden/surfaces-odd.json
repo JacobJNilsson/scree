@@ -1,0 +1,148 @@
+{
+  "makefile": {
+    "path": "Makefile",
+    "targets": [
+      {
+        "name": "build",
+        "line": 5,
+        "prereqs": [],
+        "recipe": [
+          {
+            "line": 6,
+            "text": "go build -ldflags \"-X main.version=$(shell git describe --tags)\" ./...",
+            "kind": "go-build"
+          }
+        ],
+        "unknown": true
+      },
+      {
+        "name": "release",
+        "line": 9,
+        "prereqs": [
+          "build"
+        ],
+        "recipe": [
+          {
+            "line": 10,
+            "text": "echo releasing $(VERSION)",
+            "kind": "other"
+          }
+        ],
+        "unknown": false
+      },
+      {
+        "name": "setup",
+        "line": 12,
+        "prereqs": [],
+        "recipe": [
+          {
+            "line": 13,
+            "text": "git config core.hooksPath .githooks",
+            "kind": "hooks-path",
+            "ref": ".githooks"
+          }
+        ],
+        "unknown": false
+      }
+    ],
+    "vars": [
+      {
+        "name": "VERSION",
+        "value": "$(shell git describe --tags)",
+        "line": 1
+      }
+    ],
+    "includes": false
+  },
+  "workflows": [
+    {
+      "path": ".github/workflows/test.yml",
+      "on": [],
+      "steps": [
+        {
+          "line": 7,
+          "run": [],
+          "uses": "actions/checkout@v4",
+          "unverified": false
+        },
+        {
+          "line": 8,
+          "run": [
+            {
+              "line": 8,
+              "text": "go test ${{ matrix.flags }} ./...",
+              "kind": "go-test"
+            }
+          ],
+          "unverified": true
+        },
+        {
+          "line": 9,
+          "run": [
+            {
+              "line": 11,
+              "text": "go vet ./...",
+              "kind": "go-vet"
+            },
+            {
+              "line": 12,
+              "text": "make build",
+              "kind": "make",
+              "ref": "build"
+            }
+          ],
+          "unverified": false
+        }
+      ]
+    }
+  ],
+  "hookFiles": [
+    {
+      "path": ".githooks/pre-commit",
+      "hook": "pre-commit",
+      "lines": [
+        {
+          "line": 3,
+          "text": "make verify",
+          "kind": "make",
+          "ref": "verify"
+        },
+        {
+          "line": 4,
+          "text": "sh scripts/missing.sh",
+          "kind": "script",
+          "ref": "scripts/missing.sh"
+        },
+        {
+          "line": 5,
+          "text": "if [ -n \"$CI\" ]; then exit 0; fi",
+          "kind": "other"
+        }
+      ]
+    },
+    {
+      "path": ".husky/pre-push",
+      "hook": "pre-push",
+      "lines": [
+        {
+          "line": 2,
+          "text": "make build",
+          "kind": "make",
+          "ref": "build"
+        }
+      ]
+    }
+  ],
+  "hookTools": [
+    {
+      "path": "lefthook.yml",
+      "tool": "lefthook",
+      "hooks": [
+        "pre-commit"
+      ]
+    }
+  ],
+  "lintConfig": null,
+  "agentHooks": null,
+  "errors": []
+}

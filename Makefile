@@ -13,7 +13,7 @@ test:
 
 # Only packages with golden files define the -update flag.
 golden:
-	go test ./internal/inventory ./internal/report ./cmd/scree -update
+	go test ./internal/inventory ./internal/report ./internal/safeguards ./cmd/scree -update
 
 gate-test:
 	sh scripts/coverage-gate-test.sh

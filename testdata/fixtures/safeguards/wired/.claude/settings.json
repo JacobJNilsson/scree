@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": ["Bash(make check)"]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [{ "type": "command", "command": "gofmt -l ." }]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [{ "type": "command", "command": "make check" }]
+      }
+    ]
+  }
+}

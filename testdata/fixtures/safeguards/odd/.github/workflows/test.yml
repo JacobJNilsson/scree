@@ -1,0 +1,12 @@
+name: test
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: go test ${{ matrix.flags }} ./...
+      - name: More checks
+        run: |
+          go vet ./...
+          make build

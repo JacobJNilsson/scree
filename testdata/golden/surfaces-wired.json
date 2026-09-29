@@ -1,0 +1,171 @@
+{
+  "makefile": {
+    "path": "Makefile",
+    "targets": [
+      {
+        "name": "build",
+        "line": 7,
+        "prereqs": [],
+        "recipe": [
+          {
+            "line": 8,
+            "text": "go build ./...",
+            "kind": "go-build"
+          }
+        ],
+        "unknown": false
+      },
+      {
+        "name": "test",
+        "line": 10,
+        "prereqs": [],
+        "recipe": [
+          {
+            "line": 11,
+            "text": "go test -race -coverprofile=coverage.out ./...",
+            "kind": "go-test"
+          },
+          {
+            "line": 12,
+            "text": "sh scripts/coverage-gate.sh coverage.out",
+            "kind": "script",
+            "ref": "scripts/coverage-gate.sh"
+          }
+        ],
+        "unknown": false
+      },
+      {
+        "name": "lint",
+        "line": 14,
+        "prereqs": [],
+        "recipe": [
+          {
+            "line": 15,
+            "text": "golangci-lint run ./...",
+            "kind": "golangci"
+          }
+        ],
+        "unknown": false
+      },
+      {
+        "name": "vet",
+        "line": 17,
+        "prereqs": [],
+        "recipe": [
+          {
+            "line": 18,
+            "text": "go vet ./...",
+            "kind": "go-vet"
+          }
+        ],
+        "unknown": false
+      },
+      {
+        "name": "check",
+        "line": 20,
+        "prereqs": [
+          "vet",
+          "lint",
+          "test",
+          "build"
+        ],
+        "recipe": [],
+        "unknown": false
+      },
+      {
+        "name": "setup",
+        "line": 22,
+        "prereqs": [],
+        "recipe": [
+          {
+            "line": 23,
+            "text": "git config core.hooksPath .githooks",
+            "kind": "hooks-path",
+            "ref": ".githooks"
+          }
+        ],
+        "unknown": false
+      }
+    ],
+    "vars": [
+      {
+        "name": "COVERAGE_MIN",
+        "value": "90",
+        "line": 2
+      }
+    ],
+    "includes": false
+  },
+  "workflows": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "on": [
+        "push",
+        "pull_request"
+      ],
+      "steps": [
+        {
+          "line": 12,
+          "run": [],
+          "uses": "actions/checkout@v4",
+          "unverified": false
+        },
+        {
+          "line": 13,
+          "run": [],
+          "uses": "actions/setup-go@v5",
+          "unverified": false
+        },
+        {
+          "line": 16,
+          "run": [
+            {
+              "line": 17,
+              "text": "make check",
+              "kind": "make",
+              "ref": "check"
+            }
+          ],
+          "unverified": false
+        }
+      ]
+    }
+  ],
+  "hookFiles": [
+    {
+      "path": ".githooks/pre-commit",
+      "hook": "pre-commit",
+      "lines": [
+        {
+          "line": 3,
+          "text": "make check",
+          "kind": "make",
+          "ref": "check"
+        }
+      ]
+    },
+    {
+      "path": ".githooks/pre-push",
+      "hook": "pre-push",
+      "lines": [
+        {
+          "line": 3,
+          "text": "make check",
+          "kind": "make",
+          "ref": "check"
+        }
+      ]
+    }
+  ],
+  "hookTools": [],
+  "lintConfig": {
+    "path": ".golangci.yml",
+    "line": 1
+  },
+  "agentHooks": {
+    "path": ".claude/settings.json",
+    "line": 5,
+    "count": 2
+  },
+  "errors": []
+}
