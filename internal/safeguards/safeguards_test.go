@@ -342,4 +342,11 @@ func TestUnreadableFile(t *testing.T) {
 	if s.Makefile != nil || !reflect.DeepEqual(s.Errors, want) || s.LintConfig == nil {
 		t.Errorf("surfaces = %+v, want no Makefile, errors %+v, and a lint config", s, want)
 	}
+	safeguards, _ := Evaluate(s, treeExists(tree))
+	for _, g := range safeguards {
+		wantUnknown := g.ID != IDAgentHooks && g.ID != IDCIWorkflow
+		if (g.Evidence == contract.EvidenceUnknown) != wantUnknown {
+			t.Errorf("%s = %s after a Makefile read error", g.ID, g.Evidence)
+		}
+	}
 }

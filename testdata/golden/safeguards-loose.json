@@ -1,0 +1,55 @@
+[
+  {
+    "id": "agent-hooks",
+    "evidence": "absent",
+    "locations": [],
+    "notes": "No agent hook is declared."
+  },
+  {
+    "id": "ci-workflow",
+    "evidence": "absent",
+    "locations": [],
+    "notes": "No workflow file has a step."
+  },
+  {
+    "id": "coverage-budget",
+    "evidence": "absent",
+    "locations": [],
+    "notes": "No Makefile variable or recipe sets a coverage budget."
+  },
+  {
+    "id": "lint-config",
+    "evidence": "absent",
+    "locations": [],
+    "notes": "No .golangci file exists."
+  },
+  {
+    "id": "pre-commit-hook",
+    "evidence": "absent",
+    "locations": [],
+    "notes": "No hook file or hook tool declares pre-commit."
+  },
+  {
+    "id": "pre-push-hook",
+    "evidence": "absent",
+    "locations": [],
+    "notes": "No hook file or hook tool declares pre-push."
+  },
+  {
+    "id": "test-check",
+    "evidence": "configured",
+    "locations": [
+      {
+        "path": "Makefile",
+        "line": 2
+      }
+    ],
+    "notes": "A Makefile recipe runs go test, and no enforcement point reaches it."
+  },
+  {
+    "id": "vet-check",
+    "evidence": "absent",
+    "locations": [],
+    "notes": "No Makefile recipe runs go vet."
+  }
+]

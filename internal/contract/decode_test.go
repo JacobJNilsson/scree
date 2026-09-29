@@ -70,7 +70,14 @@ func TestFactsUnmarshal(t *testing.T) {
 	if clone.Hotspot != nil || clone.Clone == nil || clone.Clone.Members[0].Path != "a.go" {
 		t.Errorf("clone facts = %+v", clone)
 	}
-	for _, in := range []string{`{"cc":1,"tokens":2}`, `{"cc":"x"}`, `[]`} {
+	var broken Facts
+	if err := json.Unmarshal([]byte(`{"command":"make verify","ref":"verify"}`), &broken); err != nil {
+		t.Fatal(err)
+	}
+	if want := (BrokenReferenceFacts{Command: "make verify", Ref: "verify"}); broken.Hotspot != nil || broken.BrokenReference == nil || *broken.BrokenReference != want {
+		t.Errorf("broken reference facts = %+v", broken)
+	}
+	for _, in := range []string{`{"cc":1,"tokens":2}`, `{"cc":"x"}`, `[]`, `{"command":"x","ref":"y","cc":1}`} {
 		var bad Facts
 		if err := json.Unmarshal([]byte(in), &bad); err == nil {
 			t.Errorf("%s: no error", in)
@@ -173,6 +180,7 @@ func TestFactsUnmarshalRequiresEveryField(t *testing.T) {
 		{`{"cc":1,"nesting":0,"sloc":1}`, "facts.mass"},
 		{`{"groupId":"00"}`, "facts.tokens"},
 		{`{"groupId":"00","tokens":100}`, "facts.members"},
+		{`{"command":"make"}`, "facts.ref"},
 	} {
 		var f Facts
 		var fieldErr *FieldError
