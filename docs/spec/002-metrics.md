@@ -346,6 +346,9 @@ understands these forms and nothing else:
 - `go vet`, `go test`, `go build`, `go run`, `golangci-lint`, `gofmt`
 - `git config core.hooksPath <dir>`
 
+Blank lines, comment lines, a shebang, and `set` option lines are not
+commands and are skipped.
+
 A reference is a make target name or a script path. A reference resolves
 when the target exists in the Makefile or the path exists under the root.
 A reference that does not resolve is a `safeguard.broken-reference` finding
