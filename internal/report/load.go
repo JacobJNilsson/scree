@@ -62,19 +62,22 @@ func checkFindings(findings []contract.Finding) error {
 	return nil
 }
 
-// checkFinding rejects an unknown kind, a set that the audit does not measure, and facts of another kind.
+// checkFinding rejects an unknown kind, a set that the kind does not allow, and facts of another kind.
 func checkFinding(f contract.Finding) *contract.FieldError {
-	if f.SourceSet != contract.Production && f.SourceSet != contract.Test {
-		return &contract.FieldError{Field: "sourceSet", Reason: fmt.Sprintf("%q is not a measured set", f.SourceSet)}
-	}
-	var shapeFits bool
+	var shapeFits, measured bool
 	switch f.Kind {
 	case complexity.KindHotspot:
-		shapeFits = f.Facts.Hotspot != nil
+		shapeFits, measured = f.Facts.Hotspot != nil, true
 	case duplication.KindCloneGroup:
-		shapeFits = f.Facts.Clone != nil
+		shapeFits, measured = f.Facts.Clone != nil, true
+	case contract.KindBrokenReference:
+		shapeFits = f.Facts.BrokenReference != nil
 	default:
 		return &contract.FieldError{Field: "kind", Reason: fmt.Sprintf("%q is unknown", f.Kind)}
+	}
+	// A broken reference sits in a configuration file, which belongs to no measured set.
+	if measured != (f.SourceSet == contract.Production || f.SourceSet == contract.Test) || (!measured && f.SourceSet != "") {
+		return &contract.FieldError{Field: "sourceSet", Reason: fmt.Sprintf("%q does not fit kind %s", f.SourceSet, f.Kind)}
 	}
 	if !shapeFits {
 		return &contract.FieldError{Field: "facts", Reason: fmt.Sprintf("do not have the shape of %s", f.Kind)}

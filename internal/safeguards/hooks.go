@@ -27,6 +27,9 @@ type AgentHooks struct {
 	Count int    `json:"count"`
 }
 
+// hookToolFiles are the lefthook files in the order that lefthook reads them, then the pre-commit file.
+var hookToolFiles = []string{"lefthook.yml", "lefthook.yaml", ".lefthook.yml", ".lefthook.yaml", ".pre-commit-config.yaml"}
+
 // hookNames are the Git hooks that a safeguard inspects.
 var hookNames = []string{"pre-commit", "pre-push"}
 
@@ -53,12 +56,12 @@ func (r *reader) readHookFiles() {
 }
 
 func (r *reader) readHookTools() {
-	for _, name := range []string{"lefthook.yml", "lefthook.yaml", ".lefthook.yml", ".lefthook.yaml"} {
+	for _, name := range hookToolFiles[:4] {
 		if tool, ok := r.readLefthook(name); ok {
 			r.s.HookTools = append(r.s.HookTools, tool)
 		}
 	}
-	const preCommitConfig = ".pre-commit-config.yaml"
+	preCommitConfig := hookToolFiles[4]
 	if text, ok := r.read(preCommitConfig); ok {
 		hooks := []string{"pre-commit"}
 		// The pre-commit tool installs a pre-push hook only when a stage names it, so the text alone decides.

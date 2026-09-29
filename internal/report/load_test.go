@@ -116,6 +116,13 @@ func TestLoadValidates(t *testing.T) {
 		{"findings order", func(r *Report) { r.Findings[0], r.Findings[1] = r.Findings[1], r.Findings[0] }, "findings[1]"},
 		{"clone facts on a hotspot", func(r *Report) { r.Findings[0].Facts = r.Findings[2].Facts }, "findings[0].facts"},
 		{"hotspot facts on a clone", func(r *Report) { r.Findings[2].Facts = r.Findings[0].Facts }, "findings[2].facts"},
+		{"broken reference with a set", func(r *Report) { r.Findings = []contract.Finding{brokenReference(contract.Production)} }, "findings[0].sourceSet"},
+		{"broken reference with a bogus set", func(r *Report) { r.Findings = []contract.Finding{brokenReference("bogus")} }, "findings[0].sourceSet"},
+		{"hotspot facts on a broken reference", func(r *Report) {
+			f := brokenReference("")
+			f.Facts = r.Findings[0].Facts
+			r.Findings = []contract.Finding{f}
+		}, "findings[0].facts"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			r := newReport(t, "clones/nested")
@@ -127,6 +134,31 @@ func TestLoadValidates(t *testing.T) {
 			_, err = Load(bytes.NewReader(data))
 			assertField(t, err, tc.field)
 		})
+	}
+}
+
+// brokenReference builds a finding of a hook line that names a missing make target.
+func brokenReference(set contract.SourceSet) contract.Finding {
+	return contract.Finding{
+		Kind: contract.KindBrokenReference, Path: ".githooks/pre-commit", StartLine: 3, EndLine: 3,
+		Identity: ".githooks/pre-commit:verify", SourceSet: set,
+		Facts: contract.Facts{BrokenReference: &contract.BrokenReferenceFacts{Command: "make verify", Ref: "verify"}},
+	}
+}
+
+func TestLoadAcceptsBrokenReference(t *testing.T) {
+	r := newReport(t, "clones/nested")
+	r.Findings = append(r.Findings, brokenReference(""))
+	contract.SortFindings(r.Findings)
+	data, err := json.Marshal(r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(data), `"sourceSet":""`) {
+		t.Errorf("a broken reference writes an empty source set")
+	}
+	if _, err := Load(bytes.NewReader(data)); err != nil {
+		t.Errorf("Load: %v", err)
 	}
 }
 

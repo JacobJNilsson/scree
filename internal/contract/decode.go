@@ -80,6 +80,13 @@ func (f *Facts) UnmarshalJSON(data []byte) error {
 	if keys == nil {
 		return &FieldError{Field: "facts", Reason: "must be an object"}
 	}
+	if _, ok := keys["command"]; ok {
+		*f = Facts{BrokenReference: &BrokenReferenceFacts{}}
+		if err := requireKeys(keys, "command", "ref"); err != nil {
+			return err
+		}
+		return strict(data, f.BrokenReference)
+	}
 	if _, ok := keys["groupId"]; ok {
 		*f = Facts{Clone: &CloneFacts{}}
 		if err := requireKeys(keys, "groupId", "tokens", "members"); err != nil {

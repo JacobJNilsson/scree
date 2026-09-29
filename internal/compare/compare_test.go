@@ -107,6 +107,18 @@ func TestReportAgainstItselfIsAllPersistent(t *testing.T) {
 	assertLists(t, c, []string{}, []string{}, []string{"a:F#1", "a:F#2", "a:G"})
 }
 
+// TestBrokenReferencesAgainstThemselves compares two equal broken lines of one hook, which differ only by line.
+func TestBrokenReferencesAgainstThemselves(t *testing.T) {
+	broken := func(line int, identity string) contract.Finding {
+		return contract.Finding{
+			Kind: contract.KindBrokenReference, Path: ".githooks/pre-commit", StartLine: line, EndLine: line, Identity: identity,
+			Facts: contract.Facts{BrokenReference: &contract.BrokenReferenceFacts{Command: "make verify", Ref: "verify"}},
+		}
+	}
+	r := rep(0, broken(2, ".githooks/pre-commit:2:verify"), broken(3, ".githooks/pre-commit:3:verify"))
+	assertLists(t, Compare(r, r), []string{}, []string{}, []string{".githooks/pre-commit:2:verify", ".githooks/pre-commit:3:verify"})
+}
+
 func TestAmbiguousClosureWithChangedFacts(t *testing.T) {
 	before := rep(20, spot("a/a.go", 3, "a:F#1", true), spot("a/a.go", 30, "a:F#2", true))
 	changed := spot("a/a.go", 30, "a:F#2", true)

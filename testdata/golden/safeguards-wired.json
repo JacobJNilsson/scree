@@ -1,0 +1,119 @@
+[
+  {
+    "id": "agent-hooks",
+    "evidence": "configured",
+    "locations": [
+      {
+        "path": ".claude/settings.json",
+        "line": 5
+      }
+    ],
+    "notes": ".claude/settings.json declares 2 agent hooks, and no enforcement point for them is verifiable."
+  },
+  {
+    "id": "ci-workflow",
+    "evidence": "structurally-wired",
+    "locations": [
+      {
+        "path": ".github/workflows/ci.yml"
+      }
+    ],
+    "notes": ".github/workflows/ci.yml runs on push and pull_request."
+  },
+  {
+    "id": "coverage-budget",
+    "evidence": "structurally-wired",
+    "locations": [
+      {
+        "path": "Makefile",
+        "line": 2
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "line": 16
+      },
+      {
+        "path": "Makefile",
+        "line": 11
+      }
+    ],
+    "notes": "The step at .github/workflows/ci.yml:16 reaches the coverage check at Makefile:11."
+  },
+  {
+    "id": "lint-config",
+    "evidence": "structurally-wired",
+    "locations": [
+      {
+        "path": ".golangci.yml",
+        "line": 1
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "line": 16
+      },
+      {
+        "path": "Makefile",
+        "line": 15
+      }
+    ],
+    "notes": "The step at .github/workflows/ci.yml:16 reaches golangci-lint at Makefile:15."
+  },
+  {
+    "id": "pre-commit-hook",
+    "evidence": "structurally-wired",
+    "locations": [
+      {
+        "path": "Makefile",
+        "line": 23
+      },
+      {
+        "path": ".githooks/pre-commit"
+      }
+    ],
+    "notes": "Target setup sets core.hooksPath to .githooks, and the hook runs make check."
+  },
+  {
+    "id": "pre-push-hook",
+    "evidence": "structurally-wired",
+    "locations": [
+      {
+        "path": "Makefile",
+        "line": 23
+      },
+      {
+        "path": ".githooks/pre-push"
+      }
+    ],
+    "notes": "Target setup sets core.hooksPath to .githooks, and the hook runs make check."
+  },
+  {
+    "id": "test-check",
+    "evidence": "structurally-wired",
+    "locations": [
+      {
+        "path": "Makefile",
+        "line": 11
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "line": 16
+      }
+    ],
+    "notes": "The step at .github/workflows/ci.yml:16 reaches go test at Makefile:11."
+  },
+  {
+    "id": "vet-check",
+    "evidence": "structurally-wired",
+    "locations": [
+      {
+        "path": "Makefile",
+        "line": 18
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "line": 16
+      }
+    ],
+    "notes": "The step at .github/workflows/ci.yml:16 reaches go vet at Makefile:18."
+  }
+]

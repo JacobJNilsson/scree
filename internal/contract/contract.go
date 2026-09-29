@@ -123,14 +123,15 @@ type Finding struct {
 	EndLine   int       `json:"endLine"`
 	Identity  string    `json:"identity"`
 	Ambiguous bool      `json:"ambiguous"`
-	SourceSet SourceSet `json:"sourceSet"`
+	SourceSet SourceSet `json:"sourceSet,omitempty"`
 	Facts     Facts     `json:"facts"`
 }
 
 // Facts holds the measurements of one finding, and only the field of the finding kind is set.
 type Facts struct {
-	Hotspot *HotspotFacts
-	Clone   *CloneFacts
+	Hotspot         *HotspotFacts
+	Clone           *CloneFacts
+	BrokenReference *BrokenReferenceFacts
 }
 
 // errFacts reports facts that do not hold exactly one kind.
@@ -138,13 +139,20 @@ var errFacts = errors.New("contract: finding facts must hold exactly one kind")
 
 // MarshalJSON emits the facts of the one kind that is set, so that the JSON shape depends on the finding kind alone.
 func (f Facts) MarshalJSON() ([]byte, error) {
-	switch {
-	case f.Hotspot != nil && f.Clone == nil:
-		return json.Marshal(f.Hotspot)
-	case f.Clone != nil && f.Hotspot == nil:
-		return json.Marshal(f.Clone)
+	var set []any
+	if f.Hotspot != nil {
+		set = append(set, f.Hotspot)
 	}
-	return nil, errFacts
+	if f.Clone != nil {
+		set = append(set, f.Clone)
+	}
+	if f.BrokenReference != nil {
+		set = append(set, f.BrokenReference)
+	}
+	if len(set) != 1 {
+		return nil, errFacts
+	}
+	return json.Marshal(set[0])
 }
 
 // SortFindings orders findings by kind, path, start line, and identity, as spec 002 demands.
@@ -184,6 +192,34 @@ type CloneMember struct {
 	Path      string `json:"path"`
 	StartLine int    `json:"startLine"`
 	EndLine   int    `json:"endLine"`
+}
+
+// KindBrokenReference is the finding kind of a make target or script path that a safeguard names and the tree lacks.
+const KindBrokenReference = "safeguard.broken-reference"
+
+// BrokenReferenceFacts name the command that holds a reference that does not resolve.
+type BrokenReferenceFacts struct {
+	Command string `json:"command"`
+	Ref     string `json:"ref"`
+}
+
+// Evidence is the level of spec 002 that a safeguard reaches.
+type Evidence string
+
+// The evidence levels of spec 002.
+const (
+	EvidenceAbsent            Evidence = "absent"
+	EvidenceConfigured        Evidence = "configured"
+	EvidenceStructurallyWired Evidence = "structurally-wired"
+	EvidenceUnknown           Evidence = "unknown"
+)
+
+// Safeguard is one entry of the safeguards list of spec 003.
+type Safeguard struct {
+	ID        string     `json:"id"`
+	Evidence  Evidence   `json:"evidence"`
+	Locations []Location `json:"locations"`
+	Notes     string     `json:"notes"`
 }
 
 // Location is a repo-relative path with an optional 1-based line.

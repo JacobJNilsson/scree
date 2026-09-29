@@ -92,6 +92,7 @@ func TestScoreJSON(t *testing.T) {
 func TestFactsJSON(t *testing.T) {
 	hotspot := &HotspotFacts{CC: 11, Nesting: 2, SLOC: 9, Mass: 33}
 	clone := &CloneFacts{GroupID: "00ff", Tokens: 120, Members: []CloneMember{{Path: "a.go", StartLine: 3, EndLine: 9}}}
+	broken := &BrokenReferenceFacts{Command: "make verify", Ref: "verify"}
 	for _, tc := range []struct {
 		name  string
 		facts Facts
@@ -103,6 +104,7 @@ func TestFactsJSON(t *testing.T) {
 			facts: Facts{Clone: clone},
 			want:  `{"groupId":"00ff","tokens":120,"members":[{"path":"a.go","startLine":3,"endLine":9}]}`,
 		},
+		{name: "broken reference", facts: Facts{BrokenReference: broken}, want: `{"command":"make verify","ref":"verify"}`},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			got, err := json.Marshal(tc.facts)
@@ -114,7 +116,7 @@ func TestFactsJSON(t *testing.T) {
 			}
 		})
 	}
-	for _, facts := range []Facts{{}, {Hotspot: hotspot, Clone: clone}} {
+	for _, facts := range []Facts{{}, {Hotspot: hotspot, Clone: clone}, {Clone: clone, BrokenReference: broken}} {
 		if _, err := json.Marshal(facts); !errors.Is(err, errFacts) {
 			t.Errorf("Marshal(%+v) error = %v, want %v", facts, err, errFacts)
 		}
@@ -138,5 +140,17 @@ func TestSortFindings(t *testing.T) {
 		if !reflect.DeepEqual(got, want) {
 			t.Fatalf("order:\n got %+v\nwant %+v", got, want)
 		}
+	}
+}
+
+func TestSafeguardJSON(t *testing.T) {
+	s := Safeguard{ID: "lint-config", Evidence: EvidenceConfigured, Locations: []Location{{Path: ".golangci.yml", Line: 1}, {Path: "Makefile"}}, Notes: "A note."}
+	got, err := json.Marshal(s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := `{"id":"lint-config","evidence":"configured","locations":[{"path":".golangci.yml","line":1},{"path":"Makefile"}],"notes":"A note."}`
+	if string(got) != want {
+		t.Errorf("JSON = %s, want %s", got, want)
 	}
 }
