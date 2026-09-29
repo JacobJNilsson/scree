@@ -276,8 +276,9 @@ Surfaces read:
   `.husky/` hook files.
 - Agent hooks: the `hooks` map in `.claude/settings.json`.
 - Coverage budget: a `COVERAGE_MIN` style variable in a Makefile, or a
-  `-coverprofile` run followed by a threshold check in a Makefile or
-  workflow.
+  `-coverprofile` run followed by a threshold check in the same Makefile
+  recipe. The profile flag may be `-coverprofile=<file>` or
+  `-coverprofile <file>`.
 
 Each safeguard reports one evidence level:
 
@@ -298,9 +299,13 @@ A broken reference, such as a hook that names a missing script, is a
 The inspector reads each surface into a line-located model. It reads text
 only. Nothing is executed, included, or expanded.
 
-- Makefile: targets with their prerequisite names and recipe lines. A line
-  that holds `$(shell`, `include`, or a backtick makes its target `unknown`.
-  Variable assignments of the form `NAME ?= value` or `NAME = value` are
+- Makefile: targets with their prerequisite names and recipe lines. A
+  target defined twice merges its prerequisites and recipes, as make does.
+  A recipe line that holds `$(shell` or a backtick makes its target
+  `unknown`. A top-level `include` or `-include` directive hides targets the
+  inspector cannot see, so every safeguard that reaches through the
+  Makefile is at most `unknown`. Variable assignments of the form
+  `NAME ?= value`, `NAME = value`, `NAME := value`, or `NAME += value` are
   recorded by name.
 - Workflow: for each file, the top-level `on` keys and, for each step, the
   `run` lines and the `uses` value. A `run` line that holds `${{` is
@@ -320,7 +325,10 @@ only. Nothing is executed, included, or expanded.
 A command is one recipe or hook line. The inspector understands these
 forms and nothing else:
 
-- `make <target>`, with optional flags before the target
+- `make <target>...`, with optional flags before the targets. Every named
+  target is followed. The flags `-f`, `-I`, `-o`, `-W`, and `-j` take one
+  argument, which is skipped. A `-C <dir>` flag runs another Makefile, so
+  the line is `other`.
 - `sh <path>`, `bash <path>`, `./<path>`
 - `go vet`, `go test`, `go build`, `go run`, `golangci-lint`, `gofmt`
 - `git config core.hooksPath <dir>`
@@ -328,7 +336,9 @@ forms and nothing else:
 A reference is a make target name or a script path. A reference resolves
 when the target exists in the Makefile or the path exists under the root.
 A reference that does not resolve is a `safeguard.broken-reference` finding
-with the path and line of the command. A line in any other form is
+with the path and line of the command. Its identity is `<path>:<line>:<ref>`,
+so two broken lines in one file are two findings that each match
+themselves across runs. A line in any other form is
 unverified. In a hook file every line is the enforcement, so one unverified
 line makes the hook `unknown`. In a workflow step only a line that holds
 `${{` is unverified, because the step's other lines cannot change which
@@ -343,9 +353,11 @@ recipe, with a visited set, so a cycle ends the walk.
 - `pre-commit-hook`, `pre-push-hook`: `configured` when a hook file exists
   or a hook tool declares the hook. `structurally-wired` when, in addition,
   a Makefile recipe sets `core.hooksPath` to the hook file's directory, or
-  a Makefile recipe or workflow step runs `lefthook install`,
-  `pre-commit install`, or uses `pre-commit/action`, and every command in
-  the hook file resolves. `unknown` when a hook line is in no understood
+  a Makefile recipe runs `lefthook install` or `pre-commit install`, or a
+  triggered workflow step uses `pre-commit/action`, and every command in
+  the hook file resolves. An install command in a workflow does not count,
+  because CI runs in a fresh clone. `pre-commit/action` counts because it
+  runs the hooks in CI. `unknown` when a hook line is in no understood
   form. A hook file under `.git/hooks` never counts.
 - `lint-config`: `configured` when a `.golangci.*` file exists.
   `structurally-wired` when a workflow step or a hook file reaches a
@@ -363,9 +375,14 @@ recipe, with a visited set, so a cycle ends the walk.
   missing or a `run` line is unverified.
 - `agent-hooks`: `configured` when the `hooks` map is present and not empty.
   Never `structurally-wired`, because no enforcement point is verifiable.
+  The note counts hook entries across every matcher group.
 
 Evidence for one id is the highest level its rules reach, except that
 `unknown` wins over `configured` when an unverified line sits on the path
-that would have made it `structurally-wired`. Each safeguard lists the
+that would have made it `structurally-wired`.
+
+The report always holds exactly the eight safeguards, sorted by id. The
+terminal and Markdown renderers list broken references under the
+safeguards block, bounded like the other lists. Each safeguard lists the
 locations that produced its level and a one-sentence note. Safeguards are
 sorted by id.
