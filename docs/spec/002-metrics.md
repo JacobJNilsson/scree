@@ -329,7 +329,11 @@ A reference is a make target name or a script path. A reference resolves
 when the target exists in the Makefile or the path exists under the root.
 A reference that does not resolve is a `safeguard.broken-reference` finding
 with the path and line of the command. A line in any other form is
-unverified, and the safeguard that reads it is `unknown`.
+unverified. In a hook file every line is the enforcement, so one unverified
+line makes the hook `unknown`. In a workflow step only a line that holds
+`${{` is unverified, because the step's other lines cannot change which
+commands the step runs. An unrecognised workflow line, such as a tool
+install, is recorded as `other` and lowers nothing.
 
 Reachability follows `make <target>` through the target's prerequisites and
 recipe, with a visited set, so a cycle ends the walk.
