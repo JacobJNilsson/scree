@@ -67,6 +67,19 @@ func TestMarkdownSummary(t *testing.T) {
 		"",
 		"### test (0)",
 		"",
+		"## Safeguards",
+		"",
+		"| id | evidence | locations | notes |",
+		"| --- | --- | --- | --- |",
+		"| agent-hooks | absent |  | No agent hook is declared. |",
+		"| ci-workflow | absent |  | No workflow file has a step. |",
+		"| coverage-budget | absent |  | No Makefile exists. |",
+		"| lint-config | absent |  | No .golangci file exists. |",
+		"| pre-commit-hook | absent |  | No hook file or hook tool declares pre-commit. |",
+		"| pre-push-hook | absent |  | No hook file or hook tool declares pre-push. |",
+		"| test-check | absent |  | No Makefile recipe runs go test. |",
+		"| vet-check | absent |  | No Makefile recipe runs go vet. |",
+		"",
 	}, "\n")
 	if out != want {
 		t.Errorf("markdown:\n%s\nwant:\n%s", out, want)
@@ -138,6 +151,29 @@ func TestMarkdownEscapesPipes(t *testing.T) {
 	r := &Report{Findings: []contract.Finding{hotspot("a|b.go", 1, ".:A", 1)}}
 	if out := markdown(t, r); !strings.Contains(out, "| a\\|b.go | 1-2 |") {
 		t.Errorf("markdown does not escape the pipe:\n%s", out)
+	}
+}
+
+func TestMarkdownSafeguards(t *testing.T) {
+	r := &Report{Safeguards: []contract.Safeguard{
+		{ID: "agent-hooks", Evidence: contract.EvidenceAbsent, Locations: []contract.Location{}, Notes: "No agent hook is declared."},
+		{ID: "pre-commit-hook", Evidence: contract.EvidenceStructurallyWired, Locations: []contract.Location{{Path: "Makefile", Line: 12}, {Path: "a|b"}}, Notes: "Runs a | b."},
+	}}
+	want := strings.Join([]string{
+		"",
+		"## Safeguards",
+		"",
+		"| id | evidence | locations | notes |",
+		"| --- | --- | --- | --- |",
+		"| agent-hooks | absent |  | No agent hook is declared. |",
+		"| pre-commit-hook | structurally-wired | Makefile:12<br>a\\|b | Runs a \\| b. |",
+		"",
+	}, "\n")
+	if out := markdown(t, r); !strings.Contains(out, want) {
+		t.Errorf("markdown:\n%s\nwant:\n%s", out, want)
+	}
+	if out := markdown(t, &Report{}); strings.Contains(out, "## Safeguards") {
+		t.Errorf("a report without safeguards prints the section:\n%s", out)
 	}
 }
 

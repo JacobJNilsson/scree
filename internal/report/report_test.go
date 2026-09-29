@@ -17,6 +17,7 @@ import (
 	"github.com/JacobJNilsson/scree/internal/discover"
 	"github.com/JacobJNilsson/scree/internal/duplication"
 	"github.com/JacobJNilsson/scree/internal/inventory"
+	"github.com/JacobJNilsson/scree/internal/safeguards"
 )
 
 func newReport(t *testing.T, fixture string) *Report {
@@ -36,7 +37,10 @@ func measure(inv *inventory.Inventory) *Report {
 		metrics[id] = m
 	}
 	findings = append(findings, clones...)
-	return New(inv, metrics, findings, limits, Run{AnalyzerVersion: testAnalyzer})
+	guards, broken := safeguards.Inspect(inv.Tree)
+	findings = append(findings, broken...)
+	contract.SortFindings(findings)
+	return New(inv, metrics, findings, limits, guards, Run{AnalyzerVersion: testAnalyzer})
 }
 
 var update = flag.Bool("update", false, "rewrite the golden files")
@@ -72,6 +76,7 @@ const testAnalyzer = "0.0.0-test"
 var fixtures = []string{
 	"sets", "functions", "broken", "empty",
 	"clones/exact", "clones/renamed", "clones/fourway", "clones/idiom", "clones/near", "clones/within", "clones/nested", "clones/ladder",
+	"safeguards/odd",
 }
 
 func TestGolden(t *testing.T) {
@@ -143,8 +148,11 @@ func TestNewSortsLimits(t *testing.T) {
 	for range 20 {
 		shuffled := append([]contract.Limit(nil), want...)
 		rng.Shuffle(len(shuffled), func(i, j int) { shuffled[i], shuffled[j] = shuffled[j], shuffled[i] })
-		if got := New(inv, nil, nil, shuffled, Run{}).Limits; !reflect.DeepEqual(got, want) {
+		if got := New(inv, nil, nil, shuffled, nil, Run{}).Limits; !reflect.DeepEqual(got, want) {
 			t.Fatalf("limits:\n got %v\nwant %v", got, want)
 		}
+	}
+	if got := New(inv, nil, nil, nil, nil, Run{}).Safeguards; got == nil || len(got) != 0 {
+		t.Errorf("safeguards = %#v, want an empty list", got)
 	}
 }

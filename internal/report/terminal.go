@@ -48,6 +48,8 @@ func RenderCompared(w io.Writer, r *Report, base *Baseline) error {
 			renderList(&b, l, r, set)
 		}
 	}
+	renderSafeguards(&b, r.Safeguards)
+	renderBroken(&b, r.Findings)
 	_, err := io.WriteString(w, b.String())
 	return err
 }
@@ -218,4 +220,64 @@ func selection(l list, r *Report, set contract.SourceSet) ([]contract.Finding, s
 	// A stable sort keeps the report order between equal sizes, so the list never depends on map or input order.
 	sort.SliceStable(matched, func(i, j int) bool { return l.size(matched[i]) > l.size(matched[j]) })
 	return matched[:min(len(matched), maxListed)], total
+}
+
+// brokenReferences returns at most maxListed broken-reference findings in report order, and a count that says when it cut the list.
+func brokenReferences(findings []contract.Finding) ([]contract.Finding, string) {
+	var matched []contract.Finding
+	for _, f := range findings {
+		if f.Kind == contract.KindBrokenReference {
+			matched = append(matched, f)
+		}
+	}
+	total := strconv.Itoa(len(matched))
+	if len(matched) > maxListed {
+		total += fmt.Sprintf(", showing %d", maxListed)
+	}
+	return matched[:min(len(matched), maxListed)], total
+}
+
+func renderBroken(b *strings.Builder, findings []contract.Finding) {
+	shown, total := brokenReferences(findings)
+	if len(shown) == 0 {
+		return
+	}
+	fmt.Fprintf(b, "\nbroken references (%s)\n", total)
+	for _, f := range shown {
+		fmt.Fprintf(b, "  %s:%d  %s\n", f.Path, f.StartLine, f.Facts.BrokenReference.Command)
+	}
+}
+
+// maxLocations bounds the locations that one safeguard row prints.
+const maxLocations = 3
+
+func renderSafeguards(b *strings.Builder, guards []contract.Safeguard) {
+	if len(guards) == 0 {
+		return
+	}
+	b.WriteString("\nsafeguards\n")
+	for _, g := range guards {
+		line := fmt.Sprintf("  %-18s %-19s %s", g.ID, g.Evidence, strings.Join(locationTexts(g.Locations, maxLocations), " "))
+		fmt.Fprintln(b, strings.TrimRight(line, " "))
+	}
+}
+
+// locationTexts prints path:line for each location, and at most limit of them followed by +N when limit is above zero.
+func locationTexts(locations []contract.Location, limit int) []string {
+	shown := locations
+	if limit > 0 && len(shown) > limit {
+		shown = shown[:limit]
+	}
+	out := make([]string, 0, len(shown)+1)
+	for _, l := range shown {
+		text := l.Path
+		if l.Line > 0 {
+			text += ":" + strconv.Itoa(l.Line)
+		}
+		out = append(out, text)
+	}
+	if len(locations) > len(shown) {
+		out = append(out, fmt.Sprintf("+%d", len(locations)-len(shown)))
+	}
+	return out
 }

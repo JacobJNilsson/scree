@@ -55,6 +55,8 @@ func RenderMarkdownCompared(w io.Writer, r *Report, base *Baseline) error {
 		}
 		return []string{c.GroupID, strconv.Itoa(c.Tokens), strings.Join(members, "<br>")}
 	})
+	markdownSafeguards(&b, r.Safeguards)
+	markdownBroken(&b, r.Findings)
 	if reasons := incompleteReasons(r); len(reasons) > 0 {
 		b.WriteString("\n## Incomplete\n\n")
 		for _, reason := range reasons {
@@ -87,6 +89,31 @@ func markdownList(b *strings.Builder, r *Report, l list, title string, header []
 		for _, f := range shown {
 			row(b, cells(f)...)
 		}
+	}
+}
+
+func markdownSafeguards(b *strings.Builder, guards []contract.Safeguard) {
+	if len(guards) == 0 {
+		return
+	}
+	b.WriteString("\n## Safeguards\n\n")
+	row(b, "id", "evidence", "locations", "notes")
+	row(b, "---", "---", "---", "---")
+	for _, g := range guards {
+		row(b, g.ID, string(g.Evidence), escape(strings.Join(locationTexts(g.Locations, 0), "<br>")), escape(g.Notes))
+	}
+}
+
+func markdownBroken(b *strings.Builder, findings []contract.Finding) {
+	shown, total := brokenReferences(findings)
+	if len(shown) == 0 {
+		return
+	}
+	fmt.Fprintf(b, "\n### Broken references (%s)\n\n", total)
+	row(b, "location", "command")
+	row(b, "---", "---")
+	for _, f := range shown {
+		row(b, escape(fmt.Sprintf("%s:%d", f.Path, f.StartLine)), escape(f.Facts.BrokenReference.Command))
 	}
 }
 

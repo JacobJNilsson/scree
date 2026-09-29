@@ -34,11 +34,7 @@ func walk(t *testing.T, root string) *discover.Tree {
 
 func read(t *testing.T, tree *discover.Tree) *Surfaces {
 	t.Helper()
-	s, err := Read(tree)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return s
+	return Read(tree)
 }
 
 // readFiles writes each file under a new root and reads the surfaces of that root.

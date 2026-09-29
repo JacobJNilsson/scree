@@ -8,6 +8,7 @@ import (
 	"github.com/JacobJNilsson/scree/internal/contract"
 	"github.com/JacobJNilsson/scree/internal/duplication"
 	"github.com/JacobJNilsson/scree/internal/formula"
+	"github.com/JacobJNilsson/scree/internal/safeguards"
 )
 
 // maxIndex is the highest index that the score of spec 002 can take.
@@ -46,7 +47,33 @@ func validate(r *Report) error {
 	if points != s.Index {
 		return &contract.FieldError{Field: "score.contributions", Reason: fmt.Sprintf("sum to %d, want the index %d", points, s.Index)}
 	}
-	return checkFindings(r.Findings)
+	if err := checkFindings(r.Findings); err != nil {
+		return err
+	}
+	return checkSafeguards(r.Safeguards)
+}
+
+// checkSafeguards requires the eight ids of spec 002 in order, each with a known evidence level.
+func checkSafeguards(guards []contract.Safeguard) error {
+	if len(guards) != len(safeguards.IDs) {
+		return &contract.FieldError{Field: "safeguards", Reason: fmt.Sprintf("holds %d entries, want %d", len(guards), len(safeguards.IDs))}
+	}
+	for i, g := range guards {
+		if g.ID != safeguards.IDs[i] {
+			return &contract.FieldError{Field: fmt.Sprintf("safeguards[%d].id", i), Reason: fmt.Sprintf("%q, want %q", g.ID, safeguards.IDs[i])}
+		}
+		switch g.Evidence {
+		case contract.EvidenceAbsent, contract.EvidenceConfigured, contract.EvidenceStructurallyWired, contract.EvidenceUnknown:
+		default:
+			return &contract.FieldError{Field: fmt.Sprintf("safeguards[%d].evidence", i), Reason: fmt.Sprintf("%q is unknown", g.Evidence)}
+		}
+		for j, l := range g.Locations {
+			if l.Line < 0 {
+				return &contract.FieldError{Field: fmt.Sprintf("safeguards[%d].locations[%d].line", i, j), Reason: fmt.Sprintf("%d is negative", l.Line)}
+			}
+		}
+	}
+	return nil
 }
 
 func checkFindings(findings []contract.Finding) error {
@@ -64,6 +91,9 @@ func checkFindings(findings []contract.Finding) error {
 
 // checkFinding rejects an unknown kind, a set that the kind does not allow, and facts of another kind.
 func checkFinding(f contract.Finding) *contract.FieldError {
+	if f.Identity == "" {
+		return &contract.FieldError{Field: "identity", Reason: "is missing"}
+	}
 	var shapeFits, measured bool
 	switch f.Kind {
 	case complexity.KindHotspot:

@@ -166,8 +166,8 @@ func TestTerminalLists(t *testing.T) {
 		"clones (test, 0)",
 		"",
 	}, "\n")
-	if !strings.HasSuffix(out, want) {
-		t.Errorf("lists:\n%s\nwant suffix:\n%s", out, want)
+	if !strings.Contains(out, want+"\nsafeguards\n") {
+		t.Errorf("lists:\n%s\nwant, before the safeguards:\n%s", out, want)
 	}
 	clones := render(t, newReport(t, "clones/nested"))
 	want = strings.Join([]string{
@@ -183,6 +183,48 @@ func TestTerminalLists(t *testing.T) {
 	}, "\n")
 	if !strings.Contains(clones, want) {
 		t.Errorf("clones:\n%s\nwant:\n%s", clones, want)
+	}
+}
+
+func TestTerminalSafeguards(t *testing.T) {
+	r := &Report{Safeguards: []contract.Safeguard{
+		{ID: "agent-hooks", Evidence: contract.EvidenceAbsent, Locations: []contract.Location{}},
+		{ID: "pre-commit-hook", Evidence: contract.EvidenceStructurallyWired, Locations: []contract.Location{{Path: "Makefile", Line: 12}, {Path: ".githooks/pre-commit"}}, Notes: "Not shown."},
+		{ID: "test-check", Evidence: contract.EvidenceUnknown, Locations: []contract.Location{{Path: "a", Line: 1}, {Path: "b"}, {Path: "c", Line: 3}, {Path: "d"}, {Path: "e"}}},
+	}}
+	want := strings.Join([]string{
+		"",
+		"safeguards",
+		"  agent-hooks        absent",
+		"  pre-commit-hook    structurally-wired  Makefile:12 .githooks/pre-commit",
+		"  test-check         unknown             a:1 b c:3 +2",
+		"",
+	}, "\n")
+	if out := render(t, r); !strings.HasSuffix(out, want) {
+		t.Errorf("safeguards:\n%s\nwant suffix:\n%s", out, want)
+	}
+	if out := render(t, &Report{}); strings.Contains(out, "safeguards") {
+		t.Errorf("a report without safeguards prints the block:\n%s", out)
+	}
+}
+
+func TestTerminalBrokenReferences(t *testing.T) {
+	var findings []contract.Finding
+	for i := 1; i <= 12; i++ {
+		findings = append(findings, contract.Finding{
+			Kind: contract.KindBrokenReference, Path: "Makefile", StartLine: i, EndLine: i,
+			Facts: contract.Facts{BrokenReference: &contract.BrokenReferenceFacts{Command: "make gone", Ref: "gone"}},
+		})
+	}
+	out := render(t, &Report{Findings: findings})
+	if !strings.Contains(out, "\nbroken references (12, showing 10)\n  Makefile:1  make gone\n") || strings.Contains(out, "Makefile:11") {
+		t.Errorf("broken references:\n%s", out)
+	}
+	if strings.Contains(markdown(t, &Report{Findings: findings}), "Makefile:11") {
+		t.Error("the Markdown list is not bounded")
+	}
+	if out := render(t, &Report{}); strings.Contains(out, "broken references") {
+		t.Errorf("a report without broken references prints the block:\n%s", out)
 	}
 }
 

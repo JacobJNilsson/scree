@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/fs"
+	"os"
 	"path/filepath"
 	"reflect"
 	"strconv"
@@ -41,6 +42,47 @@ func TestAuditMergesMeasures(t *testing.T) {
 	}
 	if r.Limits == nil || len(r.Limits) != 0 {
 		t.Errorf("limits = %#v, want an empty list", r.Limits)
+	}
+}
+
+// TestAuditSafeguards asserts that a report holds the eight safeguards and that the broken references join the sorted findings.
+func TestAuditSafeguards(t *testing.T) {
+	r, err := Audit(context.Background(), "testdata/fixtures/safeguards/odd", Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(r.Safeguards) != 8 {
+		t.Errorf("%d safeguards, want 8", len(r.Safeguards))
+	}
+	var got []string
+	for _, f := range r.Findings {
+		got = append(got, f.Kind+" "+f.Path+":"+strconv.Itoa(f.StartLine))
+	}
+	want := []string{"safeguard.broken-reference .githooks/pre-commit:3", "safeguard.broken-reference .githooks/pre-commit:4"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("findings = %v, want %v", got, want)
+	}
+}
+
+// TestAuditSharedRecipeLoads audits a Makefile whose one broken line two targets share, and the saved JSON must load.
+func TestAuditSharedRecipeLoads(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "Makefile"), []byte("a b:\n\tmake nope\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	r, err := Audit(context.Background(), root, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(r.Findings) != 1 {
+		t.Errorf("findings = %+v, want one broken reference", r.Findings)
+	}
+	data, err := json.Marshal(r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := report.Load(bytes.NewReader(data)); err != nil {
+		t.Errorf("Load: %v", err)
 	}
 }
 

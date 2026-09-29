@@ -173,6 +173,25 @@ func TestTermUnmarshalRejects(t *testing.T) {
 	}
 }
 
+func TestSafeguardUnmarshal(t *testing.T) {
+	var ok Safeguard
+	if err := json.Unmarshal([]byte(`{"id":"a","evidence":"absent","locations":[],"notes":""}`), &ok); err != nil || ok.Locations == nil {
+		t.Errorf("valid safeguard: %+v, %v", ok, err)
+	}
+	for _, tc := range []struct{ in, field string }{
+		{`{"id":"a","evidence":"absent","notes":""}`, "locations"},
+		{`{"id":"a","evidence":"absent","locations":null,"notes":""}`, "locations"},
+		{`{"id":"a","evidence":"absent","locations":[]}`, "notes"},
+		{`{"id":"a","evidence":"absent","locations":[],"notes":"","x":1}`, "x"},
+	} {
+		var s Safeguard
+		var fieldErr *FieldError
+		if err := json.Unmarshal([]byte(tc.in), &s); !errors.As(err, &fieldErr) || fieldErr.Field != tc.field {
+			t.Errorf("%s: error %v, want a FieldError naming %q", tc.in, err, tc.field)
+		}
+	}
+}
+
 func TestFactsUnmarshalRequiresEveryField(t *testing.T) {
 	for _, tc := range []struct{ in, field string }{
 		{`null`, "facts"},

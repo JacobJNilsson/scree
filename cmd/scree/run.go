@@ -55,6 +55,7 @@ terms:
   partial          a production input failed or hit a cap, so the index counts that part as full debt
   baseline         a saved report of an earlier audit, compared by index, metrics, and findings
   policy           the config file checks that fail the run with exit code 2, like a baseline scree cannot compare
+  safeguards       process checks the repo declares, reported but never scored
 `
 
 // errExclusive reports two output formats in one run.

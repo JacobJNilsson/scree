@@ -11,11 +11,13 @@ import (
 	"github.com/JacobJNilsson/scree/internal/compare"
 	"github.com/JacobJNilsson/scree/internal/complexity"
 	"github.com/JacobJNilsson/scree/internal/config"
+	"github.com/JacobJNilsson/scree/internal/contract"
 	"github.com/JacobJNilsson/scree/internal/discover"
 	"github.com/JacobJNilsson/scree/internal/duplication"
 	"github.com/JacobJNilsson/scree/internal/inventory"
 	"github.com/JacobJNilsson/scree/internal/policy"
 	"github.com/JacobJNilsson/scree/internal/report"
+	"github.com/JacobJNilsson/scree/internal/safeguards"
 )
 
 // Version is the scree release that produced a report.
@@ -67,10 +69,12 @@ func Audit(ctx context.Context, root string, opts Options) (*Report, error) {
 	for id, m := range dupMetrics {
 		metrics[id] = m
 	}
-	// Each measure sorts its own findings, and every complexity kind sorts before the clone kind, so the joined list keeps the order of spec 002.
 	findings = append(findings, clones...)
+	guards, broken := safeguards.Inspect(tree)
+	findings = append(findings, broken...)
+	contract.SortFindings(findings)
 	run := report.Run{AnalyzerVersion: Version, Config: measured}
-	r := report.New(inv, metrics, findings, limits, run)
+	r := report.New(inv, metrics, findings, limits, guards, run)
 	r.Meta.DurationMs = time.Since(start).Milliseconds()
 	return r, nil
 }

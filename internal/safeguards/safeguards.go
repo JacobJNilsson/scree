@@ -36,8 +36,17 @@ type reader struct {
 	s     *Surfaces
 }
 
+// Inspect reads the surfaces of tree and derives the eight safeguards and the broken-reference findings.
+func Inspect(tree *discover.Tree) ([]contract.Safeguard, []contract.Finding) {
+	files := make(map[string]bool, len(tree.Files))
+	for _, f := range tree.Files {
+		files[f.Path] = true
+	}
+	return Evaluate(Read(tree), func(rel string) bool { return files[rel] })
+}
+
 // Read parses every surface in the file list of tree, and an unreadable file becomes a ReadError.
-func Read(tree *discover.Tree) (*Surfaces, error) {
+func Read(tree *discover.Tree) *Surfaces {
 	r := &reader{
 		root:  tree.Root,
 		files: make(map[string]bool, len(tree.Files)),
@@ -58,7 +67,7 @@ func Read(tree *discover.Tree) (*Surfaces, error) {
 	r.s.LintConfig = r.lintConfig()
 	r.s.AgentHooks = r.readAgentHooks()
 	sortSurfaces(r.s)
-	return r.s, nil
+	return r.s
 }
 
 // read returns the text of a kept file, and ok is false when the tree lacks the file or the read fails.

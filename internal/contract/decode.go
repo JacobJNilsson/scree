@@ -71,6 +71,27 @@ func (in metricJSON) checkPresent() error {
 	return nil
 }
 
+// UnmarshalJSON reads a safeguard strictly and rejects a missing or null locations list and a missing note, which a plain decode reads as empty.
+func (s *Safeguard) UnmarshalJSON(data []byte) error {
+	var in struct {
+		ID        string      `json:"id"`
+		Evidence  Evidence    `json:"evidence"`
+		Locations *[]Location `json:"locations"`
+		Notes     *string     `json:"notes"`
+	}
+	if err := strict(data, &in); err != nil {
+		return err
+	}
+	if in.Locations == nil || *in.Locations == nil {
+		return &FieldError{Field: "locations", Reason: "must be a list"}
+	}
+	if in.Notes == nil {
+		return &FieldError{Field: "notes", Reason: "is missing"}
+	}
+	*s = Safeguard{ID: in.ID, Evidence: in.Evidence, Locations: *in.Locations, Notes: *in.Notes}
+	return nil
+}
+
 // UnmarshalJSON reads the facts of the kind whose key it finds, since the JSON carries no kind of its own.
 func (f *Facts) UnmarshalJSON(data []byte) error {
 	var keys map[string]json.RawMessage
