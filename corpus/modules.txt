@@ -1,0 +1,25 @@
+# This list holds the public modules that make corpus audits, each at one pinned version.
+#
+# The list runs from under 2,000 production code lines to over 50,000.
+# The table then shows the index over code of every size.
+# A module enters the list when it is public and a user would depend on it.
+# It must also fill a size gap that the list does not cover yet.
+# The versions are pinned, so a rerun measures the same code.
+#
+# The list never changes a scoring constant. It shows how the index spreads.
+
+github.com/mattn/go-isatty@v0.0.20
+github.com/pkg/errors@v0.9.1
+github.com/fatih/color@v1.17.0
+github.com/google/uuid@v1.6.0
+github.com/go-chi/chi/v5@v5.1.0
+github.com/gorilla/websocket@v1.5.3
+github.com/stretchr/testify@v1.9.0
+go.uber.org/zap@v1.27.0
+github.com/rs/zerolog@v1.33.0
+gopkg.in/yaml.v3@v3.0.1
+github.com/prometheus/client_golang@v1.19.1
+github.com/valyala/fasthttp@v1.55.0
+k8s.io/apimachinery@v0.31.0
+google.golang.org/grpc@v1.65.0
+github.com/prometheus/prometheus@v0.54.0

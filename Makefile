@@ -5,7 +5,7 @@ ANTISLOP_PKGS ?= ./...
 COVERAGE_MIN ?= 90
 export COVERAGE_MIN
 
-.PHONY: build test gate-test lint lint-fast vet tidy tidy-check antislop check check-scoped setup clean golden selfcheck
+.PHONY: build test gate-test lint lint-fast vet tidy tidy-check antislop check check-scoped setup clean golden selfcheck corpus
 
 build:
 	go build ./...
@@ -17,6 +17,10 @@ test:
 # Only packages with golden files define the -update flag.
 golden:
 	go test ./internal/inventory ./internal/report ./internal/safeguards ./cmd/scree -update
+
+# The corpus needs the network, so no other target runs it.
+corpus:
+	go run ./internal/corpus -list corpus/modules.txt -out corpus/results.md
 
 gate-test:
 	sh scripts/coverage-gate-test.sh

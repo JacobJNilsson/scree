@@ -3,3 +3,9 @@
 
 # main only calls run, and run_test.go covers run.
 cmd/scree/main.go
+
+# main only reads the flags and hands the work to run, and corpus_test covers run.
+internal/corpus/main.go
+
+# download runs go mod download, which needs the network.
+internal/corpus/download.go
