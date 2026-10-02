@@ -68,7 +68,7 @@ func TestTerminalHeaderAndIndex(t *testing.T) {
 
 func TestTerminalPartial(t *testing.T) {
 	got := lines(render(t, newReport(t, "broken")))
-	if !strings.HasSuffix(got[2], "scoring 0.1.0-provisional (partial)") {
+	if !strings.HasSuffix(got[2], "scoring 0.1.0 (partial)") {
 		t.Errorf("index line = %q, want the partial mark", got[2])
 	}
 	if got[3] != "incomplete: bad.go, bad_test.go" {

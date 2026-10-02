@@ -2,7 +2,7 @@
 
 example.com/clones/ladder, scree 0.0.0-test.
 
-The index is 53/100, lower is better, scoring 0.1.0-provisional.
+The index is 53/100, lower is better, scoring 0.1.0.
 Contributions: complexity-erosion 32, duplication 21.
 
 | set | files | sloc | funcs | cc p50/p90/max | eroded | clones | dup lines |

@@ -10,9 +10,9 @@ Three versions travel with every report:
 - `schemaVersion`: the shape of this document. Starts at `1.0.0`.
 - `analyzerVersion`: the `scree` release that produced the measurements.
   Equals the module version.
-- `scoringVersion`: the formula constants. Starts at `0.1.0-provisional` and
-  stays provisional until the corpus calibration in step 7 of
-  [004-implementation.md](004-implementation.md) ends.
+- `scoringVersion`: the formula constants. It is `0.1.0`, the version the
+  calibration in [004-implementation.md](004-implementation.md) checked. A
+  change to any constant raises it.
 
 Two reports are comparable when all three versions match and their
 configuration digests match. An incomparable pair is refused with the
@@ -36,7 +36,7 @@ reaches the output.
 {
   "schemaVersion": "1.0.0",
   "analyzerVersion": "0.1.0",
-  "scoringVersion": "0.1.0-provisional",
+  "scoringVersion": "0.1.0",
   "repo": { "root": "/abs/path", "module": "github.com/x/y" },   // module "" when no go.mod
   "configDigest": "sha256:…",                                      // of the normalized effective config
   "coverage": {
