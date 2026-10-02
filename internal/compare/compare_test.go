@@ -21,7 +21,7 @@ func rep(index int, findings ...contract.Finding) *report.Report {
 	return &report.Report{
 		SchemaVersion:   "1.0.0",
 		AnalyzerVersion: "0.1.0",
-		ScoringVersion:  "0.1.0-provisional",
+		ScoringVersion:  "0.1.0",
 		ConfigDigest:    "sha256:aa",
 		Metrics: map[string]contract.Metric{
 			"duplication.density.production": {State: contract.Complete, Value: 0.25, Unit: "ratio"},

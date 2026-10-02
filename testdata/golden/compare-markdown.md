@@ -1,7 +1,7 @@
 # scree comparison
 
-Before: index 0/100, scoring 0.1.0-provisional.
-After: index 34/100, scoring 0.1.0-provisional.
+Before: index 0/100, scoring 0.1.0.
+After: index 34/100, scoring 0.1.0.
 The index delta is +34.
 
 ## Metrics

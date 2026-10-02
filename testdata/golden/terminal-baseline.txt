@@ -1,6 +1,6 @@
 scree 0.0.0-test  example.com/functions
 
-index  34/100  lower is better  scoring 0.1.0-provisional
+index  34/100  lower is better  scoring 0.1.0
        baseline 0  delta +34  new 4  resolved 0
        complexity-erosion 34  duplication 0
 

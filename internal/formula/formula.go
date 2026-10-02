@@ -17,7 +17,7 @@ const (
 )
 
 // ScoringVersion changes whenever a weight, term, or constant of the score changes.
-const ScoringVersion = "0.1.0-provisional"
+const ScoringVersion = "0.1.0"
 
 // Dimension is one weighted part of the index.
 type Dimension struct {

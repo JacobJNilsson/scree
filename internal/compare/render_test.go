@@ -43,7 +43,7 @@ func TestRenderRefusal(t *testing.T) {
 	before, after := rep(20), rep(25)
 	after.ScoringVersion = "0.2.0"
 	terminal, markdown := renderBoth(t, Compare(before, after))
-	refusal := `scoringVersion differs: before "0.1.0-provisional", after "0.2.0"`
+	refusal := `scoringVersion differs: before "0.1.0", after "0.2.0"`
 	if !strings.Contains(terminal, "\nrefused: "+refusal+"\n") || strings.Contains(terminal, "metric") {
 		t.Errorf("terminal refusal:\n%s", terminal)
 	}

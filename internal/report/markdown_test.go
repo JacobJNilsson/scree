@@ -35,7 +35,7 @@ func TestMarkdownSummary(t *testing.T) {
 		"",
 		"example.com/functions, scree " + testAnalyzer + ".",
 		"",
-		"The index is 34/100, lower is better, scoring 0.1.0-provisional.",
+		"The index is 34/100, lower is better, scoring 0.1.0.",
 		"Contributions: complexity-erosion 34, duplication 0.",
 		"",
 		"| set | files | sloc | funcs | cc p50/p90/max | eroded | clones | dup lines |",
@@ -89,7 +89,7 @@ func TestMarkdownSummary(t *testing.T) {
 func TestMarkdownIncomplete(t *testing.T) {
 	out := markdown(t, newReport(t, "broken"))
 	for _, want := range []string{
-		"The index is 100/100, lower is better, scoring 0.1.0-provisional, partial.\n",
+		"The index is 100/100, lower is better, scoring 0.1.0, partial.\n",
 		"| production | 2 | 2 | - | - | - | - | - |\n",
 		"### production (-)\n",
 		"## Incomplete\n\n- bad.go\n- bad_test.go\n",
