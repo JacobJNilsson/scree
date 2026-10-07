@@ -44,6 +44,8 @@ func AllSets() []SourceSet {
 type Options struct {
 	Exclude      []string
 	TestPatterns []string
+	// Omit is the path of one file that the walk leaves out of every set and every count, and "" omits none.
+	Omit string
 }
 
 // File is one regular file that the walk kept.
@@ -103,6 +105,7 @@ func Walk(ctx context.Context, root string, opts Options) (*Tree, error) {
 		ctx:         ctx,
 		root:        abs,
 		opts:        opts,
+		omit:        resolveOmit(opts.Omit),
 		ignoreFiles: gitignore.NewCache(),
 		tree: &Tree{
 			Root:          abs,
@@ -127,6 +130,21 @@ func Walk(ctx context.Context, root string, opts Options) (*Tree, error) {
 	return w.tree, nil
 }
 
+// resolveOmit returns the path that the walk sees for the omitted file, with the symbolic links of its directory resolved like the root.
+func resolveOmit(omit string) string {
+	if omit == "" {
+		return ""
+	}
+	abs, err := filepath.Abs(omit)
+	if err != nil {
+		return ""
+	}
+	if dir, err := filepath.EvalSymlinks(filepath.Dir(abs)); err == nil {
+		abs = filepath.Join(dir, filepath.Base(abs))
+	}
+	return abs
+}
+
 // finish sorts every list of a tree and counts the files of each set.
 func finish(tree *Tree) {
 	sort.Slice(tree.Files, func(i, j int) bool { return tree.Files[i].Path < tree.Files[j].Path })
@@ -143,9 +161,11 @@ func finish(tree *Tree) {
 }
 
 type walker struct {
-	ctx    context.Context
-	root   string
-	opts   Options
+	ctx  context.Context
+	root string
+	opts Options
+	// omit is the resolved path of Options.Omit.
+	omit   string
 	ignore gitignore.GitIgnore
 	// ignoreFiles is the library's cache of parsed .gitignore files, and the walk adds an empty entry for each unreadable one.
 	ignoreFiles gitignore.Cache
@@ -176,7 +196,7 @@ func (w *walker) visit(path string, d fs.DirEntry, err error) error {
 	if d.IsDir() {
 		return w.visitDir(path, rel)
 	}
-	if !d.Type().IsRegular() || w.ignored(path, false) {
+	if !w.keeps(path, d) {
 		return nil
 	}
 	file, err := w.classify(path, rel)
@@ -187,6 +207,11 @@ func (w *walker) visit(path string, d fs.DirEntry, err error) error {
 	}
 	w.tree.Files = append(w.tree.Files, file)
 	return nil
+}
+
+// keeps reports whether a non-directory entry is a regular file that the walk classifies.
+func (w *walker) keeps(path string, d fs.DirEntry) bool {
+	return d.Type().IsRegular() && path != w.omit && !w.ignored(path, false)
 }
 
 // readError records an error without the absolute path, which must not reach a report.

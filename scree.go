@@ -4,6 +4,7 @@ package scree
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
@@ -45,6 +46,8 @@ type PolicyResult = policy.Result
 type Options struct {
 	// Config is the configuration of the audit, and nil reads scree.yaml at the audited root when it exists.
 	Config *Config
+	// Omit is the path of one file that the audit leaves out of the walk and the coverage counts, and "" omits none.
+	Omit string
 }
 
 // Audit measures the Go module at root and evaluates no policy.
@@ -59,7 +62,7 @@ func Audit(ctx context.Context, root string, opts Options) (*Report, error) {
 		}
 	}
 	measured := cfg.Contract()
-	tree, err := discover.Walk(ctx, root, discover.Options{Exclude: measured.Exclude, TestPatterns: measured.TestPatterns})
+	tree, err := discover.Walk(ctx, root, discover.Options{Exclude: measured.Exclude, TestPatterns: measured.TestPatterns, Omit: opts.Omit})
 	if err != nil {
 		return nil, err
 	}
@@ -77,6 +80,23 @@ func Audit(ctx context.Context, root string, opts Options) (*Report, error) {
 	r := report.New(inv, metrics, findings, limits, guards, run)
 	r.Meta.DurationMs = time.Since(start).Milliseconds()
 	return r, nil
+}
+
+// Baseline audits like Audit and returns the reproducible JSON form of spec 003, the bytes of a committed baseline file.
+func Baseline(ctx context.Context, root string, opts Options) ([]byte, error) {
+	r, err := Audit(ctx, root, opts)
+	if err != nil {
+		return nil, err
+	}
+	r.Repo.Root = "."
+	r.Meta.DurationMs = 0
+	var buf bytes.Buffer
+	enc := json.NewEncoder(&buf)
+	enc.SetIndent("", "  ")
+	if err := enc.Encode(r); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }
 
 // LoadConfig reads and validates the configuration file at path, and a missing file is an error.

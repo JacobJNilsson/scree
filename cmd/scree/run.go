@@ -9,16 +9,33 @@ import (
 	"github.com/JacobJNilsson/scree"
 )
 
-const usage = "usage: scree audit <path> [--config <file>] [--baseline <report.json>] [--json|--md] [--out <file>] [--quiet]\n       scree compare <before.json> <after.json> [--json|--md]\n       scree version"
+const usage = "usage: scree audit <path> [--config <file>] [--baseline <report.json>] [--json|--md] [--out <file>] [--quiet]\n       scree compare <before.json> <after.json> [--json|--md]\n       scree baseline [path] [--config <file>] [--out <file>] [--quiet]\n       scree version"
 
 const help = `usage: scree <command>
 
 commands:
   audit <path>                        measure the Go module at path and print the report
   compare <before.json> <after.json>  compare two saved JSON reports and print the comparison
+  baseline [path]                     write the reproducible baseline report of the module at path
   version                             print the scree version
 
 Run scree audit --help for the audit flags and terms.
+Run scree baseline --help for the baseline flags.
+`
+
+const baselineHelp = `usage: scree baseline [path] [--config <file>] [--out <file>] [--quiet]
+
+The command audits the Go module at path, which defaults to the current directory, and writes
+the report as JSON with repo.root set to . and meta.durationMs set to 0. The same files,
+configuration, and versions then give the same bytes on any machine. The file is a valid
+--baseline for scree audit and an argument for scree compare.
+The audit leaves the output file out, so the file does not count as an unsupported file.
+
+flags:
+  --config <file>  read the configuration from the file, not from scree.yaml at the path
+  --out <file>     write the baseline to the file, default scree-baseline.json at the path
+  --quiet          do not print the line that names the written file
+  --help, -h       print this help
 `
 
 const compareHelp = `usage: scree compare <before.json> <after.json> [--json|--md]
@@ -77,6 +94,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return writeText(stdout, "scree "+scree.Version+"\n")
 	case fs.NArg() > 0 && fs.Arg(0) == "audit":
 		return audit(fs.Args()[1:], stdout, stderr)
+	case fs.NArg() > 0 && fs.Arg(0) == "baseline":
+		return baselineCommand(fs.Args()[1:], stdout, stderr)
 	case fs.NArg() > 0 && fs.Arg(0) == "compare":
 		return compareCommand(fs.Args()[1:], stdout, stderr)
 	}
