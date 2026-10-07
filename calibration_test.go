@@ -2,6 +2,7 @@ package scree
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -20,7 +21,11 @@ const (
 	lower  pairDirection = "lower"
 	higher pairDirection = "higher"
 	equal  pairDirection = "equal"
+	near   pairDirection = "near"
 )
+
+// nearTolerance is the largest index move, in points, that a near pair allows.
+const nearTolerance = 3
 
 // calibrationPairs is the table of spec 004, one row per paired refactor.
 var calibrationPairs = []struct {
@@ -35,6 +40,7 @@ var calibrationPairs = []struct {
 	{name: "move", want: equal},
 	{name: "tests-only", want: equal},
 	{name: "comments", want: equal},
+	{name: "pad", want: near},
 }
 
 // TestPairedRefactors asserts that every pair moves the index in its direction.
@@ -55,6 +61,10 @@ func TestPairedRefactors(t *testing.T) {
 		case equal:
 			if after.Score.Index != before.Score.Index {
 				t.Errorf("%s: index %d -> %d, want an equal index", p.name, before.Score.Index, after.Score.Index)
+			}
+		case near:
+			if diff := after.Score.Index - before.Score.Index; diff < -nearTolerance || diff > nearTolerance {
+				t.Errorf("%s: index %d -> %d, want a move of at most %d points", p.name, before.Score.Index, after.Score.Index, nearTolerance)
 			}
 		}
 	}
@@ -164,6 +174,33 @@ func init() {
 			pairChanges = append(pairChanges, pairChange{pair: pair, metric: m, check: unchanged})
 		}
 	}
+}
+
+// assertAboutDouble asserts that the after module holds about twice the production lines of the before module.
+func assertAboutDouble(t *testing.T, before, after *Report) {
+	t.Helper()
+	if ratio := float64(after.Coverage.Production.SLOC) / float64(before.Coverage.Production.SLOC); ratio < 1.8 || ratio > 2.2 {
+		t.Errorf("production lines %v -> %v, want about double", before.Coverage.Production.SLOC, after.Coverage.Production.SLOC)
+	}
+}
+
+// assertMetricsMove asserts, for each id, that the value moves by at most limit.
+func assertMetricsMove(t *testing.T, before, after *Report, limit float64, ids ...string) {
+	t.Helper()
+	for _, id := range ids {
+		if b, a := before.Metrics[id].Value, after.Metrics[id].Value; math.Abs(a-b) > limit {
+			t.Errorf("%s %v -> %v, want a move of at most %v", id, b, a, limit)
+		}
+	}
+}
+
+// TestPadPairAddsOnlyCleanCode asserts that the pad pair doubles the production lines and keeps the eroded count and the clone groups.
+func TestPadPairAddsOnlyCleanCode(t *testing.T) {
+	before := pairReport(t, "pad/before")
+	after := pairReport(t, "pad/after")
+	assertAboutDouble(t, before, after)
+	assertMetricsMove(t, before, after, 0, "erosion.eroded-count.production", "duplication.groups.production")
+	assertMetricsMove(t, before, after, 0.05, "erosion.eroded-share.production", "duplication.density.production")
 }
 
 // TestMovePairMovesTheFunction asserts that the move pair takes tangle.go out of the root and into a helper package.
