@@ -62,12 +62,13 @@ default run writes nothing, and audits run offline.
 
 ## Calibration
 
-Eight paired refactors under `testdata/fixtures/pairs/` decide whether the
-constants hold. Each pair holds a `before` and an `after` module, and the only difference
-between them is one stated refactor. A test asserts the direction of the index:
-removing a clone or splitting a function with too many branches lowers it,
-adding a clone or adding branches raises it, and renaming, moving a function to
-another package, adding test code, or adding comments leaves it alone.
+Nine paired refactors under `testdata/fixtures/pairs/` decide whether the
+constants hold. Each pair holds a `before` and an `after` module, and the only
+difference between them is one stated refactor. A test asserts the direction of
+the index: removing a clone or splitting a function with too many branches
+lowers it, adding a clone or adding branches raises it, and renaming, moving a
+function to another package, adding test code, or adding comments leaves it
+alone. Doubling a module with clean code moves it by at most 3 points.
 
 `corpus/modules.txt` holds 15 public modules at pinned versions, from 142
 production lines to 75,973. Those line counts are the `coverage.production.sloc`
