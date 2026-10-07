@@ -17,6 +17,7 @@ scree audit .                        # measure and print the report
 scree audit . --out report.json      # save a baseline
 scree audit . --baseline report.json # compare with the baseline
 scree compare before.json after.json # compare two saved reports
+scree baseline .                     # write scree-baseline.json, and --check fails CI when it is stale
 ```
 
 No release tag exists yet, so build the command from a clone. `go install`
