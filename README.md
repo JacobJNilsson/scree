@@ -21,9 +21,8 @@ scree baseline .                     # write scree-baseline.json
 scree baseline --check .             # exit 2 when scree-baseline.json is stale
 ```
 
-The `v0.1.0` tag does not include the `baseline` command. Until the next tag,
-install from `main` with
-`go install github.com/JacobJNilsson/scree/cmd/scree@main`, or build the
+Install the `baseline` command with
+`go install github.com/JacobJNilsson/scree/cmd/scree@v0.2.0`, or build the
 command from a clone.
 
 An audit prints the index, the two contributions, both source sets with their
