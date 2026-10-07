@@ -23,7 +23,9 @@ parses every file once, and measures two things:
 It folds those into a 0–100 index where lower is better. Every point traces
 to a raw metric, a threshold, and a list of findings with file and line. A
 saved report is a baseline: a later audit compares against it and a
-declared policy decides whether the run passes.
+declared policy decides whether the run passes. A repository can also commit
+a baseline on `main` with `scree baseline`, and CI runs `scree baseline
+--check` to fail a change that did not update it.
 
 Separately from the score, `scree` reports which safeguards the repository
 has configured: Git hooks, lint configuration, CI steps, coverage budgets.
