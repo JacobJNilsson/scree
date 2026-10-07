@@ -7,9 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/JacobJNilsson/scree"
@@ -286,7 +288,82 @@ func writeTable(w io.Writer, rows []tableRow) error {
 			return err
 		}
 	}
-	return nil
+	return writeCorrelations(w, rows)
+}
+
+// correlationMinLines is the production size above which a module enters the correlations.
+const correlationMinLines = 5000
+
+// writeCorrelations covers only modules above correlationMinLines, because spec 004 sets that cutoff.
+func writeCorrelations(w io.Writer, rows []tableRow) error {
+	var index, lines, debt []float64
+	for _, r := range rows {
+		if r.productionLines <= correlationMinLines {
+			continue
+		}
+		index = append(index, float64(r.index))
+		lines = append(lines, float64(r.productionLines))
+		debt = append(debt, float64(r.eroded+r.cloneGroups)*1000/float64(r.productionLines))
+	}
+	_, err := fmt.Fprintf(w, "\nOver the %d modules above %d production lines, the Spearman rank correlation of the index is %s with production code lines and %s with debt per thousand production lines. Debt is eroded functions plus clone groups.\n",
+		len(index), correlationMinLines, formatRank(spearman(index, lines)), formatRank(spearman(index, debt)))
+	return err
+}
+
+// formatRank formats one correlation, and names an undefined one.
+func formatRank(rho float64, ok bool) string {
+	if !ok {
+		return "undefined"
+	}
+	return fmt.Sprintf("%+.2f", rho)
+}
+
+// spearman reports false when the correlation is undefined, which happens with fewer than two values or no spread on one side.
+func spearman(xs, ys []float64) (float64, bool) {
+	if len(xs) < 2 || len(xs) != len(ys) {
+		return 0, false
+	}
+	rx, ry := ranks(xs), ranks(ys)
+	mx, my := mean(rx), mean(ry)
+	var sxy, sxx, syy float64
+	for i := range rx {
+		sxy += (rx[i] - mx) * (ry[i] - my)
+		sxx += (rx[i] - mx) * (rx[i] - mx)
+		syy += (ry[i] - my) * (ry[i] - my)
+	}
+	if sxx == 0 || syy == 0 {
+		return 0, false
+	}
+	return sxy / math.Sqrt(sxx*syy), true
+}
+
+// ranks returns the 1-based rank of each value, with tied values sharing the average of their positions.
+func ranks(values []float64) []float64 {
+	order := make([]int, len(values))
+	for i := range order {
+		order[i] = i
+	}
+	sort.Slice(order, func(a, b int) bool { return values[order[a]] < values[order[b]] })
+	out := make([]float64, len(values))
+	for start := 0; start < len(order); {
+		end := start
+		for end+1 < len(order) && values[order[end+1]] == values[order[start]] {
+			end++
+		}
+		for k := start; k <= end; k++ {
+			out[order[k]] = float64(start+end)/2 + 1
+		}
+		start = end + 1
+	}
+	return out
+}
+
+func mean(values []float64) float64 {
+	var sum float64
+	for _, v := range values {
+		sum += v
+	}
+	return sum / float64(len(values))
 }
 
 // header holds the heading and the column names of the table.
