@@ -1,0 +1,273 @@
+{
+  "schemaVersion": "1.0.0",
+  "analyzerVersion": "0.2.0-dev",
+  "scoringVersion": "0.2.0",
+  "repo": {
+    "root": ".",
+    "module": "example.com/sets"
+  },
+  "configDigest": "sha256:4c50bb6e6bc006a5b9243824f1685a5379c85d70169e618006d2edfe7d505d66",
+  "coverage": {
+    "production": {
+      "files": 2,
+      "sloc": 4
+    },
+    "test": {
+      "files": 1,
+      "sloc": 7
+    },
+    "generated": {
+      "files": 1
+    },
+    "vendored": {
+      "files": 1
+    },
+    "testdata": {
+      "files": 1
+    },
+    "excluded": {
+      "files": 6
+    },
+    "unsupported": {
+      "files": 2
+    },
+    "nestedModules": [
+      "tools/gen"
+    ]
+  },
+  "completeness": "complete",
+  "metrics": {
+    "complexity.cc.max.production": {
+      "state": "complete",
+      "value": 1,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.max.test": {
+      "state": "complete",
+      "value": 2,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.p50.production": {
+      "state": "complete",
+      "value": 1,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.p50.test": {
+      "state": "complete",
+      "value": 2,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.p90.production": {
+      "state": "complete",
+      "value": 1,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.p90.test": {
+      "state": "complete",
+      "value": 2,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.functions.production": {
+      "state": "complete",
+      "value": 2,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.functions.test": {
+      "state": "complete",
+      "value": 1,
+      "unit": "count",
+      "detail": {}
+    },
+    "duplication.density.production": {
+      "state": "complete",
+      "value": 0,
+      "unit": "ratio",
+      "numerator": 0,
+      "denominator": 4,
+      "detail": {}
+    },
+    "duplication.density.test": {
+      "state": "complete",
+      "value": 0,
+      "unit": "ratio",
+      "numerator": 0,
+      "denominator": 7,
+      "detail": {}
+    },
+    "duplication.duplicated-lines.production": {
+      "state": "complete",
+      "value": 0,
+      "unit": "count",
+      "detail": {}
+    },
+    "duplication.duplicated-lines.test": {
+      "state": "complete",
+      "value": 0,
+      "unit": "count",
+      "detail": {}
+    },
+    "duplication.groups.production": {
+      "state": "complete",
+      "value": 0,
+      "unit": "count",
+      "detail": {}
+    },
+    "duplication.groups.test": {
+      "state": "complete",
+      "value": 0,
+      "unit": "count",
+      "detail": {}
+    },
+    "erosion.eroded-count.production": {
+      "state": "complete",
+      "value": 0,
+      "unit": "count",
+      "detail": {}
+    },
+    "erosion.eroded-count.test": {
+      "state": "complete",
+      "value": 0,
+      "unit": "count",
+      "detail": {}
+    },
+    "erosion.eroded-share.production": {
+      "state": "complete",
+      "value": 0,
+      "unit": "ratio",
+      "numerator": 0,
+      "denominator": 2,
+      "detail": {}
+    },
+    "erosion.eroded-share.test": {
+      "state": "complete",
+      "value": 0,
+      "unit": "ratio",
+      "numerator": 0,
+      "denominator": 4.47213595499958,
+      "detail": {}
+    },
+    "erosion.mass.production": {
+      "state": "complete",
+      "value": 2,
+      "unit": "mass",
+      "detail": {}
+    },
+    "erosion.mass.test": {
+      "state": "complete",
+      "value": 4.47213595499958,
+      "unit": "mass",
+      "detail": {}
+    }
+  },
+  "score": {
+    "index": 0,
+    "direction": "lower-is-better",
+    "partial": false,
+    "contributions": [
+      {
+        "dimension": "complexity-erosion",
+        "points": 0,
+        "weight": 0.6,
+        "terms": [
+          {
+            "metricId": "erosion.eroded-share.production",
+            "state": "complete",
+            "value": 0,
+            "saturatesAt": 0.8,
+            "score": 0
+          },
+          {
+            "metricId": "erosion.eroded-count.production",
+            "state": "complete",
+            "value": 0,
+            "countScale": 20,
+            "score": 0
+          }
+        ]
+      },
+      {
+        "dimension": "duplication",
+        "points": 0,
+        "weight": 0.4,
+        "terms": [
+          {
+            "metricId": "duplication.density.production",
+            "state": "complete",
+            "value": 0,
+            "saturatesAt": 0.3,
+            "score": 0
+          },
+          {
+            "metricId": "duplication.groups.production",
+            "state": "complete",
+            "value": 0,
+            "countScale": 15,
+            "score": 0
+          }
+        ]
+      }
+    ]
+  },
+  "findings": [],
+  "safeguards": [
+    {
+      "id": "agent-hooks",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No agent hook is declared."
+    },
+    {
+      "id": "ci-workflow",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No workflow file has a step."
+    },
+    {
+      "id": "coverage-budget",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No Makefile exists."
+    },
+    {
+      "id": "lint-config",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No .golangci file exists."
+    },
+    {
+      "id": "pre-commit-hook",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No hook file or hook tool declares pre-commit."
+    },
+    {
+      "id": "pre-push-hook",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No hook file or hook tool declares pre-push."
+    },
+    {
+      "id": "test-check",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No Makefile recipe runs go test."
+    },
+    {
+      "id": "vet-check",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No Makefile recipe runs go vet."
+    }
+  ],
+  "limits": [],
+  "meta": {
+    "durationMs": 0
+  }
+}

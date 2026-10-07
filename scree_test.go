@@ -161,3 +161,72 @@ func TestAuditDeterministic(t *testing.T) {
 		t.Errorf("two audits differ:\n%s\n%s", outputs[0], outputs[1])
 	}
 }
+
+// TestBaselineReproducible asserts that two copies of a fixture in different directories give the same bytes.
+func TestBaselineReproducible(t *testing.T) {
+	var runs [2][]byte
+	for i := range runs {
+		data, err := Baseline(context.Background(), fixtureCopy(t, "sets"), Options{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		runs[i] = data
+	}
+	if !bytes.Equal(runs[0], runs[1]) {
+		t.Error("baselines of two copies differ")
+	}
+	r, err := report.Load(bytes.NewReader(runs[0]))
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+	if r.Repo.Root != "." || r.Meta.DurationMs != 0 {
+		t.Errorf("root %q and duration %d, want \".\" and 0", r.Repo.Root, r.Meta.DurationMs)
+	}
+}
+
+// TestBaselineMatchesAudit asserts that the baseline differs from an audit in the two machine fields only.
+func TestBaselineMatchesAudit(t *testing.T) {
+	root := fixtureCopy(t, "functions")
+	data, err := Baseline(context.Background(), root, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	base, err := report.Load(bytes.NewReader(data))
+	if err != nil {
+		t.Fatal(err)
+	}
+	live := audit(t, root)
+	live.Repo.Root, live.Meta.DurationMs = ".", 0
+	if !reflect.DeepEqual(base, live) {
+		t.Error("baseline differs from the audit beyond root and duration")
+	}
+	if cmp := Compare(base, live); !cmp.Comparable || len(cmp.New) != 0 || len(cmp.Resolved) != 0 {
+		t.Errorf("comparison = %+v, want comparable and unchanged", cmp)
+	}
+}
+
+func TestBaselineErrors(t *testing.T) {
+	if _, err := Baseline(context.Background(), filepath.Join(t.TempDir(), "missing"), Options{}); !errors.Is(err, fs.ErrNotExist) {
+		t.Errorf("missing root: error %v, want fs.ErrNotExist", err)
+	}
+}
+
+// TestAuditOmit asserts that Options.Omit keeps the output file out of the coverage counts.
+func TestAuditOmit(t *testing.T) {
+	root := fixtureCopy(t, "functions")
+	out := filepath.Join(root, "scree-baseline.json")
+	if err := os.WriteFile(out, []byte("{}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	with, err := Audit(context.Background(), root, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	without, err := Audit(context.Background(), root, Options{Omit: out})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := without.Coverage.Unsupported.Files, with.Coverage.Unsupported.Files-1; got != want {
+		t.Errorf("unsupported files = %d, want %d", got, want)
+	}
+}

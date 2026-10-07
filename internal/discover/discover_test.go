@@ -686,3 +686,41 @@ func TestFinishShuffle(t *testing.T) {
 		}
 	}
 }
+
+// TestWalkOmit asserts that the omitted path leaves the walk and the coverage, however the path is spelled.
+func TestWalkOmit(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, map[string]string{"main.go": "package main\n", "out.json": "{}\n", "sub/out.json": "{}\n"})
+	omits := map[string]string{
+		"absolute": filepath.Join(root, "out.json"),
+		"unclean":  filepath.Join(root, "sub", "..", "out.json"),
+		"missing":  filepath.Join(root, "absent.json"),
+	}
+	want := map[string][]entry{
+		"absolute": {{"main.go", Production}, {"sub/out.json", Unsupported}},
+		"unclean":  {{"main.go", Production}, {"sub/out.json", Unsupported}},
+		"missing":  {{"main.go", Production}, {"out.json", Unsupported}, {"sub/out.json", Unsupported}},
+	}
+	for name, omit := range omits {
+		t.Run(name, func(t *testing.T) {
+			tree := walk(t, root, Options{Omit: omit})
+			if got := entries(tree); !reflect.DeepEqual(got, want[name]) {
+				t.Errorf("files = %v, want %v", got, want[name])
+			}
+		})
+	}
+}
+
+// TestWalkOmitThroughSymlink asserts that an omit path under a symbolic link to the root still matches.
+func TestWalkOmitThroughSymlink(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, map[string]string{"out.json": "{}\n"})
+	link := filepath.Join(t.TempDir(), "link")
+	if err := os.Symlink(root, link); err != nil {
+		t.Skip(err)
+	}
+	tree := walk(t, link, Options{Omit: filepath.Join(link, "out.json")})
+	if got := entries(tree); len(got) != 0 {
+		t.Errorf("files = %v, want none", got)
+	}
+}
