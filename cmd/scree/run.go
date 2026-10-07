@@ -9,7 +9,7 @@ import (
 	"github.com/JacobJNilsson/scree"
 )
 
-const usage = "usage: scree audit <path> [--config <file>] [--baseline <report.json>] [--json|--md] [--out <file>] [--quiet]\n       scree compare <before.json> <after.json> [--json|--md]\n       scree baseline [path] [--config <file>] [--out <file>] [--quiet]\n       scree version"
+const usage = "usage: scree audit <path> [--config <file>] [--baseline <report.json>] [--json|--md] [--out <file>] [--quiet]\n       scree compare <before.json> <after.json> [--json|--md]\n       scree baseline [path] [--config <file>] [--out <file>] [--check] [--quiet]\n       scree version"
 
 const help = `usage: scree <command>
 
@@ -23,18 +23,21 @@ Run scree audit --help for the audit flags and terms.
 Run scree baseline --help for the baseline flags.
 `
 
-const baselineHelp = `usage: scree baseline [path] [--config <file>] [--out <file>] [--quiet]
+const baselineHelp = `usage: scree baseline [path] [--config <file>] [--out <file>] [--check] [--quiet]
 
 The command audits the Go module at path, which defaults to the current directory, and writes
 the report as JSON with repo.root set to . and meta.durationMs set to 0. The same files,
 configuration, and versions then give the same bytes on any machine. The file is a valid
 --baseline for scree audit and an argument for scree compare.
 The audit leaves the output file out, so the file does not count as an unsupported file.
+With --check the command writes nothing and compares the bytes it would write with the file.
+Exit code 0 means the file is current, 2 means it is stale, and 1 means the file is missing or unreadable.
 
 flags:
   --config <file>  read the configuration from the file, not from scree.yaml at the path
   --out <file>     write the baseline to the file, default scree-baseline.json at the path
-  --quiet          do not print the line that names the written file
+  --check          compare with the committed file and write nothing, so CI fails when a change did not update it
+  --quiet          do not print the line that names the file or the current baseline
   --help, -h       print this help
 `
 
