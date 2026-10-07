@@ -29,10 +29,10 @@ anti-slop-go v1.4.1 requires Go 1.26 or newer. With the default
 `make check` from step 1 on. It fails when the policy in `scree.yaml`
 fails, for example when the index rises above `maxIndex`.
 
-The pre-commit tier, `make check-scoped`, runs vet, lint, and race tests on
-the packages a staged change touches, with the same coverage bar over the
-scoped profile. Changes to `go.mod`, `go.sum`, `Makefile`, `scripts/`,
-`.githooks/`, or `.golangci.yml` escalate to the full gate.
+The pre-commit tier, `make check-scoped`, runs vet, lint, anti-slop-go, and
+race tests on the packages a staged change touches, with the same coverage
+bar over the scoped profile. Changes to `go.mod`, `go.sum`, `Makefile`,
+`scripts/`, `.githooks/`, or `.golangci.yml` escalate to the full gate.
 
 ## Spec first
 

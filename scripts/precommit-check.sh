@@ -2,8 +2,8 @@
 # This script is the pre-commit tier of the gate.
 #
 # It checks only the packages that own a staged .go file, with the same
-# vet, lint, race test, and coverage bar as `make check`. Pre-push and CI
-# still run the full `make check` over the whole module.
+# vet, lint, anti-slop-go, race test, and coverage bar as `make check`.
+# Pre-push and CI still run the full `make check` over the whole module.
 set -eu
 
 cd "$(git rev-parse --show-toplevel)"
@@ -47,6 +47,7 @@ make tidy-check
 go vet $pkgs
 # shellcheck disable=SC2086
 golangci-lint run $lintdirs
+make antislop ANTISLOP_PKGS="$lintdirs"
 # shellcheck disable=SC2086
 go test -race -coverprofile=coverage.scoped.out $pkgs
 COVERAGE_GATE_ALLOW_EMPTY=1 sh scripts/coverage-gate.sh coverage.scoped.out
