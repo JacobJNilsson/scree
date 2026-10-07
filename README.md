@@ -94,6 +94,12 @@ The spec is in [docs/spec](docs/spec). Implementation follows the steps in
 [004-implementation.md](docs/spec/004-implementation.md), and
 [AGENTS.md](AGENTS.md) holds the working rules.
 
+## Agent skill
+
+The folder `skills/scree` holds a skill for coding agents. It teaches the
+baseline workflow. Install it by copying or linking the folder into the skills
+folder that your agent reads.
+
 ## Influenced by
 
 `scree` is a Go re-imagining of [trellis](https://github.com/jayminwest/trellis)
