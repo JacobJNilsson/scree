@@ -10,7 +10,7 @@ Three versions travel with every report:
 - `schemaVersion`: the shape of this document. Starts at `1.0.0`.
 - `analyzerVersion`: the `scree` release that produced the measurements.
   Equals the module version.
-- `scoringVersion`: the formula constants. It is `0.1.0`, the version the
+- `scoringVersion`: the formula constants. It is `0.2.0`, the version the
   calibration in [004-implementation.md](004-implementation.md) checked. A
   change to any constant raises it.
 
@@ -36,7 +36,7 @@ reaches the output.
 {
   "schemaVersion": "1.0.0",
   "analyzerVersion": "0.1.0",
-  "scoringVersion": "0.1.0",
+  "scoringVersion": "0.2.0",
   "repo": { "root": "/abs/path", "module": "github.com/x/y" },   // module "" when no go.mod
   "configDigest": "sha256:…",                                      // of the normalized effective config
   "coverage": {
@@ -59,18 +59,18 @@ reaches the output.
     }
   },
   "score": {
-    "index": 25,
+    "index": 10,
     "direction": "lower-is-better",
     "partial": false,
     "contributions": [
-      { "dimension": "complexity-erosion", "points": 25, "weight": 0.6,
+      { "dimension": "complexity-erosion", "points": 10, "weight": 0.6,
         "terms": [
-          { "metricId": "erosion.eroded-share.production", "state": "complete", "value": 0.18, "saturatesAt": 0.25, "score": 72 },
+          { "metricId": "erosion.eroded-share.production", "state": "complete", "value": 0.18, "saturatesAt": 0.8, "score": 22.5 },
           { "metricId": "erosion.eroded-count.production", "state": "complete", "value": 3, "countScale": 20, "score": 12.26 }
         ] },
       { "dimension": "duplication", "points": 0, "weight": 0.4,
         "terms": [
-          { "metricId": "duplication.density.production", "state": "complete", "value": 0, "saturatesAt": 0.15, "score": 0 },
+          { "metricId": "duplication.density.production", "state": "complete", "value": 0, "saturatesAt": 0.3, "score": 0 },
           { "metricId": "duplication.groups.production", "state": "complete", "value": 0, "countScale": 15, "score": 0 }
         ] }
     ]

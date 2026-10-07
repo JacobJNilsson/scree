@@ -230,10 +230,13 @@ coverage, and safeguards never enter it.
 
 | dimension          | weight | terms                                                                                  |
 | ------------------ | ------ | -------------------------------------------------------------------------------------- |
-| complexity-erosion | 0.6    | `erosion.eroded-share` saturates at 0.25 (share 0.5); `erosion.eroded-count` count scale 20 (share 0.5) |
-| duplication        | 0.4    | `duplication.density` saturates at 0.15 (share 0.5); `duplication.groups` count scale 15 (share 0.5) |
+| complexity-erosion | 0.6    | `erosion.eroded-share` saturates at 0.8 (share 0.5); `erosion.eroded-count` count scale 20 (share 0.5) |
+| duplication        | 0.4    | `duplication.density` saturates at 0.3 (share 0.5); `duplication.groups` count scale 15 (share 0.5) |
 
 - A saturating term scores `100 × min(1, value / saturatesAt)`.
+  The saturation points sit at the largest share and density in the corpus
+  of [004-implementation.md](004-implementation.md), so the share terms
+  still separate large modules.
 - A count term scores `100 × b / (1 + b)` where `b = ln(1 + count / scale)`.
   It has no finite cap and no size denominator, so a large clean addition
   cannot erase a hotspot count.

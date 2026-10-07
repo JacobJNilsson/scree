@@ -120,8 +120,12 @@ asserts the direction of the index.
 | `move` | A function moves to a file in another package. | equal |
 | `tests-only` | A test file with a clone group and an eroded function appears. | equal |
 | `comments` | Comments and blank lines appear. | equal |
+| `pad` | The `after` module holds `before` plus a second package of clean code, about as many production lines as `before`, with no eroded function and no clone group. | near |
 
-Lower and higher mean a move of at least one index point. Each `before`
+Lower and higher mean a move of at least one index point. Near means the
+index moves by at most 3 points either way. In `pad`, the new code must not
+clone the code of `before`. Duplication matches normalized tokens, so a
+renamed copy counts as a clone. Each `before`
 module scores above 0. An index that moves in the other direction, or
 does not move, is a calibration defect. The fix changes a constant in
 `internal/formula` and raises `ScoringVersion`. The fix never edits a
@@ -136,6 +140,17 @@ path, version, index, the two contributions, production code lines,
 production functions, eroded functions, clone groups, and completeness.
 The repository commits that file. `make corpus` needs the network, so
 `make check` does not run it.
+
+Under the table, `make corpus` also writes the Spearman rank correlation of
+the index with production code lines, and of the index with debt per
+thousand production lines. Both cover the modules above 5,000 production
+lines. Debt is eroded functions plus clone groups.
+A correlation that cannot be computed, because fewer than two modules qualify
+or one side has no spread, prints as `undefined`.
+
+One limit is known. A module padded with clean code lowers both share terms,
+and no current term prevents that. The `pad` pair bounds the effect for a
+small module. A large module still drops further.
 
 The corpus shows how the index spreads over real code. It never changes a
 constant by itself. When every pair passes, `ScoringVersion` drops the
