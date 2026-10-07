@@ -1,8 +1,8 @@
 scree compare
 
-before  index 0/100, scoring 0.1.0
-after   index 34/100, scoring 0.1.0
-delta   +34
+before  index 0/100, scoring 0.2.0
+after   index 23/100, scoring 0.2.0
+delta   +23
 
 metric                                       before     after     delta
 complexity.cc.max.production                      1        15       +14
