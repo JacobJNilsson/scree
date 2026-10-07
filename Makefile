@@ -5,7 +5,7 @@ ANTISLOP_PKGS ?= ./...
 COVERAGE_MIN ?= 90
 export COVERAGE_MIN
 
-.PHONY: build test gate-test lint lint-fast vet tidy tidy-check antislop check check-scoped setup clean golden selfcheck corpus
+.PHONY: build test gate-test lint lint-fast vet tidy tidy-check antislop check check-scoped setup clean golden selfcheck baseline corpus
 
 build:
 	go build ./...
@@ -51,6 +51,11 @@ antislop:
 selfcheck:
 	go run ./cmd/scree audit . --out .scree-self.json
 	@sed -nE 's/^    "index": ([0-9]+),$$/self-audit index \1 (.scree-self.json)/p' .scree-self.json
+	go run ./cmd/scree baseline --check .
+
+# Regenerate the committed baseline after a change that alters a measurement.
+baseline:
+	go run ./cmd/scree baseline .
 
 check: tidy-check vet lint gate-test test build antislop selfcheck
 

@@ -1,0 +1,1341 @@
+{
+  "schemaVersion": "1.0.0",
+  "analyzerVersion": "0.2.0-dev",
+  "scoringVersion": "0.2.0",
+  "repo": {
+    "root": ".",
+    "module": "github.com/JacobJNilsson/scree"
+  },
+  "configDigest": "sha256:4c50bb6e6bc006a5b9243824f1685a5379c85d70169e618006d2edfe7d505d66",
+  "coverage": {
+    "production": {
+      "files": 42,
+      "sloc": 5342
+    },
+    "test": {
+      "files": 36,
+      "sloc": 7089
+    },
+    "generated": {
+      "files": 0
+    },
+    "vendored": {
+      "files": 0
+    },
+    "testdata": {
+      "files": 199
+    },
+    "excluded": {
+      "files": 5
+    },
+    "unsupported": {
+      "files": 18
+    },
+    "nestedModules": []
+  },
+  "completeness": "complete",
+  "metrics": {
+    "complexity.cc.max.production": {
+      "state": "complete",
+      "value": 17,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.max.test": {
+      "state": "complete",
+      "value": 20,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.p50.production": {
+      "state": "complete",
+      "value": 3,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.p50.test": {
+      "state": "complete",
+      "value": 3,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.p90.production": {
+      "state": "complete",
+      "value": 7,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.cc.p90.test": {
+      "state": "complete",
+      "value": 6,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.functions.production": {
+      "state": "complete",
+      "value": 380,
+      "unit": "count",
+      "detail": {}
+    },
+    "complexity.functions.test": {
+      "state": "complete",
+      "value": 561,
+      "unit": "count",
+      "detail": {}
+    },
+    "duplication.density.production": {
+      "state": "complete",
+      "value": 0.0041183077499064025,
+      "unit": "ratio",
+      "numerator": 22,
+      "denominator": 5342,
+      "detail": {}
+    },
+    "duplication.density.test": {
+      "state": "complete",
+      "value": 0.07335308224009028,
+      "unit": "ratio",
+      "numerator": 520,
+      "denominator": 7089,
+      "detail": {}
+    },
+    "duplication.duplicated-lines.production": {
+      "state": "complete",
+      "value": 22,
+      "unit": "count",
+      "detail": {}
+    },
+    "duplication.duplicated-lines.test": {
+      "state": "complete",
+      "value": 520,
+      "unit": "count",
+      "detail": {}
+    },
+    "duplication.groups.production": {
+      "state": "complete",
+      "value": 2,
+      "unit": "count",
+      "detail": {}
+    },
+    "duplication.groups.test": {
+      "state": "complete",
+      "value": 29,
+      "unit": "count",
+      "detail": {}
+    },
+    "erosion.eroded-count.production": {
+      "state": "complete",
+      "value": 5,
+      "unit": "count",
+      "detail": {}
+    },
+    "erosion.eroded-count.test": {
+      "state": "complete",
+      "value": 9,
+      "unit": "count",
+      "detail": {}
+    },
+    "erosion.eroded-share.production": {
+      "state": "complete",
+      "value": 0.08693654158090174,
+      "unit": "ratio",
+      "numerator": 468.78497462551877,
+      "denominator": 5392.266199009942,
+      "detail": {}
+    },
+    "erosion.eroded-share.test": {
+      "state": "complete",
+      "value": 0.09587051093084015,
+      "unit": "ratio",
+      "numerator": 682.5247615867298,
+      "denominator": 7119.235674868731,
+      "detail": {}
+    },
+    "erosion.mass.production": {
+      "state": "complete",
+      "value": 5392.266199009942,
+      "unit": "mass",
+      "detail": {}
+    },
+    "erosion.mass.test": {
+      "state": "complete",
+      "value": 7119.235674868731,
+      "unit": "mass",
+      "detail": {}
+    }
+  },
+  "score": {
+    "index": 11,
+    "direction": "lower-is-better",
+    "partial": false,
+    "contributions": [
+      {
+        "dimension": "complexity-erosion",
+        "points": 9,
+        "weight": 0.6,
+        "terms": [
+          {
+            "metricId": "erosion.eroded-share.production",
+            "state": "complete",
+            "value": 0.08693654158090174,
+            "saturatesAt": 0.8,
+            "score": 10.867067697612717
+          },
+          {
+            "metricId": "erosion.eroded-count.production",
+            "state": "complete",
+            "value": 5,
+            "countScale": 20,
+            "score": 18.243447473884206
+          }
+        ]
+      },
+      {
+        "dimension": "duplication",
+        "points": 2,
+        "weight": 0.4,
+        "terms": [
+          {
+            "metricId": "duplication.density.production",
+            "state": "complete",
+            "value": 0.0041183077499064025,
+            "saturatesAt": 0.3,
+            "score": 1.372769249968801
+          },
+          {
+            "metricId": "duplication.groups.production",
+            "state": "complete",
+            "value": 2,
+            "countScale": 15,
+            "score": 11.123999549558864
+          }
+        ]
+      }
+    ]
+  },
+  "findings": [
+    {
+      "kind": "complexity.hotspot",
+      "path": "calibration_test.go",
+      "startLine": 47,
+      "endLine": 71,
+      "identity": ".:TestPairedRefactors",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "cc": 11,
+        "nesting": 3,
+        "sloc": 25,
+        "mass": 55
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "cmd/scree/baseline_check_test.go",
+      "startLine": 121,
+      "endLine": 145,
+      "identity": "cmd/scree:TestBaselineCheckUnusableFile",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "cc": 13,
+        "nesting": 1,
+        "sloc": 25,
+        "mass": 65
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "cmd/scree/run.go",
+      "startLine": 84,
+      "endLine": 107,
+      "identity": "cmd/scree:run",
+      "ambiguous": false,
+      "sourceSet": "production",
+      "facts": {
+        "cc": 11,
+        "nesting": 1,
+        "sloc": 23,
+        "mass": 52.75414675643991
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "internal/complexity/complexity_test.go",
+      "startLine": 78,
+      "endLine": 107,
+      "identity": "internal/complexity:TestIncomplete",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "cc": 11,
+        "nesting": 3,
+        "sloc": 28,
+        "mass": 58.206528843421
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "internal/contract/decode_test.go",
+      "startLine": 58,
+      "endLine": 86,
+      "identity": "internal/contract:TestFactsUnmarshal",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "cc": 15,
+        "nesting": 2,
+        "sloc": 29,
+        "mass": 80.77747210701756
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "internal/discover/discover_test.go",
+      "startLine": 323,
+      "endLine": 347,
+      "identity": "internal/discover:TestWalkKeepsSyntaxOfMeasuredFiles",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "cc": 11,
+        "nesting": 3,
+        "sloc": 25,
+        "mass": 55
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "internal/duplication/duplication.go",
+      "startLine": 178,
+      "endLine": 233,
+      "identity": "internal/duplication:stream.addFile",
+      "ambiguous": false,
+      "sourceSet": "production",
+      "facts": {
+        "cc": 15,
+        "nesting": 2,
+        "sloc": 54,
+        "mass": 110.22703842524302
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "internal/duplication/duplication.go",
+      "startLine": 341,
+      "endLine": 407,
+      "identity": "internal/duplication:stream.groups",
+      "ambiguous": false,
+      "sourceSet": "production",
+      "facts": {
+        "cc": 17,
+        "nesting": 3,
+        "sloc": 64,
+        "mass": 136
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "internal/duplication/duplication_test.go",
+      "startLine": 107,
+      "endLine": 129,
+      "identity": "internal/duplication:TestExact",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "cc": 11,
+        "nesting": 1,
+        "sloc": 21,
+        "mass": 50.40833264451424
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "internal/duplication/groups_test.go",
+      "startLine": 19,
+      "endLine": 67,
+      "identity": "internal/duplication:naiveGroups",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "cc": 20,
+        "nesting": 4,
+        "sloc": 47,
+        "mass": 137.11309200802089
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "internal/duplication/suffix.go",
+      "startLine": 13,
+      "endLine": 72,
+      "identity": "internal/duplication:suffixArray",
+      "ambiguous": false,
+      "sourceSet": "production",
+      "facts": {
+        "cc": 14,
+        "nesting": 2,
+        "sloc": 53,
+        "mass": 101.92153844992725
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "internal/formula/score.go",
+      "startLine": 36,
+      "endLine": 67,
+      "identity": "internal/formula:scoreDimension",
+      "ambiguous": false,
+      "sourceSet": "production",
+      "facts": {
+        "cc": 12,
+        "nesting": 2,
+        "sloc": 32,
+        "mass": 67.88225099390857
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "internal/formula/score_test.go",
+      "startLine": 44,
+      "endLine": 75,
+      "identity": "internal/formula:TestWorkedExample",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "cc": 19,
+        "nesting": 1,
+        "sloc": 32,
+        "mass": 107.48023074035522
+      }
+    },
+    {
+      "kind": "complexity.hotspot",
+      "path": "public_test.go",
+      "startLine": 110,
+      "endLine": 142,
+      "identity": ".:TestEvaluateWithBaseline",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "cc": 13,
+        "nesting": 1,
+        "sloc": 32,
+        "mass": 73.53910524340095
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/compare/compare_test.go",
+      "startLine": 126,
+      "endLine": 135,
+      "identity": "6a73623f66bdba13",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "6a73623f66bdba13",
+        "tokens": 128,
+        "members": [
+          {
+            "path": "internal/compare/compare_test.go",
+            "startLine": 126,
+            "endLine": 135
+          },
+          {
+            "path": "internal/compare/compare_test.go",
+            "startLine": 133,
+            "endLine": 142
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/compare/compare_test.go",
+      "startLine": 128,
+      "endLine": 139,
+      "identity": "089c071f3d5543d2",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "089c071f3d5543d2",
+        "tokens": 136,
+        "members": [
+          {
+            "path": "internal/compare/compare_test.go",
+            "startLine": 128,
+            "endLine": 139
+          },
+          {
+            "path": "internal/compare/compare_test.go",
+            "startLine": 142,
+            "endLine": 153
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/compare/render.go",
+      "startLine": 20,
+      "endLine": 28,
+      "identity": "95fcdc3a3785e328",
+      "ambiguous": false,
+      "sourceSet": "production",
+      "facts": {
+        "groupId": "95fcdc3a3785e328",
+        "tokens": 102,
+        "members": [
+          {
+            "path": "internal/compare/render.go",
+            "startLine": 20,
+            "endLine": 28
+          },
+          {
+            "path": "internal/compare/render.go",
+            "startLine": 43,
+            "endLine": 51
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/contract/contract_test.go",
+      "startLine": 133,
+      "endLine": 147,
+      "identity": "38970e244b3e7e7c",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "38970e244b3e7e7c",
+        "tokens": 121,
+        "members": [
+          {
+            "path": "internal/contract/contract_test.go",
+            "startLine": 133,
+            "endLine": 147
+          },
+          {
+            "path": "internal/duplication/duplication_test.go",
+            "startLine": 462,
+            "endLine": 476
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/contract/decode_test.go",
+      "startLine": 16,
+      "endLine": 39,
+      "identity": "fc61bb1b63fe3c51",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "fc61bb1b63fe3c51",
+        "tokens": 147,
+        "members": [
+          {
+            "path": "internal/contract/decode_test.go",
+            "startLine": 16,
+            "endLine": 39
+          },
+          {
+            "path": "internal/contract/decode_test.go",
+            "startLine": 143,
+            "endLine": 166
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/contract/decode_test.go",
+      "startLine": 43,
+      "endLine": 56,
+      "identity": "964f31011eea0c20",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "964f31011eea0c20",
+        "tokens": 109,
+        "members": [
+          {
+            "path": "internal/contract/decode_test.go",
+            "startLine": 43,
+            "endLine": 56
+          },
+          {
+            "path": "internal/contract/decode_test.go",
+            "startLine": 197,
+            "endLine": 210
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/contract/decode_test.go",
+      "startLine": 45,
+      "endLine": 60,
+      "identity": "b3efeee954d2125a",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "b3efeee954d2125a",
+        "tokens": 132,
+        "members": [
+          {
+            "path": "internal/contract/decode_test.go",
+            "startLine": 45,
+            "endLine": 60
+          },
+          {
+            "path": "internal/contract/decode_test.go",
+            "startLine": 163,
+            "endLine": 178
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/contract/decode_test.go",
+      "startLine": 162,
+      "endLine": 176,
+      "identity": "03f9a297a996701b",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "03f9a297a996701b",
+        "tokens": 123,
+        "members": [
+          {
+            "path": "internal/contract/decode_test.go",
+            "startLine": 162,
+            "endLine": 176
+          },
+          {
+            "path": "internal/contract/decode_test.go",
+            "startLine": 181,
+            "endLine": 195
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/discover/discover_test.go",
+      "startLine": 179,
+      "endLine": 194,
+      "identity": "04ed734919f80f6c",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "04ed734919f80f6c",
+        "tokens": 103,
+        "members": [
+          {
+            "path": "internal/discover/discover_test.go",
+            "startLine": 179,
+            "endLine": 194
+          },
+          {
+            "path": "internal/discover/discover_test.go",
+            "startLine": 211,
+            "endLine": 227
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/discover/discover_test.go",
+      "startLine": 184,
+      "endLine": 203,
+      "identity": "5a020f6783a54a59",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "5a020f6783a54a59",
+        "tokens": 109,
+        "members": [
+          {
+            "path": "internal/discover/discover_test.go",
+            "startLine": 184,
+            "endLine": 203
+          },
+          {
+            "path": "internal/discover/discover_test.go",
+            "startLine": 248,
+            "endLine": 267
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/discover/glob_test.go",
+      "startLine": 11,
+      "endLine": 37,
+      "identity": "6728ac849ad52053",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "6728ac849ad52053",
+        "tokens": 216,
+        "members": [
+          {
+            "path": "internal/discover/glob_test.go",
+            "startLine": 11,
+            "endLine": 37
+          },
+          {
+            "path": "internal/discover/glob_test.go",
+            "startLine": 12,
+            "endLine": 38
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/duplication/duplication_test.go",
+      "startLine": 34,
+      "endLine": 47,
+      "identity": "599994b60f94e44b",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "599994b60f94e44b",
+        "tokens": 114,
+        "members": [
+          {
+            "path": "internal/duplication/duplication_test.go",
+            "startLine": 34,
+            "endLine": 47
+          },
+          {
+            "path": "internal/inventory/inventory_test.go",
+            "startLine": 137,
+            "endLine": 150
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/duplication/duplication_test.go",
+      "startLine": 34,
+      "endLine": 46,
+      "identity": "c55b5c789d124933",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "c55b5c789d124933",
+        "tokens": 106,
+        "members": [
+          {
+            "path": "internal/duplication/duplication_test.go",
+            "startLine": 34,
+            "endLine": 46
+          },
+          {
+            "path": "internal/inventory/inventory_test.go",
+            "startLine": 137,
+            "endLine": 149
+          },
+          {
+            "path": "internal/safeguards/safeguards_test.go",
+            "startLine": 46,
+            "endLine": 58
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/inventory/inventory_test.go",
+      "startLine": 47,
+      "endLine": 79,
+      "identity": "2b9aaaf75c9ff6f1",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "2b9aaaf75c9ff6f1",
+        "tokens": 475,
+        "members": [
+          {
+            "path": "internal/inventory/inventory_test.go",
+            "startLine": 47,
+            "endLine": 79
+          },
+          {
+            "path": "internal/inventory/inventory_test.go",
+            "startLine": 49,
+            "endLine": 80
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/inventory/inventory_test.go",
+      "startLine": 276,
+      "endLine": 297,
+      "identity": "51932de3df99b6f0",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "51932de3df99b6f0",
+        "tokens": 157,
+        "members": [
+          {
+            "path": "internal/inventory/inventory_test.go",
+            "startLine": 276,
+            "endLine": 297
+          },
+          {
+            "path": "internal/inventory/inventory_test.go",
+            "startLine": 388,
+            "endLine": 407
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/inventory/inventory_test.go",
+      "startLine": 356,
+      "endLine": 368,
+      "identity": "da75bbe1ea9f8c59",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "da75bbe1ea9f8c59",
+        "tokens": 132,
+        "members": [
+          {
+            "path": "internal/inventory/inventory_test.go",
+            "startLine": 356,
+            "endLine": 368
+          },
+          {
+            "path": "internal/inventory/inventory_test.go",
+            "startLine": 411,
+            "endLine": 423
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/policy/policy_test.go",
+      "startLine": 121,
+      "endLine": 136,
+      "identity": "51d5cc5f63396ca1",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "51d5cc5f63396ca1",
+        "tokens": 159,
+        "members": [
+          {
+            "path": "internal/policy/policy_test.go",
+            "startLine": 121,
+            "endLine": 136
+          },
+          {
+            "path": "internal/policy/policy_test.go",
+            "startLine": 131,
+            "endLine": 146
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/report/load_test.go",
+      "startLine": 80,
+      "endLine": 94,
+      "identity": "25d921f9f13e2a4f",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "25d921f9f13e2a4f",
+        "tokens": 150,
+        "members": [
+          {
+            "path": "internal/report/load_test.go",
+            "startLine": 80,
+            "endLine": 94
+          },
+          {
+            "path": "internal/report/load_test.go",
+            "startLine": 81,
+            "endLine": 95
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/command_test.go",
+      "startLine": 14,
+      "endLine": 25,
+      "identity": "ab57ad2806a84a59",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "ab57ad2806a84a59",
+        "tokens": 238,
+        "members": [
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 14,
+            "endLine": 25
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 60,
+            "endLine": 71
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/command_test.go",
+      "startLine": 17,
+      "endLine": 25,
+      "identity": "866dad16824483a0",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "866dad16824483a0",
+        "tokens": 166,
+        "members": [
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 17,
+            "endLine": 25
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 30,
+            "endLine": 37
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 55,
+            "endLine": 62
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/command_test.go",
+      "startLine": 23,
+      "endLine": 30,
+      "identity": "6d5090e58b6d4a5b",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "6d5090e58b6d4a5b",
+        "tokens": 123,
+        "members": [
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 23,
+            "endLine": 30
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 43,
+            "endLine": 50
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/command_test.go",
+      "startLine": 27,
+      "endLine": 37,
+      "identity": "034c37303786e35c",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "034c37303786e35c",
+        "tokens": 237,
+        "members": [
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 27,
+            "endLine": 37
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 49,
+            "endLine": 59
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/command_test.go",
+      "startLine": 29,
+      "endLine": 39,
+      "identity": "c9c700741a2013e9",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "c9c700741a2013e9",
+        "tokens": 238,
+        "members": [
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 29,
+            "endLine": 39
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 54,
+            "endLine": 64
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/command_test.go",
+      "startLine": 34,
+      "endLine": 38,
+      "identity": "85f822dd734b1524",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "85f822dd734b1524",
+        "tokens": 101,
+        "members": [
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 34,
+            "endLine": 38
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 40,
+            "endLine": 45
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 59,
+            "endLine": 63
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/command_test.go",
+      "startLine": 36,
+      "endLine": 40,
+      "identity": "03a2192fd92288c6",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "03a2192fd92288c6",
+        "tokens": 104,
+        "members": [
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 36,
+            "endLine": 40
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 37,
+            "endLine": 41
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 48,
+            "endLine": 52
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/command_test.go",
+      "startLine": 36,
+      "endLine": 43,
+      "identity": "da4c33c33a7f89f7",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "da4c33c33a7f89f7",
+        "tokens": 176,
+        "members": [
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 36,
+            "endLine": 43
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 47,
+            "endLine": 54
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/command_test.go",
+      "startLine": 49,
+      "endLine": 58,
+      "identity": "a0b05e2908e613cb",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "a0b05e2908e613cb",
+        "tokens": 216,
+        "members": [
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 49,
+            "endLine": 58
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 61,
+            "endLine": 71
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/command_test.go",
+      "startLine": 51,
+      "endLine": 61,
+      "identity": "e37dbd6426b9e269",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "e37dbd6426b9e269",
+        "tokens": 230,
+        "members": [
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 51,
+            "endLine": 61
+          },
+          {
+            "path": "internal/safeguards/command_test.go",
+            "startLine": 52,
+            "endLine": 62
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/evaluate_test.go",
+      "startLine": 51,
+      "endLine": 75,
+      "identity": "f4c94517349dc719",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "f4c94517349dc719",
+        "tokens": 157,
+        "members": [
+          {
+            "path": "internal/safeguards/evaluate_test.go",
+            "startLine": 51,
+            "endLine": 75
+          },
+          {
+            "path": "internal/safeguards/safeguards_test.go",
+            "startLine": 64,
+            "endLine": 88
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/evaluate_test.go",
+      "startLine": 134,
+      "endLine": 138,
+      "identity": "4d487613bba59fdc",
+      "ambiguous": false,
+      "sourceSet": "test",
+      "facts": {
+        "groupId": "4d487613bba59fdc",
+        "tokens": 100,
+        "members": [
+          {
+            "path": "internal/safeguards/evaluate_test.go",
+            "startLine": 134,
+            "endLine": 138
+          },
+          {
+            "path": "internal/safeguards/evaluate_test.go",
+            "startLine": 148,
+            "endLine": 152
+          }
+        ]
+      }
+    },
+    {
+      "kind": "duplication.clone-group",
+      "path": "internal/safeguards/safeguards.go",
+      "startLine": 115,
+      "endLine": 117,
+      "identity": "b2da81b9bf2fdd38",
+      "ambiguous": false,
+      "sourceSet": "production",
+      "facts": {
+        "groupId": "b2da81b9bf2fdd38",
+        "tokens": 114,
+        "members": [
+          {
+            "path": "internal/safeguards/safeguards.go",
+            "startLine": 115,
+            "endLine": 117
+          },
+          {
+            "path": "internal/safeguards/safeguards.go",
+            "startLine": 116,
+            "endLine": 118
+          }
+        ]
+      }
+    }
+  ],
+  "safeguards": [
+    {
+      "id": "agent-hooks",
+      "evidence": "absent",
+      "locations": [],
+      "notes": "No agent hook is declared."
+    },
+    {
+      "id": "ci-workflow",
+      "evidence": "structurally-wired",
+      "locations": [
+        {
+          "path": ".github/workflows/ci.yml"
+        }
+      ],
+      "notes": ".github/workflows/ci.yml runs on push and pull_request."
+    },
+    {
+      "id": "coverage-budget",
+      "evidence": "structurally-wired",
+      "locations": [
+        {
+          "path": "Makefile",
+          "line": 5
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "line": 24
+        },
+        {
+          "path": "Makefile",
+          "line": 14
+        }
+      ],
+      "notes": "The step at .github/workflows/ci.yml:24 reaches the coverage check at Makefile:14."
+    },
+    {
+      "id": "lint-config",
+      "evidence": "structurally-wired",
+      "locations": [
+        {
+          "path": ".golangci.yml",
+          "line": 1
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "line": 24
+        },
+        {
+          "path": "Makefile",
+          "line": 29
+        }
+      ],
+      "notes": "The step at .github/workflows/ci.yml:24 reaches golangci-lint at Makefile:29."
+    },
+    {
+      "id": "pre-commit-hook",
+      "evidence": "structurally-wired",
+      "locations": [
+        {
+          "path": "Makefile",
+          "line": 66
+        },
+        {
+          "path": ".githooks/pre-commit"
+        }
+      ],
+      "notes": "Target setup sets core.hooksPath to .githooks, and the hook runs make check-scoped."
+    },
+    {
+      "id": "pre-push-hook",
+      "evidence": "structurally-wired",
+      "locations": [
+        {
+          "path": "Makefile",
+          "line": 66
+        },
+        {
+          "path": ".githooks/pre-push"
+        }
+      ],
+      "notes": "Target setup sets core.hooksPath to .githooks, and the hook runs make check."
+    },
+    {
+      "id": "test-check",
+      "evidence": "structurally-wired",
+      "locations": [
+        {
+          "path": "Makefile",
+          "line": 14
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "line": 24
+        }
+      ],
+      "notes": "The step at .github/workflows/ci.yml:24 reaches go test at Makefile:14."
+    },
+    {
+      "id": "vet-check",
+      "evidence": "structurally-wired",
+      "locations": [
+        {
+          "path": "Makefile",
+          "line": 35
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "line": 24
+        }
+      ],
+      "notes": "The step at .github/workflows/ci.yml:24 reaches go vet at Makefile:35."
+    }
+  ],
+  "limits": [],
+  "meta": {
+    "durationMs": 0
+  }
+}
