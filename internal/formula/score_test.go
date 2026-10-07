@@ -40,33 +40,33 @@ func scoreOf(t *testing.T, s contract.Score, id string) float64 {
 	return 0
 }
 
-// The worked example: share term 72, count term 100 × ln(1.15)/(1+ln(1.15)) = 12.26, dimension 42.13, weighted 25.28, index 25.
+// The worked example: share term 22.5, count term 100 × ln(1.15)/(1+ln(1.15)) = 12.26, dimension 17.38, weighted 10.43, index 10.
 func TestWorkedExample(t *testing.T) {
 	m := clean()
 	m[erodedShare] = complete(0.18)
 	m[erodedCount] = complete(3)
 	s := Score(m)
-	if got := scoreOf(t, s, erodedShare); !near(got, 72) {
-		t.Errorf("share term = %v, want 72", got)
+	if got := scoreOf(t, s, erodedShare); !near(got, 22.5) {
+		t.Errorf("share term = %v, want 22.5", got)
 	}
 	if got := scoreOf(t, s, erodedCount); !near(got, 12.26) {
 		t.Errorf("count term = %v, want 12.26", got)
 	}
-	if s.Index != 25 || s.Partial || s.Direction != "lower-is-better" {
-		t.Errorf("score = %+v, want index 25, not partial, lower-is-better", s)
+	if s.Index != 10 || s.Partial || s.Direction != "lower-is-better" {
+		t.Errorf("score = %+v, want index 10, not partial, lower-is-better", s)
 	}
 	if len(s.Contributions) != 2 {
 		t.Fatalf("got %d contributions, want 2", len(s.Contributions))
 	}
 	erosion, dup := s.Contributions[0], s.Contributions[1]
-	if erosion.Dimension != "complexity-erosion" || erosion.Points != 25 || erosion.Weight != 0.6 {
+	if erosion.Dimension != "complexity-erosion" || erosion.Points != 10 || erosion.Weight != 0.6 {
 		t.Errorf("erosion contribution = %+v", erosion)
 	}
 	if dup.Dimension != "duplication" || dup.Points != 0 || dup.Weight != 0.4 {
 		t.Errorf("duplication contribution = %+v", dup)
 	}
 	term := erosion.Terms[0]
-	if term.MetricID != erodedShare || term.State != contract.Complete || term.Value != 0.18 || term.SaturatesAt != 0.25 {
+	if term.MetricID != erodedShare || term.State != contract.Complete || term.Value != 0.18 || term.SaturatesAt != 0.8 {
 		t.Errorf("share term = %+v", term)
 	}
 	if count := erosion.Terms[1]; count.CountScale != 20 || count.SaturatesAt != 0 {
@@ -75,7 +75,7 @@ func TestWorkedExample(t *testing.T) {
 }
 
 func TestSaturatingTerm(t *testing.T) {
-	for _, tc := range []struct{ value, want float64 }{{0, 0}, {0.125, 50}, {0.25, 100}, {0.9, 100}} {
+	for _, tc := range []struct{ value, want float64 }{{0, 0}, {0.4, 50}, {0.8, 100}, {0.9, 100}} {
 		m := clean()
 		m[erodedShare] = complete(tc.value)
 		if got := scoreOf(t, Score(m), erodedShare); !near(got, tc.want) {
@@ -103,7 +103,7 @@ func TestCountTerm(t *testing.T) {
 
 func TestDimensionIsShareWeightedSum(t *testing.T) {
 	m := clean()
-	m[density] = complete(0.15)
+	m[density] = complete(0.3)
 	m[groups] = complete(15)
 	b := math.Ln2
 	dim := 0.5*100 + 0.5*100*b/(1+b)
@@ -116,13 +116,13 @@ func TestDimensionIsShareWeightedSum(t *testing.T) {
 func TestIndexRoundsHalfUp(t *testing.T) {
 	// The share term scores 12.5, the dimension 6.25, and the weighted sum 3.75, which rounds to 4.
 	m := clean()
-	m[erodedShare] = complete(0.03125)
+	m[erodedShare] = complete(0.1)
 	if s := Score(m); s.Index != 4 {
 		t.Errorf("index = %d, want 4", s.Index)
 	}
-	// A density of 0.01125 gives a weighted sum of exactly 1.5 in IEEE-754 doubles, which rounds up to 2.
+	// A density of 0.0225 gives a weighted sum of exactly 1.5 in IEEE-754 doubles, which rounds up to 2.
 	m = clean()
-	m[density] = complete(0.01125)
+	m[density] = complete(0.0225)
 	if s := Score(m); s.Index != 2 {
 		t.Errorf("index = %d, want 2 from an exact half", s.Index)
 	}
