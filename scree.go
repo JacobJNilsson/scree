@@ -21,7 +21,7 @@ import (
 )
 
 // Version is the scree release that produced a report.
-const Version = "0.1.0"
+const Version = "0.2.0-dev"
 
 // Report is the result of one audit.
 type Report = report.Report
