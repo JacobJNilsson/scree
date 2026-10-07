@@ -67,6 +67,9 @@ package.
   `make check` from step 1 on. Each step extends what the self-audit prints.
   From step 1 it must exit 0. From step 4 a rise in the repository's own
   index above the committed budget in `scree.yaml` fails the gate.
+  `make selfcheck` also runs `scree baseline --check` against the committed
+  `scree-baseline.json`, so a change that alters a measurement must
+  regenerate that file.
 - No private repository names or identifiers in this repository. Corpus
   entries are public modules at pinned revisions.
 

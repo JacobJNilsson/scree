@@ -27,6 +27,10 @@ outside `repo.root`, and machine identifiers. Same files, same
 configuration, same versions means a byte-equal payload. Timing goes under
 `meta` and never enters comparison.
 
+A baseline is the reproducible form of a report. It sets `repo.root` to `.`
+and `meta.durationMs` to 0. The same files, configuration, and versions then
+give a byte-equal file on any machine, in any directory.
+
 Every list in the report has a defined sort order. Map iteration order never
 reaches the output.
 
@@ -166,6 +170,7 @@ not a policy failure. Integer knobs reject fractions.
 ```
 scree audit <path> [--config <file>] [--baseline <report.json>] [--json|--md] [--out <file>] [--quiet]
 scree compare <before.json> <after.json> [--json|--md]
+scree baseline [path] [--config <file>] [--out <file>] [--check] [--quiet]
 scree version
 ```
 
@@ -179,6 +184,37 @@ scree version
   stdout.
 - `compare` reads two saved JSON reports and prints the comparison. It runs
   no audit.
+- `baseline` audits like `audit` and writes the reproducible form of the
+  report as JSON. The path defaults to `.`. `--out` defaults to
+  `scree-baseline.json` at the audited root, and `--quiet` suppresses the
+  confirmation on stderr. The written file loads with `LoadReport`, so it is
+  a valid `--baseline` for `audit` and an argument for `compare`. A
+  repository commits the file on `main`, and its CI runs `baseline --check`.
+- `baseline --check` writes nothing. It audits, builds the same bytes, and
+  compares them with the file at `--out`. When the bytes are equal, the
+  command exits `0` and prints one line to stderr unless `--quiet`. When
+  they differ, the command exits `2`. It prints that the baseline has not
+  been updated and the command that regenerates it. For comparable reports
+  it prints the index before and after and the counts of new and resolved
+  findings, otherwise `refused:` and the reason. It then prints one
+  `changed:` line per differing leaf of the report, without `meta`, as a
+  dotted path with the old and new value. An array prints only its path.
+  It adds the item counts when they differ. The lines for `score` come
+  first, then `findings`, then every other path in alphabetical order. The
+  output stops at 10 lines and ends with `+N more`. A missing or unreadable
+  file exits `1` and names the path. A file that fails to load, for example
+  after a schema version change, also exits `1`, with the error and the
+  regenerate command. Any change to a
+  measurement makes the file stale, including a new non-Go file, because
+  coverage counts it.
+- The baseline run leaves its output file out of the audit. The walk skips
+  the file at the `--out` path, so it appears in no source set and no
+  coverage count. Writing the file for the first time therefore does not
+  change the measurement, and `--check` finds it current. A different file
+  at another path counts as usual. A plain `audit` counts the committed
+  baseline like any other file, so its coverage differs from the baseline's
+  by that file. `Options.Omit` carries the path in the
+  public package.
 - Exit codes: `0` when the run passed, `2` when the policy failed or a
   comparison was refused, `1` on an operational error (a path that does not
   exist, an invalid configuration, an unreadable report). A policy failure
@@ -193,6 +229,7 @@ package scree // import "github.com/JacobJNilsson/scree"
 
 func Audit(ctx context.Context, root string, opts Options) (*Report, error)
 func LoadReport(path string) (*Report, error)
+func Baseline(ctx context.Context, root string, opts Options) ([]byte, error)
 func Compare(before, after *Report) *Comparison
 func Evaluate(policy Policy, report *Report, baseline *Report) PolicyResult
 func LoadConfig(path string) (*Config, error)
