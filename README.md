@@ -17,19 +17,23 @@ scree audit .                        # measure and print the report
 scree audit . --out report.json      # save a baseline
 scree audit . --baseline report.json # compare with the baseline
 scree compare before.json after.json # compare two saved reports
-scree baseline .                     # write scree-baseline.json, and --check fails CI when it is stale
+scree baseline .                     # write scree-baseline.json
+scree baseline --check .             # exit 2 when scree-baseline.json is stale
 ```
 
-No release tag exists yet, so build the command from a clone. `go install`
-needs the `v0.1.0` tag.
+The `v0.1.0` tag does not include the `baseline` command. Until the next tag,
+install from `main` with
+`go install github.com/JacobJNilsson/scree/cmd/scree@main`, or build the
+command from a clone.
 
 An audit prints the index, the two contributions, both source sets with their
 distributions, the findings, and the safeguards the repository declares. The
 flags `--json`, `--md`, `--out`, `--config`, `--baseline`, and `--quiet` shape
 the output and the run. `scree audit --help` names every flag and term.
 
-Exit code `2` means the policy failed or a baseline could not be compared, `1`
-means the audit could not run, and `0` means the run passed.
+Exit code `2` means the policy failed, a baseline could not be compared, or
+`baseline --check` found a stale file. Exit code `1` means the command
+could not run, and `0` means the run passed.
 
 ## Configuration
 
