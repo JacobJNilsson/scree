@@ -21,9 +21,9 @@ unchanged. It runs, in order: `go mod tidy -diff`, `go vet ./...`,
 `golangci-lint run ./...`, the coverage gate self-test, `go test -race ./...`
 with the coverage gate at `COVERAGE_MIN` (90), `go build ./...`, and
 `make antislop`, which runs the anti-slop-go rules over the module.
-anti-slop-go v1.3.0 requires Go 1.24 or newer. With the default
+anti-slop-go v1.4.1 requires Go 1.26 or newer. With the default
 `GOTOOLCHAIN=auto`, the go command downloads a newer toolchain for
-`make antislop`. With `GOTOOLCHAIN=local` on a Go 1.23 host,
+`make antislop`. With `GOTOOLCHAIN=local` on a host older than Go 1.26,
 `make antislop` fails.
 `make selfcheck` audits this repository with its own binary and is part of
 `make check` from step 1 on. It fails when the policy in `scree.yaml`

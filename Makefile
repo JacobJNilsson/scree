@@ -34,10 +34,10 @@ tidy:
 tidy-check:
 	go mod tidy -diff
 
-# anti-slop-go v1.3.0 requires Go 1.24 or newer. GOTOOLCHAIN=auto downloads a newer toolchain.
-# GOTOOLCHAIN=local on Go 1.23 fails.
+# anti-slop-go v1.4.1 requires Go 1.26 or newer. GOTOOLCHAIN=auto downloads a newer toolchain.
+# GOTOOLCHAIN=local on a host older than Go 1.26 fails.
 antislop:
-	go run github.com/JacobJNilsson/anti-slop-go/cmd/antislop@v1.3.0 ./...
+	go run github.com/JacobJNilsson/anti-slop-go/cmd/antislop@v1.4.1 ./...
 
 # The self-audit fails the gate when scree cannot audit its own repository or when the policy in scree.yaml fails.
 # The sed line prints the index, because the score block holds the only "index" key at four spaces of indent.
